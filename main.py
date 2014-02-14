@@ -117,7 +117,7 @@ class Shooter():
             self.ship.move('down', interval)
 
         self.ship.bullets.update(interval)
-        
+
     def on_render(self) :
         self.display.fill(bg_color)
         sprites = self.scene.list_sprites()

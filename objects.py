@@ -26,14 +26,12 @@ class Bullets() :
         self.positions = []
         self.sprite = sprite
 
-
     def update(self, interval) :
         if self.direction == 'up' :
             for i, pos in enumerate(self.positions) :
                 #should consider time passed
                 offset = BULLET_SPEED * interval
                 self.positions[i] = (pos[0], pos[1]-offset)
-
 
 class Ship(Mobile_sprite) :
     '''A ship controlled by player and shooting'''
@@ -48,22 +46,20 @@ class Ship(Mobile_sprite) :
         #should consider time passed
         offset = self.speed_power * interval
         if direction == 'right' :
-            self.pos = self.pos[0]+offset, self.pos[1]
+            new_pos = self.pos[0]+offset, self.pos[1]
         elif direction == 'left' :
-            self.pos = self.pos[0]-offset, self.pos[1]
+            new_pos = self.pos[0]-offset, self.pos[1]
         elif direction == 'up' :
-            self.pos = self.pos[0], self.pos[1]-offset
+            new_pos = self.pos[0], self.pos[1]-offset
         elif direction == 'down' :
-            self.pos = self.pos[0], self.pos[1]+offset
+            new_pos = self.pos[0], self.pos[1]+offset
+        new_center = (new_pos[0]+self.surface.get_width()/2,
+        new_pos[1]+self.surface.get_height()/2)
         #do not step outside screen
-        if self.center[0] > self.limits[0] :
-            self.pos = self.limits[0], self.center[1]
-        elif self.center[0] < 0 :
-            self.pos = 0, self.center[1]
-        if self.pos[1] > self.limits[1] :
-            self.pos = self.center[0], self.limits[1]
-        elif self.center[1] < 0 :
-            self.pos = self.center[0], 0
+        if (new_center[0] < self.limits[0] and new_center[0] > 0
+        and new_center[1] < self.limits[1] and new_center[1] > 0) :
+            self.pos = new_pos
+        self.update()
 
     def shoot(self) :
         self.bullets.positions.append(self.center)
