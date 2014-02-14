@@ -20,3 +20,8 @@ R_key = K_RIGHT
 L_key = K_LEFT
 U_key = K_UP
 D_key = K_DOWN
+Shoot_key = K_SPACE
+
+#physics tuning
+BASE_POWER = 0.1
+BULLET_SPEED = 0.3
