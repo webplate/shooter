@@ -35,7 +35,6 @@ class Bullets() :
                 #should consider time passed
                 offset = BULLET_SPEED * interval
                 x, y = (pos[0], pos[1]-offset)
-                print x, y, self.width, self.height
                 #remove if outside screen
                 if (x > self.limits[0] or x + self.width < 0
                 or y > self.limits[1] or y + self.height < 0) :
