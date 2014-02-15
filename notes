@@ -1,0 +1,7 @@
+input :
+matrice binaire vaisseaux w*h*id
+matrice binaire projectiles&vaisseaux enemis : w*h*type*id
+
+output :
+liste (vaisseau, projectile) collisions
+liste (projectile_id, projectile_type) ayant touché

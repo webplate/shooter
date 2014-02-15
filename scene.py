@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import entity
 
 class Scene():
     def __init__(self, content):
@@ -10,10 +10,7 @@ class Scene():
         for item in self.content :
             yield item.pos, item.surface
             #draw projectile maps
-            try :
+            if isinstance(item, entity.Ship) :
                 projectiles = item.bullets
-            except AttributeError :
-                projectiles = None
-            if projectiles != None :
                 for pos in projectiles.positions :
                     yield pos, projectiles.sprite

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import platform, os, threading, pygame, operator
 from parameters import *
-import objects, scene
+import entity, scene
 
 class Player() :
     def __init__(self):
@@ -68,9 +68,9 @@ class Shooter():
         #Players
         self.player = Player()
         #Initialize scene
-        self.ship = objects.Ship((0,window_size[1]-2*txt_inter),
+        self.ship = entity.Ship((0,window_size[1]-2*txt_inter),
         'ship', self.font, window_size)
-        content = [self.ship, objects.Mobile_sprite((window_size[0]/2,0), 'target', self.font)]
+        content = [self.ship, entity.Mobile_sprite((window_size[0]/2,0), 'target', self.font)]
         self.scene = scene.Scene(content)
 
 
