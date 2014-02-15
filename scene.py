@@ -10,10 +10,11 @@ class Scene():
         self.update(0)
 
     def list_sprites(self) :
+        '''explore sprites in drawing order'''
         for item in self.content :
             yield item.pos, item.surface
             #draw projectile maps
-            if isinstance(item, entity.Ship) :
+            if isinstance(item, entity.Fighter) :
                 projectiles = item.bullets
                 for pos in projectiles.positions :
                     yield pos, projectiles.surface
@@ -30,18 +31,15 @@ class Scene():
             if isinstance(item, entity.Ship) :
                 #shoot and stuff
                 item.update()
-                #projectiles of object
-                projectiles = item.bullets
-                #move according to time
-                projectiles.update(interval)
+                #projectiles of object move according to time
+                item.bullets.update(interval)
                 #populate collision map
-                self.ship_map.append((item.pos, item.surface))
-                for pos in projectiles.positions :
-                    self.ship_proj_map.append((pos, projectiles.surface))
+                self.ship_map.append((item.pos, item.array))
+                for pos in item.bullets.positions :
+                    self.ship_proj_map.append((pos, item.bullets.array))
             elif isinstance(item, entity.Fighter) :
                 item.update()
-                projectiles = item.bullets
-                projectiles.update(interval)
-                self.target_map.append((item.pos, item.surface))
-                for pos in projectiles.positions :
-                    self.target_proj_map.append((pos, projectiles.surface))
+                item.bullets.update(interval)
+                self.target_map.append((item.pos, item.array))
+                for pos in item.bullets.positions :
+                    self.target_proj_map.append((pos, item.bullets.array))

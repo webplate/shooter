@@ -26,7 +26,7 @@ class Fighter(Mobile_sprite) :
     '''a shooting mobile sprite'''
     def __init__(self, pos, identity, font, limits) :
         Mobile_sprite.__init__(self, pos, identity, font)
-        bullet_sprite = font.render('<>', False, txt_color)
+        bullet_sprite = font.render('d', False, txt_color)
         self.bullets = projectiles.Bullets('down', bullet_sprite, limits)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
@@ -35,7 +35,6 @@ class Fighter(Mobile_sprite) :
         if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
             self.bullets.positions.append(self.center)
             self.last_shoot = pygame.time.get_ticks()
-            print self.last_shoot,  self.fire_cooldown
 
     def update(self) :
         Mobile_sprite.update(self)
@@ -45,11 +44,11 @@ class Ship(Fighter) :
     '''A ship controlled by player and shooting'''
     def __init__(self, pos, identity, font, limits) :
         Fighter.__init__(self, pos, identity, font, limits)
-        bullet_sprite = font.render('^', False, txt_color)
+        bullet_sprite = font.render('p', False, txt_color)
         self.bullets = projectiles.Bullets('up', bullet_sprite, limits)
         self.speed_power = BASE_POWER
         self.limits = limits
-        #~ self.fire_cool_down = SHIP_COOLDOWN
+        self.fire_cooldown = SHIP_COOLDOWN
 
     def move(self, direction, interval) :
         #should consider time passed
