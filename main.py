@@ -23,7 +23,7 @@ class Player() :
             self.go_left = True
         elif not self.keys['left'] and self.go_left :
             self.go_left = False
-        
+
         if self.keys['up'] and not self.go_up and not self.keys['down'] :
             self.go_up = True
         elif not self.keys['up'] and self.go_up :
