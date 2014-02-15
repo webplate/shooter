@@ -52,7 +52,7 @@ class Ship(Fighter) :
 
     def move(self, direction, interval) :
         #should consider time passed
-        offset = self.speed_power * interval
+        offset = int(self.speed_power * interval)
         if direction == 'right' :
             new_pos = self.pos[0]+offset, self.pos[1]
         elif direction == 'left' :

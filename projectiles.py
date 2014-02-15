@@ -15,10 +15,10 @@ class Bullets() :
         self.limits = limits
 
     def update(self, interval) :
+        #should consider time passed
+        offset = int(BULLET_SPEED * interval)
         if self.direction == 'up' :
             for i, pos in enumerate(self.positions) :
-                #should consider time passed
-                offset = BULLET_SPEED * interval
                 x, y = (pos[0], pos[1]-offset)
                 #remove if outside screen
                 if (x > self.limits[0] or x + self.width < 0
@@ -28,8 +28,6 @@ class Bullets() :
                     self.positions[i] = (x, y)
         elif self.direction == 'down' :
             for i, pos in enumerate(self.positions) :
-                #should consider time passed
-                offset = BULLET_SPEED * interval
                 x, y = (pos[0], pos[1]+offset)
                 #remove if outside screen
                 if (x > self.limits[0] or x + self.width < 0

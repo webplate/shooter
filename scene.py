@@ -4,6 +4,9 @@ import numpy
 from parameters import *
 import entity
 
+def is_round(pos) :
+    return isinstance(pos[0], int) and isinstance(pos[1], int)
+        
 class Scene():
     def __init__(self, content):
         self.content = content
@@ -28,18 +31,20 @@ class Scene():
         self.target_proj_map = []
         #explore scene
         for item in self.content :
+            #shoot and stuff
+            item.update()
+            #projectiles of object move according to time
+            item.bullets.update(interval)
+            #populate collision map
             if isinstance(item, entity.Ship) :
-                #shoot and stuff
-                item.update()
-                #projectiles of object move according to time
-                item.bullets.update(interval)
-                #populate collision map
+                if not is_round(item.pos) : print 'not round'
                 self.ship_map.append((item.pos, item.array))
                 for pos in item.bullets.positions :
+                    if not is_round(pos) : print 'not round'
                     self.ship_proj_map.append((pos, item.bullets.array))
             elif isinstance(item, entity.Fighter) :
-                item.update()
-                item.bullets.update(interval)
+                if not is_round(item.pos) : print 'not round'
                 self.target_map.append((item.pos, item.array))
                 for pos in item.bullets.positions :
+                    if not is_round(pos) : print 'not round'
                     self.target_proj_map.append((pos, item.bullets.array))
