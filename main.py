@@ -4,6 +4,14 @@ import platform, os, pygame
 from parameters import *
 import entity, scene
 
+def load_content(font) :
+    ship = entity.Ship((0,window_size[1]-2*txt_inter),
+    'ship', font, window_size)
+    fighter = entity.Fighter((window_size[0]/2,0),
+    'target', font, window_size)
+    content = [ship, fighter]
+    return content
+
 class Player() :
     def __init__(self):
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
@@ -68,10 +76,12 @@ class Shooter():
         #Players
         self.player = Player()
         #Initialize scene
-        self.ship = entity.Ship((0,window_size[1]-2*txt_inter),
-        'ship', self.font, window_size)
-        content = [self.ship, entity.Mobile_sprite((window_size[0]/2,0), 'target', self.font)]
+        content = load_content(self.font)
         self.scene = scene.Scene(content)
+        for item in self.scene.content :
+            if isinstance(item, entity.Ship) :
+                self.ship = item
+                break
 
 
     def on_event(self, event):
@@ -106,7 +116,6 @@ class Shooter():
         '''alter and move objects according to altitude, movement...'''
         interval = pygame.time.get_ticks() - self.last_flip
         self.player.update()
-        self.ship.update()
         if self.player.go_right :
             self.ship.move('right', interval)
         elif self.player.go_left :
@@ -116,8 +125,7 @@ class Shooter():
         elif self.player.go_down :
             self.ship.move('down', interval)
 
-        self.ship.bullets.update(interval)
-        self.scene.update()
+        self.scene.update(interval)
 
     def on_render(self) :
         self.display.fill(bg_color)

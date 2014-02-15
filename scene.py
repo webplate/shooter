@@ -7,7 +7,7 @@ import entity
 class Scene():
     def __init__(self, content):
         self.content = content
-        self.update()
+        self.update(0)
 
     def list_sprites(self) :
         for item in self.content :
@@ -18,28 +18,30 @@ class Scene():
                 for pos in projectiles.positions :
                     yield pos, projectiles.surface
 
-    def collision_maps(self) :
-        #special objects instead of dicts ???
-        self.ship_map = {}
-        self.target_map = {}
-        self.proj_map = {}
+
+    def update(self, interval) :
+        #collision maps
+        self.ship_map = []
+        self.target_map = []
+        self.ship_proj_map = []
+        self.target_proj_map = []
+        #explore scene
         for item in self.content :
             if isinstance(item, entity.Ship) :
-                if item.array in self.ship_map :
-                    ship_map[item.array].append(item.pos)
-                else :
-                    self.ship_map.update({item.array : [item.pos]})
+                #shoot and stuff
+                item.update()
+                #projectiles of object
                 projectiles = item.bullets
+                #move according to time
+                projectiles.update(interval)
+                #populate collision map
+                self.ship_map.append((item.pos, item.surface))
                 for pos in projectiles.positions :
-                    if projectiles.array in self.proj_map :
-                        proj_map[projectiles.array].append(pos)
-                    else :
-                        self.ship_map.update({projectiles.array : [pos]})
-            else :
-                if item.array in self.target_map :
-                    target_map[item.array].append(item.pos)
-                else :
-                    self.target_map.update({item.array : [item.pos]})
-                
-    def update(self) :
-        self.collision_maps()
+                    self.ship_proj_map.append((pos, projectiles.surface))
+            elif isinstance(item, entity.Fighter) :
+                item.update()
+                projectiles = item.bullets
+                projectiles.update(interval)
+                self.target_map.append((item.pos, item.surface))
+                for pos in projectiles.positions :
+                    self.target_proj_map.append((pos, projectiles.surface))

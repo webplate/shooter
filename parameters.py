@@ -25,3 +25,5 @@ Shoot_key = K_SPACE
 #physics tuning
 BASE_POWER = 0.1
 BULLET_SPEED = 0.3
+BASE_COOLDOWN = 500
+SHIP_COOLDOWN = 100
