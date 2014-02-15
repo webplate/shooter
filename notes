@@ -5,3 +5,13 @@ matrice binaire projectiles&vaisseaux enemis : w*h*type*id
 output :
 liste (vaisseau, projectile) collisions
 liste (projectile_id, projectile_type) ayant touché
+
+ou alors plutôt :
+
+i:
+liste (id, pos, array) des vaiseaux
+liste (id, pos, array) des projectiles et vaisseaux enemis
+
+o:
+liste (vaisseau, projectile) collisions
+liste id projectiles ayant touché

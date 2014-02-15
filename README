@@ -1,1 +1,4 @@
 First prototype of a scrolling shooter.
+
+
+dependencies : python 2.7, pygame, numpy

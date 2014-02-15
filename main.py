@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import platform, os, threading, pygame, operator
+import platform, os, pygame
 from parameters import *
 import entity, scene
 
@@ -107,7 +107,6 @@ class Shooter():
         interval = pygame.time.get_ticks() - self.last_flip
         self.player.update()
         self.ship.update()
-        self.scene.update()
         if self.player.go_right :
             self.ship.move('right', interval)
         elif self.player.go_left :
@@ -118,6 +117,7 @@ class Shooter():
             self.ship.move('down', interval)
 
         self.ship.bullets.update(interval)
+        self.scene.update()
 
     def on_render(self) :
         self.display.fill(bg_color)

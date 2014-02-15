@@ -18,28 +18,28 @@ class Scene():
                 for pos in projectiles.positions :
                     yield pos, projectiles.surface
 
-    def list_entity(self) :
-        for item in self.content :
-            yield item.pos, item.array
-
-    def list_projectile(self) :
+    def collision_maps(self) :
+        #special objects instead of dicts ???
+        self.ship_map = {}
+        self.target_map = {}
+        self.proj_map = {}
         for item in self.content :
             if isinstance(item, entity.Ship) :
+                if item.array in self.ship_map :
+                    ship_map[item.array].append(item.pos)
+                else :
+                    self.ship_map.update({item.array : [item.pos]})
                 projectiles = item.bullets
                 for pos in projectiles.positions :
-                    yield pos, projectiles.array
-
-    def update(self) :
-        self.ship_map = []
-        self.target_map = []
-        self.proj_map = []
-        for item in self.content :
-            if isinstance(item, entity.Mobile_sprite) :
-                if isinstance(item, entity.Ship) :
-                    self.ship_map.append((item.pos, item.array))
-                    projectiles = item.bullets
-                    for pos in projectiles.positions :
-                        self.proj_map.append((pos, projectiles.array))
+                    if projectiles.array in self.proj_map :
+                        proj_map[projectiles.array].append(pos)
+                    else :
+                        self.ship_map.update({projectiles.array : [pos]})
+            else :
+                if item.array in self.target_map :
+                    target_map[item.array].append(item.pos)
                 else :
-                    self.target_map.append((item.pos, item.array))
-    
+                    self.target_map.update({item.array : [item.pos]})
+                
+    def update(self) :
+        self.collision_maps()
