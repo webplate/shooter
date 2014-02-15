@@ -11,7 +11,7 @@ def get_center(pos, surface) :
 class Mobile_sprite() :
     '''a mobile sprite'''
     def __init__(self, pos, identity, font) :
-        self.pos = pos
+        self._pos = pos
         self.identity = identity
         self.speed = 0
         self.orientation = 0
@@ -21,6 +21,12 @@ class Mobile_sprite() :
 
     def update(self) :
         self.center = get_center(self.pos, self.surface)
+
+    def _get_pos(self) :
+        '''world wants exact position'''
+        position = int(self._pos[0]), int(self._pos[1])
+        return position
+    pos = property(_get_pos)
 
 class Fighter(Mobile_sprite) :
     '''a shooting mobile sprite'''
@@ -52,17 +58,17 @@ class Ship(Fighter) :
 
     def move(self, direction, interval) :
         #should consider time passed
-        offset = int(self.speed_power * interval)
+        offset = self.speed_power * interval
         if direction == 'right' :
-            new_pos = self.pos[0]+offset, self.pos[1]
+            new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :
-            new_pos = self.pos[0]-offset, self.pos[1]
+            new_pos = self._pos[0]-offset, self._pos[1]
         elif direction == 'up' :
-            new_pos = self.pos[0], self.pos[1]-offset
+            new_pos = self._pos[0], self._pos[1]-offset
         elif direction == 'down' :
-            new_pos = self.pos[0], self.pos[1]+offset
+            new_pos = self._pos[0], self._pos[1]+offset
         new_center = get_center(new_pos, self.surface)
         #do not step outside screen
         if (new_center[0] < self.limits[0] and new_center[0] > 0
         and new_center[1] < self.limits[1] and new_center[1] > 0) :
-            self.pos = new_pos
+            self._pos = new_pos
