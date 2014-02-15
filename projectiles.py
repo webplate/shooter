@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import pygame
 from parameters import *
 
 class Bullets() :
     '''a map of bullets'''
-    def __init__(self, direction, sprite, limits) :
+    def __init__(self, direction, surface, limits) :
         self.direction = direction
         self.positions = []
-        self.sprite = sprite
-        self.width = sprite.get_width()
-        self.height = sprite.get_height()
+        self.surface = surface
+        self.array = pygame.surfarray.array_alpha(self.surface)
+        self.width = surface.get_width()
+        self.height = surface.get_height()
         self.limits = limits
 
     def update(self, interval) :

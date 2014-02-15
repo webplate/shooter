@@ -12,6 +12,8 @@ class Mobile_sprite() :
         self.speed = 0
         self.orientation = 0
         self.surface = font.render(identity, False, txt_color)
+        self.array = pygame.surfarray.array_alpha(self.surface)
+        
         self.center = (self.pos[0]+self.surface.get_width()/2,
         self.pos[1]+self.surface.get_height()/2)
 

@@ -107,6 +107,7 @@ class Shooter():
         interval = pygame.time.get_ticks() - self.last_flip
         self.player.update()
         self.ship.update()
+        self.scene.update()
         if self.player.go_right :
             self.ship.move('right', interval)
         elif self.player.go_left :
