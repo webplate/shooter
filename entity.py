@@ -51,8 +51,11 @@ class Fighter(Mobile_sprite) :
 
     def shoot(self, weapon='projectiles.Bullets', power=None) :
         w = self.weapons[weapon]
+        #most projectiles aren't charged
         if power == None :
-            if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
+            #limit fire rate and stop when charging
+            if (pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown
+            and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y))
                 self.last_shoot = pygame.time.get_ticks()

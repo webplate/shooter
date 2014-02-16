@@ -53,8 +53,9 @@ class Player() :
         elif self.go_down :
             self.ship.move('down', interval)
         #charged shot
-        if not self.keys['shoot'] and self.chargepower > 0.5 :
-            self.ship.shoot('projectiles.Blasts', self.chargepower)
+        if not self.keys['shoot'] :
+            if self.chargepower > 0.5 :
+                self.ship.shoot('projectiles.Blasts', self.chargepower)
             self.chargepower = 0
 
 class Shooter():
