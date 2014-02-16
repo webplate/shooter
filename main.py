@@ -9,7 +9,9 @@ def load_content(font) :
     'ship', font, window_size)
     fighter = entity.Fighter((window_size[0]/2,0),
     'target', font, window_size)
-    content = [ship, fighter]
+    fighter2 = entity.Fighter((window_size[0]/3,200),
+    'target', font, window_size)
+    content = [ship, fighter, fighter2]
     return content
 
 class Player() :
@@ -134,7 +136,7 @@ class Shooter():
         for pos, surf in sprites :
             self.display.blit(surf, pos)
         #flip every 16ms only (for smooth animation, particularly on linux)
-        if pygame.time.get_ticks() > self.last_flip + 16 :
+        if pygame.time.get_ticks() > self.last_flip + 8 :
             fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
             fps = str(int(fps))
             surf = self.font.render(fps, False, txt_color)

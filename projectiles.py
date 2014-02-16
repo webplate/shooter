@@ -3,12 +3,6 @@
 import pygame
 from parameters import *
 
-class Positions() :
-    '''store exact position as float, give rounded position'''
-    def __init__(self, pos) :
-        self.position = pos
-        self._pos = int(pos[0]), int(pos[1])
-
 class Bullets() :
     '''a map of bullets'''
     def __init__(self, direction, surface, limits) :
@@ -41,7 +35,6 @@ class Bullets() :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y)
-
     
     def position(self, index) :
         '''give rounded position of a projectile'''
