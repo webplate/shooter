@@ -5,10 +5,12 @@ import surftools
 from parameters import *
 
 class Mobile_sprite() :
-    '''a mobile sprite'''
-    def __init__(self, pos, identity, font) :
+    """a mobile sprite"""
+    def __init__(self, scene, pos, identity, font) :
+        self.scene = scene
         self._pos = pos
         self.identity = identity
+        self.font = font
         self.ally = False
         self.speed = 0
         self.orientation = 0
@@ -21,43 +23,56 @@ class Mobile_sprite() :
         
         self.center = surftools.get_center(self.pos, self.surface)
 
-    def update(self, interval) :
+    def update(self, interval=0) :
         self.center = surftools.get_center(self.pos, self.surface)
 
     def _get_pos(self) :
-        '''world wants exact position'''
+        """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
         return position
     pos = property(_get_pos)
 
 class Fighter(Mobile_sprite) :
-    '''a shooting mobile sprite'''
-    def __init__(self, pos, identity, font, limits) :
-        Mobile_sprite.__init__(self, pos, identity, font)
+    """a shooting mobile sprite"""
+    def __init__(self, scene, pos, identity, font, limits) :
+        Mobile_sprite.__init__(self, scene, pos, identity, font)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
+        self.weapons = {}
+        self.charge = 0
+        self.aura = None
+        #add new object in scene
+        self.scene.content.append(self.aura)
 
     def new_weapon(self, projectile_map) :
-        #keep trace of weapon
-        self.bullets = projectile_map
         #set map allied status
-        self.bullets.ally = self.ally
+        projectile_map.ally = self.ally
+        #keep trace of weapon
+        self.weapons.update({str(projectile_map.__class__) : projectile_map})
 
-    def shoot(self) :
-        if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
-            coord = (self.center[0]-self.bullets.width/2,
-            self.center[1]-self.bullets.height/2)
-            self.bullets.positions.append(coord)
-            self.last_shoot = pygame.time.get_ticks()
-
-    def update(self, interval) :
-        Mobile_sprite.update(self, interval)
+    def shoot(self, weapon='projectiles.Bullets', power=None) :
+        w = self.weapons[weapon]
+        if power == None :
+            if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
+                x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+                w.positions.append((x, y))
+                self.last_shoot = pygame.time.get_ticks()
+        else :
+            x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+            w.positions.append((x, y, power))
+    
+    def update(self, interval=0) :
+        Mobile_sprite.update(self)
         self.shoot()
+        if self.charge > 0 :
+            if self.aura == None :
+                self.aura = Charge(self.scene, self, '', self.font)
+            self.aura.update(self.charge)
 
 class Ship(Fighter) :
-    '''A ship controlled by player and shooting'''
-    def __init__(self, pos, identity, font, limits) :
-        Fighter.__init__(self, pos, identity, font, limits)
+    """A ship controlled by player and shooting"""
+    def __init__(self, scene, pos, identity, font, limits) :
+        Fighter.__init__(self, scene, pos, identity, font, limits)
         self.ally = True
         self.speed_power = BASE_POWER
         self.limits = limits
@@ -79,3 +94,23 @@ class Ship(Fighter) :
         if (new_center[0] < self.limits[0] and new_center[0] > 0
         and new_center[1] < self.limits[1] and new_center[1] > 0) :
             self._pos = new_pos
+
+class Charge(Mobile_sprite) :
+    """showing the charge of ship"""
+    def __init__(self, scene, ship, identity, font) :
+        self.ship = ship
+        self.pos = self.ship.pos
+        Mobile_sprite.__init__(self, scene, self.pos, identity, font)
+        self.levels = [font.render('.....', False, txt_color),
+        font.render('_____', False, txt_color),
+        font.render('ooooo', False, txt_color),
+        font.render('OOOOO', False, txt_color)]
+        self.arrays = [ pygame.surfarray.array2d(surface).astype(bool)
+        for surface in self.levels ]
+        
+    def update(self, charge) :
+        self.pos = self.ship.pos
+        if charge == 0 :
+            self.surface = self.levels[0]
+            self.array = self.arrays[0]
+        Mobile_sprite.update(self)

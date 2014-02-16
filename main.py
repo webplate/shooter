@@ -6,15 +6,19 @@ import scene
 
 
 class Player() :
-    def __init__(self):
+    """class for player settings, controls, ships"""
+    def __init__(self, ship):
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
         self.go_right = False
         self.go_left = False
         self.go_up = False
         self.go_down = False
+        self.initcharge = 0
+        self.chargepower = 0
+        self.ship = ship
 
-    def update(self) :
+    def update(self, interval) :
         #where is going the ship ?
         if self.keys['right'] and not self.go_right and not self.keys['left'] :
             self.go_right = True
@@ -33,10 +37,29 @@ class Player() :
             self.go_down = True
         elif not self.keys['down'] and self.go_down :
             self.go_down = False
+        #is the ship charging ?
+        if self.keys['shoot'] and self.chargepower <= 1 :
+            self.chargepower += CHARGE_RATE * interval
+        self.ship.charge = self.chargepower
+
+            
+        #command ship !!
+        if self.go_right :
+            self.ship.move('right', interval)
+        elif self.go_left :
+            self.ship.move('left', interval)
+        if self.go_up :
+            self.ship.move('up', interval)
+        elif self.go_down :
+            self.ship.move('down', interval)
+        #charged shot
+        if not self.keys['shoot'] and self.chargepower > 0.5 :
+            self.ship.shoot('projectiles.Blasts', self.chargepower)
+            self.chargepower = 0
 
 class Shooter():
-    '''a pygame shooter
-    '''
+    """a pygame shooter
+    """
     def __init__(self):
         self.running = True
         
@@ -66,11 +89,11 @@ class Shooter():
         if nb_joysticks > 0:
             mon_joystick = pygame.joystick.Joystick(0)
             mon_joystick.init() #Initialisation
-        #Players
-        self.player = Player()
+        
         #Initialize scene
         self.scene = scene.Scene(self.font)
-
+        #Players
+        self.player = Player(self.scene.ship)
 
     def on_event(self, event):
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -101,18 +124,9 @@ class Shooter():
                 self.player.keys['shoot'] = False
 
     def on_loop(self):
-        '''alter and move objects according to altitude, movement...'''
+        """alter and move objects according to altitude, movement..."""
         interval = pygame.time.get_ticks() - self.last_iter
-        self.player.update()
-        if self.player.go_right :
-            self.scene.ship.move('right', interval)
-        elif self.player.go_left :
-            self.scene.ship.move('left', interval)
-        if self.player.go_up :
-            self.scene.ship.move('up', interval)
-        elif self.player.go_down :
-            self.scene.ship.move('down', interval)
-
+        self.player.update(interval)
         self.scene.update(interval)
         self.last_iter = pygame.time.get_ticks()
 
