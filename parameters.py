@@ -8,7 +8,7 @@ window_size = (640, 480)
 
 
 #interface style
-bg_color = (0, 0, 0)
+bg_color = (50, 0, 0)
 txt_color = (100, 100, 100)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 16

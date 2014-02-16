@@ -5,6 +5,7 @@ from parameters import *
 import entity, scene
 
 def load_content(font) :
+    proj_types = ['up', 'down']
     ship = entity.Ship((0,window_size[1]-2*txt_inter),
     'ship', font, window_size)
     fighter = entity.Fighter((window_size[0]/2,0),
@@ -157,9 +158,9 @@ class Shooter():
         self.last_iter = pygame.time.get_ticks()
         while self.running:
             #EVENTS
-            #evt = pygame.event.wait()
+            #~ evt = pygame.event.wait()
             evts = pygame.event.get()
-            #evts.insert(0, evt)
+            #~ evts.insert(0, evt)
             for event in evts:
                 self.on_event(event)
             #EVOLUTION

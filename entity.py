@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pygame
-import projectiles
+import projectiles, surftools
 from parameters import *
-
-def get_center(pos, surface) :
-    center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
-    return center
 
 class Mobile_sprite() :
     '''a mobile sprite'''
@@ -15,12 +11,17 @@ class Mobile_sprite() :
         self.identity = identity
         self.speed = 0
         self.orientation = 0
-        self.surface = font.render(identity, False, txt_color)
-        self.array = pygame.surfarray.array_alpha(self.surface)
-        self.center = get_center(self.pos, self.surface)
+        if self.identity == 'ship' :
+            self.surface = surftools.load_image('ship.png')
+            self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
+        else :
+            self.surface = font.render(identity, False, txt_color)
+            self.array = pygame.surfarray.array2d(self.surface).astype(bool)
+        
+        self.center = surftools.get_center(self.pos, self.surface)
 
     def update(self) :
-        self.center = get_center(self.pos, self.surface)
+        self.center = surftools.get_center(self.pos, self.surface)
 
     def _get_pos(self) :
         '''world wants exact position'''
@@ -39,7 +40,9 @@ class Fighter(Mobile_sprite) :
 
     def shoot(self) :
         if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
-            self.bullets.positions.append(self.center)
+            coord = (self.center[0]-self.bullets.width/2,
+            self.center[1]-self.bullets.height/2)
+            self.bullets.positions.append(coord)
             self.last_shoot = pygame.time.get_ticks()
 
     def update(self) :
@@ -67,7 +70,7 @@ class Ship(Fighter) :
             new_pos = self._pos[0], self._pos[1]-offset
         elif direction == 'down' :
             new_pos = self._pos[0], self._pos[1]+offset
-        new_center = get_center(new_pos, self.surface)
+        new_center = surftools.get_center(new_pos, self.surface)
         #do not step outside screen
         if (new_center[0] < self.limits[0] and new_center[0] > 0
         and new_center[1] < self.limits[1] and new_center[1] > 0) :

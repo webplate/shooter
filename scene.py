@@ -19,7 +19,7 @@ class Scene():
                 projectiles = item.bullets
                 for pos in projectiles.positions :
                     yield pos, projectiles.surface
- 
+
     def update(self, interval) :
         #collision maps
         self.ship_map = []
@@ -32,7 +32,7 @@ class Scene():
             item.update()
             #projectiles of object move according to time
             item.bullets.update(interval)
-            #populate collision map
+            #populate collision maps
             if isinstance(item, entity.Ship) :
                 self.ship_map.append((item.pos, item.array))
                 for i in range(len(item.bullets.positions)) :
