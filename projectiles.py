@@ -36,7 +36,7 @@ class Bullets() :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y)
-    
+
     def position(self, index) :
         '''give rounded position of a projectile'''
         pos = self.positions[index]

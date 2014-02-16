@@ -2,25 +2,8 @@
 # -*- coding: utf-8 -*-
 import platform, os, pygame
 from parameters import *
-import entity, projectiles, scene
+import scene
 
-def load_content(font) :
-    #fighters
-    ship = entity.Ship((0,window_size[1]-2*txt_inter),
-    'ship', font, window_size)
-    fighter = entity.Fighter((window_size[0]/2,0),
-    'target', font, window_size)
-    fighter2 = entity.Fighter((window_size[0]/3,200),
-    'target', font, window_size)
-    #projectile maps
-    ship_bullets = projectiles.Bullets('up', font, window_size)
-    targ_bullets = projectiles.Bullets('down', font, window_size)
-    #link fighters to projectile maps
-    ship.new_weapon(ship_bullets)
-    fighter.new_weapon(targ_bullets)
-    fighter2.new_weapon(targ_bullets)
-    content = [ship, fighter, fighter2, ship_bullets, targ_bullets]
-    return content
 
 class Player() :
     def __init__(self):
@@ -86,12 +69,7 @@ class Shooter():
         #Players
         self.player = Player()
         #Initialize scene
-        content = load_content(self.font)
-        self.scene = scene.Scene(content)
-        for item in self.scene.content :
-            if isinstance(item, entity.Ship) :
-                self.ship = item
-                break
+        self.scene = scene.Scene(self.font)
 
 
     def on_event(self, event):
@@ -108,7 +86,7 @@ class Shooter():
                 self.player.keys['down'] = True
             elif event.key == Shoot_key :
                 self.player.keys['shoot'] = True
-                self.ship.shoot()
+
             
         elif event.type == KEYUP :
             if event.key == R_key :
@@ -127,13 +105,13 @@ class Shooter():
         interval = pygame.time.get_ticks() - self.last_iter
         self.player.update()
         if self.player.go_right :
-            self.ship.move('right', interval)
+            self.scene.ship.move('right', interval)
         elif self.player.go_left :
-            self.ship.move('left', interval)
+            self.scene.ship.move('left', interval)
         if self.player.go_up :
-            self.ship.move('up', interval)
+            self.scene.ship.move('up', interval)
         elif self.player.go_down :
-            self.ship.move('down', interval)
+            self.scene.ship.move('down', interval)
 
         self.scene.update(interval)
         self.last_iter = pygame.time.get_ticks()

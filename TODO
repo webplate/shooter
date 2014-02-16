@@ -1,10 +1,3 @@
 
-projectile maps not created by ships
-initialized one per proj type
 
-exact and rounded positions for projectiles (for low speed)
-
-output boolean array of pixels for surface for collisions
-
-movement speed shouldn't depend on CPU, nb of projectiles...
 idea: one thread for positions, one thread for drawing
