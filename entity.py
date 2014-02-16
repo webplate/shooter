@@ -6,11 +6,10 @@ from parameters import *
 
 class Mobile_sprite() :
     """a mobile sprite"""
-    def __init__(self, scene, pos, identity, font) :
+    def __init__(self, scene, pos, identity) :
         self.scene = scene
         self._pos = pos
         self.identity = identity
-        self.font = font
         self.ally = False
         self.speed = 0
         self.orientation = 0
@@ -18,7 +17,7 @@ class Mobile_sprite() :
             self.surface = surftools.load_image('ship.png')
             self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
         else :
-            self.surface = font.render(identity, False, txt_color)
+            self.surface = self.scene.font.render(identity, False, txt_color)
             self.array = pygame.surfarray.array2d(self.surface).astype(bool)
         
         self.center = surftools.get_center(self.pos, self.surface)
@@ -34,8 +33,8 @@ class Mobile_sprite() :
 
 class Fighter(Mobile_sprite) :
     """a shooting mobile sprite"""
-    def __init__(self, scene, pos, identity, font, limits) :
-        Mobile_sprite.__init__(self, scene, pos, identity, font)
+    def __init__(self, scene, pos, identity) :
+        Mobile_sprite.__init__(self, scene, pos, identity)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
         self.weapons = {}
@@ -66,16 +65,15 @@ class Fighter(Mobile_sprite) :
         self.shoot()
         if self.charge > 0 :
             if self.aura == None :
-                self.aura = Charge(self.scene, self, '', self.font)
+                self.aura = Charge(self.scene, self, '')
             self.aura.update(self.charge)
 
 class Ship(Fighter) :
     """A ship controlled by player and shooting"""
-    def __init__(self, scene, pos, identity, font, limits) :
-        Fighter.__init__(self, scene, pos, identity, font, limits)
+    def __init__(self, scene, pos, identity) :
+        Fighter.__init__(self, scene, pos, identity)
         self.ally = True
         self.speed_power = BASE_POWER
-        self.limits = limits
         self.fire_cooldown = SHIP_COOLDOWN
 
     def move(self, direction, interval) :
@@ -91,20 +89,20 @@ class Ship(Fighter) :
             new_pos = self._pos[0], self._pos[1]+offset
         new_center = surftools.get_center(new_pos, self.surface)
         #do not step outside screen
-        if (new_center[0] < self.limits[0] and new_center[0] > 0
-        and new_center[1] < self.limits[1] and new_center[1] > 0) :
+        if (new_center[0] < self.scene.limits[0] and new_center[0] > 0
+        and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
             self._pos = new_pos
 
 class Charge(Mobile_sprite) :
     """showing the charge of ship"""
-    def __init__(self, scene, ship, identity, font) :
+    def __init__(self, scene, ship, identity) :
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile_sprite.__init__(self, scene, self.pos, identity, font)
-        self.levels = [font.render('.....', False, txt_color),
-        font.render('_____', False, txt_color),
-        font.render('ooooo', False, txt_color),
-        font.render('OOOOO', False, txt_color)]
+        Mobile_sprite.__init__(self, scene, self.pos, identity)
+        self.levels = [self.scene.font.render('.....', False, txt_color),
+        self.scene.font.render('_____', False, txt_color),
+        self.scene.font.render('ooooo', False, txt_color),
+        self.scene.font.render('OOOOO', False, txt_color)]
         self.arrays = [ pygame.surfarray.array2d(surface).astype(bool)
         for surface in self.levels ]
         

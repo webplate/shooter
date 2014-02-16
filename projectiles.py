@@ -5,12 +5,11 @@ from parameters import *
 
 class Projectile() :
     """projectile positions should be accessed with position(index)"""
-    def __init__(self, direction, font, limits) :
+    def __init__(self, scene, direction) :
+        self.scene = scene
         self.direction = direction
         self.positions = [] #floats for exact positions
         self.ally = False
-        self.font = font
-        self.limits = limits
 
     def position(self, index) :
         """give rounded position of a projectile"""
@@ -20,9 +19,9 @@ class Projectile() :
 class Bullets(Projectile) :
     """a map of bullets
     """
-    def __init__(self, direction, font, limits) :
-        Projectile.__init__(self, direction, font, limits)
-        self.surface = font.render('H', False, txt_color)
+    def __init__(self, scene, direction) :
+        Projectile.__init__(self, scene, direction)
+        self.surface = self.scene.font.render('H', False, txt_color)
         self.array = pygame.surfarray.array2d(self.surface).astype(bool)
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
@@ -34,8 +33,8 @@ class Bullets(Projectile) :
             for i, pos in enumerate(self.positions) :
                 x, y = (pos[0], pos[1]-offset)
                 #remove if outside screen
-                if (x > self.limits[0] or x + self.width < 0
-                or y > self.limits[1] or y + self.height < 0) :
+                if (x > self.scene.limits[0] or x + self.width < 0
+                or y > self.scene.limits[1] or y + self.height < 0) :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y)
@@ -43,17 +42,17 @@ class Bullets(Projectile) :
             for i, pos in enumerate(self.positions) :
                 x, y = (pos[0], pos[1]+offset)
                 #remove if outside screen
-                if (x > self.limits[0] or x + self.width < 0
-                or y > self.limits[1] or y + self.height < 0) :
+                if (x > self.scene.limits[0] or x + self.width < 0
+                or y > self.scene.limits[1] or y + self.height < 0) :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y)
         
 class Blasts(Projectile) :
     """charged shots"""
-    def __init__(self, direction, font, limits) :
-        Projectile.__init__(self, direction, font, limits)
-        self.surface = font.render('Oo..oO', False, txt_color)
+    def __init__(self, scene, direction) :
+        Projectile.__init__(self, scene, direction)
+        self.surface = self.scene.font.render('Oo..oO', False, txt_color)
         self.array = pygame.surfarray.array2d(self.surface).astype(bool)
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
@@ -65,8 +64,8 @@ class Blasts(Projectile) :
             for i, pos in enumerate(self.positions) :
                 x, y, p = (pos[0], pos[1]-offset, pos[2])
                 #remove if outside screen
-                if (x > self.limits[0] or x + self.width < 0
-                or y > self.limits[1] or y + self.height < 0) :
+                if (x > self.scene.limits[0] or x + self.width < 0
+                or y > self.scene.limits[1] or y + self.height < 0) :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y, p)
@@ -74,8 +73,8 @@ class Blasts(Projectile) :
             for i, pos in enumerate(self.positions) :
                 x, y, p = (pos[0], pos[1]+offset, pos[2])
                 #remove if outside screen
-                if (x > self.limits[0] or x + self.width < 0
-                or y > self.limits[1] or y + self.height < 0) :
+                if (x > self.scene.limits[0] or x + self.width < 0
+                or y > self.scene.limits[1] or y + self.height < 0) :
                     self.positions.remove(pos)
                 else :
                     self.positions[i] = (x, y, p)

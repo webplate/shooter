@@ -5,18 +5,15 @@ from parameters import *
 import entity, projectiles
 
 
-def load_content(scene, font) :
+def load_content(scene) :
     #fighters
-    ship = entity.Ship(scene, (0,window_size[1]-2*txt_inter),
-    'ship', font, window_size)
-    fighter = entity.Fighter(scene, (window_size[0]/2,0),
-    'target', font, window_size)
-    fighter2 = entity.Fighter(scene, (window_size[0]/3,200),
-    'target', font, window_size)
+    ship = entity.Ship(scene, (0,scene.limits[1]-2*txt_inter), 'ship')
+    fighter = entity.Fighter(scene, (scene.limits[0]/2,0), 'target')
+    fighter2 = entity.Fighter(scene, (scene.limits[0]/3,200), 'target')
     #projectile maps
-    ship_bullets = projectiles.Bullets('up', font, window_size)
-    ship_blasts = projectiles.Blasts('up', font, window_size)
-    targ_bullets = projectiles.Bullets('down', font, window_size)
+    ship_bullets = projectiles.Bullets(scene, 'up')
+    ship_blasts = projectiles.Blasts(scene, 'up')
+    targ_bullets = projectiles.Bullets(scene, 'down')
     #link fighters to projectile maps
     ship.new_weapon(ship_bullets)
     ship.new_weapon(ship_blasts)
@@ -28,8 +25,10 @@ def load_content(scene, font) :
 
 class Scene():
     def __init__(self, font) :
+        self.font = font
+        self.limits = window_size
         self.content = []
-        self.content = load_content(self, font)
+        self.content = load_content(self)
         for item in self.content :
             if isinstance(item, entity.Ship) :
                 self.ship = item
