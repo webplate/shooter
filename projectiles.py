@@ -5,13 +5,14 @@ from parameters import *
 
 class Bullets() :
     '''a map of bullets'''
-    def __init__(self, direction, surface, limits) :
+    def __init__(self, direction, font, limits) :
         self.direction = direction
         self.positions = [] #float for exact positions
-        self.surface = surface
+        self.ally = False
+        self.surface = font.render('H', False, txt_color)
         self.array = pygame.surfarray.array_alpha(self.surface)
-        self.width = surface.get_width()
-        self.height = surface.get_height()
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
         self.limits = limits
 
     def update(self, interval) :

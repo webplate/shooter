@@ -2,17 +2,24 @@
 # -*- coding: utf-8 -*-
 import platform, os, pygame
 from parameters import *
-import entity, scene
+import entity, projectiles, scene
 
 def load_content(font) :
-    proj_types = ['up', 'down']
+    #fighters
     ship = entity.Ship((0,window_size[1]-2*txt_inter),
     'ship', font, window_size)
     fighter = entity.Fighter((window_size[0]/2,0),
     'target', font, window_size)
     fighter2 = entity.Fighter((window_size[0]/3,200),
     'target', font, window_size)
-    content = [ship, fighter, fighter2]
+    #projectile maps
+    ship_bullets = projectiles.Bullets('up', font, window_size)
+    targ_bullets = projectiles.Bullets('down', font, window_size)
+    #link fighters to projectile maps
+    ship.new_weapon(ship_bullets)
+    fighter.new_weapon(targ_bullets)
+    fighter2.new_weapon(targ_bullets)
+    content = [ship, fighter, fighter2, ship_bullets, targ_bullets]
     return content
 
 class Player() :
@@ -133,11 +140,10 @@ class Shooter():
 
     def on_render(self) :
         self.display.fill(bg_color)
-        sprites = self.scene.list_sprites()
-        for pos, surf in sprites :
+        for pos, surf in self.scene.lst_sprites :
             self.display.blit(surf, pos)
         #flip every 16ms only (for smooth animation, particularly on linux)
-        if pygame.time.get_ticks() > self.last_flip + 8 :
+        if pygame.time.get_ticks() > self.last_flip + 16 :
             fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
             fps = str(int(fps))
             surf = self.font.render(fps, False, txt_color)

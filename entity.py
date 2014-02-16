@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pygame
-import projectiles, surftools
+import surftools
 from parameters import *
 
 class Mobile_sprite() :
@@ -9,6 +9,7 @@ class Mobile_sprite() :
     def __init__(self, pos, identity, font) :
         self._pos = pos
         self.identity = identity
+        self.ally = False
         self.speed = 0
         self.orientation = 0
         if self.identity == 'ship' :
@@ -20,7 +21,7 @@ class Mobile_sprite() :
         
         self.center = surftools.get_center(self.pos, self.surface)
 
-    def update(self) :
+    def update(self, interval) :
         self.center = surftools.get_center(self.pos, self.surface)
 
     def _get_pos(self) :
@@ -33,10 +34,14 @@ class Fighter(Mobile_sprite) :
     '''a shooting mobile sprite'''
     def __init__(self, pos, identity, font, limits) :
         Mobile_sprite.__init__(self, pos, identity, font)
-        bullet_sprite = font.render('d', False, txt_color)
-        self.bullets = projectiles.Bullets('down', bullet_sprite, limits)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
+
+    def new_weapon(self, projectile_map) :
+        #keep trace of weapon
+        self.bullets = projectile_map
+        #set map allied status
+        self.bullets.ally = self.ally
 
     def shoot(self) :
         if pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown :
@@ -45,16 +50,15 @@ class Fighter(Mobile_sprite) :
             self.bullets.positions.append(coord)
             self.last_shoot = pygame.time.get_ticks()
 
-    def update(self) :
-        Mobile_sprite.update(self)
+    def update(self, interval) :
+        Mobile_sprite.update(self, interval)
         self.shoot()
 
 class Ship(Fighter) :
     '''A ship controlled by player and shooting'''
     def __init__(self, pos, identity, font, limits) :
         Fighter.__init__(self, pos, identity, font, limits)
-        bullet_sprite = font.render('p', False, txt_color)
-        self.bullets = projectiles.Bullets('up', bullet_sprite, limits)
+        self.ally = True
         self.speed_power = BASE_POWER
         self.limits = limits
         self.fire_cooldown = SHIP_COOLDOWN
