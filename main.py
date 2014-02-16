@@ -114,7 +114,7 @@ class Shooter():
 
     def on_loop(self):
         '''alter and move objects according to altitude, movement...'''
-        interval = pygame.time.get_ticks() - self.last_flip
+        interval = pygame.time.get_ticks() - self.last_iter
         self.player.update()
         if self.player.go_right :
             self.ship.move('right', interval)
@@ -126,6 +126,7 @@ class Shooter():
             self.ship.move('down', interval)
 
         self.scene.update(interval)
+        self.last_iter = pygame.time.get_ticks()
 
     def on_render(self) :
         self.display.fill(bg_color)
@@ -151,6 +152,7 @@ class Shooter():
         #Main loop
         self.frame = 0
         self.last_flip = pygame.time.get_ticks()
+        self.last_iter = pygame.time.get_ticks()
         while self.running:
             #EVENTS
             #evt = pygame.event.wait()

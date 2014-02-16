@@ -6,7 +6,7 @@ import entity
 
 
 class Scene():
-    def __init__(self, content):
+    def __init__(self, content) :
         self.content = content
         self.update(0)
 
@@ -19,7 +19,7 @@ class Scene():
                 projectiles = item.bullets
                 for pos in projectiles.positions :
                     yield pos, projectiles.surface
-
+ 
     def update(self, interval) :
         #collision maps
         self.ship_map = []
@@ -35,9 +35,12 @@ class Scene():
             #populate collision map
             if isinstance(item, entity.Ship) :
                 self.ship_map.append((item.pos, item.array))
-                for pos in item.bullets.positions :
+                for i in range(len(item.bullets.positions)) :
+                    pos = item.bullets.position(i)
                     self.ship_proj_map.append((pos, item.bullets.array))
             elif isinstance(item, entity.Fighter) :
                 self.target_map.append((item.pos, item.array))
-                for pos in item.bullets.positions :
+                for i in range(len(item.bullets.positions)) :
+                    pos = item.bullets.position(i)
                     self.target_proj_map.append((pos, item.bullets.array))
+
