@@ -49,8 +49,8 @@ class Scene():
                         if itemT.array[xP - xT, yP - yT] :
                             #remove or not, colliding projectile
                             #hurt or not, entity
-                            itemP.collided(index)
                             itemT.collided(itemP, index)
+                            itemP.collided(index)
             #horizontal line projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
@@ -58,8 +58,8 @@ class Scene():
                     or (xPe < xTe and xPe > xT))
                     and yP < yTe and yP > yT) :
                         if True in itemT.array[xP - xT : xPe - xT, yP - yT] :
-                            itemP.collided(index)
                             itemT.collided(itemP, index)
+                            itemP.collided(index)
         
     def update(self, interval = 0) :
         #collision maps

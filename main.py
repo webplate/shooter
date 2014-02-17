@@ -7,14 +7,15 @@ import scene
 
 class Player() :
     """class for player settings, controls, ships"""
-    def __init__(self, ship):
+    def __init__(self, scene):
+        self.scene = scene
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
         self.go_right = False
         self.go_left = False
         self.go_up = False
         self.go_down = False
-        self.ship = ship
+        self.ship = self.scene.ship
 
     def update(self, interval) :
         #where is going the ship ?
@@ -94,7 +95,7 @@ class Shooter():
         #Initialize scene
         self.scene = scene.Scene(self.font)
         #Players
-        self.player = Player(self.scene.ship)
+        self.player = Player(self.scene)
 
     def on_event(self, event):
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -160,9 +161,7 @@ class Shooter():
         self.last_iter = pygame.time.get_ticks()
         while self.running:
             #EVENTS
-            #~ evt = pygame.event.wait()
             evts = pygame.event.get()
-            #~ evts.insert(0, evt)
             for event in evts:
                 self.on_event(event)
             #EVOLUTION
