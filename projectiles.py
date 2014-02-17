@@ -14,7 +14,8 @@ class Projectile() :
         self.ally = False
 
     def collided(self, index) :
-        if len(self.positions) > 0 :
+        l = len(self.positions)
+        if l > 0 and index < l :
             self.positions.pop(index)
 
     def damage(self, index) :

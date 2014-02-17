@@ -1,3 +1,5 @@
 add trajectory object
 
+projectiles should have drawing positions and collision positions and width ?
+
 idea: one thread for positions, one thread for drawing
