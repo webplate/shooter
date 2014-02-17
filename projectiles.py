@@ -24,7 +24,7 @@ class Projectile() :
             self.positions.pop(index)
 
     def damage(self, index) :
-        return 1
+        return BASEDAMAGE
 
     def draw_position(self, index) :
         """give rounded position of a projectile surface"""

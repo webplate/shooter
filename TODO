@@ -1,9 +1,7 @@
-add trajectory object, weapon object
+add trajectory object, weapon object?
 
-really remove control of ship from scene (aura and blast)
+collision should return culprit
 
 period of immunity for certain projectiles
-
-projectiles should have drawing positions and collision positions and width ?
 
 idea: one thread for positions, one thread for drawing

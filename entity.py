@@ -13,10 +13,8 @@ class Mobile_sprite() :
         self._pos = pos
         self.identity = identity
         self.ally = False
-        self.speed = 0
-        self.orientation = 0
         self.trajectory = None
-        self.life = 10
+        self.life = BASELIFE
         if self.identity == 'ship' and USE_PICS :
             self.surface = surftools.load_image('ship.png')
             self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
@@ -43,8 +41,11 @@ class Mobile_sprite() :
                     self._pos = self._pos[0] - offset, self._pos[1]
     
     def collided(self, projectile, index) :
+        #take damage
         self.life -= projectile.damage(index)
-
+        #reward shooter
+        self.scene.player.score += 1
+        
     def die(self) :
         #remove of scene
         self.scene.content.remove(self)
@@ -129,6 +130,7 @@ class Ship(Fighter) :
         Fighter.die(self)
         #player is dead
         self.scene.player.alive = False
+        print self.scene.player.score
 
 
 class Charge(Mobile_sprite) :
@@ -145,7 +147,7 @@ class Charge(Mobile_sprite) :
 
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
-        
+
     def update(self, interval) :
         if self.ship.charge >= 1 :
             self.surface = self.levels[3]

@@ -16,6 +16,7 @@ class Player() :
         self.go_down = False
         self.ship = self.scene.ship
         self.alive = True
+        self.score = 0
 
     def update(self, interval) :
         #where is going the ship ?
@@ -74,23 +75,25 @@ class Scene():
         self.lst_sprites = []
         self.update()
 
-    def load_fighter(self, identity) :
+    
+    def load_fighter(self, identity, targ_bullets) :
         coord = random.randint(0, self.limits[0]), self.limits[1]/6
         fighter = entity.Fighter(self, coord, identity)
-        #projectile maps
-        targ_bullets = projectiles.Bullets(self, 'down', 'H')
         #link fighters to projectile maps
         fighter.new_weapon(targ_bullets)
 
-    def load_ship(self, identity) :
+    def load_ship(self, identity, ship_bullets, ship_blasts) :
         ship = entity.Ship(self, (0,self.limits[1]-2*txt_inter), identity)
-        ship_bullets = projectiles.Bullets(self, 'up', 'o')
-        ship_blasts = projectiles.Blasts(self, 'up', 'Oo......oO')
         ship.new_weapon(ship_bullets)
         ship.new_weapon(ship_blasts)
         
     def load_content(self) :
-        self.load_ship('ship')
+        #projectile maps
+        self.ship_blasts = projectiles.Blasts(self, 'up', 'Oo......oO')
+        self.ship_bullets = projectiles.Bullets(self, 'up', 'o')
+        self.targ_bullets = projectiles.Bullets(self, 'down', 'H')
+
+        self.load_ship('ship', self.ship_bullets, self.ship_blasts)
 
 
     def collide(self, proj_map, target_map) :
@@ -165,6 +168,6 @@ class Scene():
         self.collide(ship_proj_map, target_map)
         self.collide(target_proj_map, ship_map)
         #evolution of scenery
-        if self.nb_fighters < 3 :
-            self.load_fighter('target')
+        if self.nb_fighters < NBENEMIES :
+            self.load_fighter('target', self.targ_bullets)
     
