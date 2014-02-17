@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import platform, os, pygame
+import platform, os, time, pygame
 from parameters import *
 import scene
 
@@ -125,10 +125,13 @@ class Shooter():
 
     def on_loop(self):
         """alter and move objects according to altitude, movement..."""
-        interval = pygame.time.get_ticks() - self.last_iter
+        new_time = pygame.time.get_ticks()
+        interval = new_time - self.last_iter
+        self.last_iter = new_time
+        #recompute scene status
         self.player.update(interval)
         self.scene.update(interval)
-        self.last_iter = pygame.time.get_ticks()
+        
 
     def on_render(self) :
         self.display.fill(bg_color)
