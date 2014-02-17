@@ -4,6 +4,61 @@ import random
 from parameters import *
 import entity, projectiles
 
+class Player() :
+    """class for player settings, controls, ships"""
+    def __init__(self, scene):
+        self.scene = scene
+        self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
+        'shoot':False}
+        self.go_right = False
+        self.go_left = False
+        self.go_up = False
+        self.go_down = False
+        self.ship = self.scene.ship
+
+    def update(self, interval) :
+        #where is going the ship ?
+        if self.keys['right'] and not self.go_right and not self.keys['left'] :
+            self.go_right = True
+        elif not self.keys['right'] and self.go_right :
+            self.go_right = False
+        if self.keys['left'] and not self.go_left and not self.keys['right'] :
+            self.go_left = True
+        elif not self.keys['left'] and self.go_left :
+            self.go_left = False
+
+        if self.keys['up'] and not self.go_up and not self.keys['down'] :
+            self.go_up = True
+        elif not self.keys['up'] and self.go_up :
+            self.go_up = False
+        if self.keys['down'] and not self.go_down and not self.keys['up'] :
+            self.go_down = True
+        elif not self.keys['down'] and self.go_down :
+            self.go_down = False
+        
+        #command ship !!
+        if self.go_right :
+            self.ship.fly('right', interval)
+        elif self.go_left :
+            self.ship.fly('left', interval)
+        if self.go_up :
+            self.ship.fly('up', interval)
+        elif self.go_down :
+            self.ship.fly('down', interval)
+        #is the ship charging ?
+        if self.keys['shoot'] :
+            offset = CHARGE_RATE * interval
+            if self.ship.charge + offset > 1 :
+                self.ship.charge = 1.
+            else :
+                self.ship.charge += offset
+        else :
+            #charged shot
+            if self.ship.charge > 0.5 :
+                self.ship.shoot('projectiles.Blasts', self.ship.charge)
+            self.ship.charge = 0.
+
+
 class Scene():
     def __init__(self, font) :
         self.font = font
@@ -14,6 +69,7 @@ class Scene():
             if isinstance(item, entity.Ship) :
                 self.ship = item
                 break
+        self.player = Player(self)
         self.lst_sprites = []
         self.update()
 
