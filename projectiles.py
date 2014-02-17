@@ -76,7 +76,6 @@ class Blasts(Projectile) :
 
     def damage(self, index) :
         amount = self.positions[index][2] * 5 + 1
-        print amount
         return amount
     
     def update(self, interval) :
