@@ -18,17 +18,17 @@ class Scene():
         self.update()
 
     def load_fighter(self, identity) :
-        coord = random.randint(0, self.limits[0]), 0
+        coord = random.randint(0, self.limits[0]), self.limits[1]/6
         fighter = entity.Fighter(self, coord, identity)
         #projectile maps
-        targ_bullets = projectiles.Bullets(self, 'down')
+        targ_bullets = projectiles.Bullets(self, 'down', 'H')
         #link fighters to projectile maps
         fighter.new_weapon(targ_bullets)
 
     def load_ship(self, identity) :
         ship = entity.Ship(self, (0,self.limits[1]-2*txt_inter), identity)
-        ship_bullets = projectiles.Bullets(self, 'up')
-        ship_blasts = projectiles.Blasts(self, 'up')
+        ship_bullets = projectiles.Bullets(self, 'up', 'o')
+        ship_blasts = projectiles.Blasts(self, 'up', 'Oo......oO')
         ship.new_weapon(ship_bullets)
         ship.new_weapon(ship_blasts)
         
@@ -37,17 +37,29 @@ class Scene():
 
 
     def collide(self, proj_map, target_map) :
-        for xP, yP, itemP, index in proj_map :
-            for xT, yT, xTe, yTe, itemT in target_map :
-                if (xP < xTe and xP > xT
-                and yP < yTe and yP > yT) :
-                    #in range for per pixel collision detection
-                    if itemT.array[xP - xT, yP - yT] :
-                        #remove or not colliding projectile
-                        #hurt or not entity
-                        itemP.collided(index)
-                        itemT.collided(itemP, index)
-                        
+        """repercute collisions projectiles and alpha maps of sprites"""  
+        for xP, yP, xPe, wP, itemP, index in proj_map :
+            #one pixel projectile
+            if wP == 1 :
+                for xT, yT, xTe, yTe, itemT in target_map :
+                    #is in range ?
+                    if (xP < xTe and xP > xT
+                    and yP < yTe and yP > yT) :
+                        #per pixel collision
+                        if itemT.array[xP - xT, yP - yT] :
+                            #remove or not, colliding projectile
+                            #hurt or not, entity
+                            itemP.collided(index)
+                            itemT.collided(itemP, index)
+            #horizontal line projectile
+            else :
+                for xT, yT, xTe, yTe, itemT in target_map :
+                    if (((xP < xTe and xP > xT)
+                    or (xPe < xTe and xPe > xT))
+                    and yP < yTe and yP > yT) :
+                        if True in itemT.array[xP - xT : xPe - xT, yP - yT] :
+                            itemP.collided(index)
+                            itemT.collided(itemP, index)
         
     def update(self, interval = 0) :
         #collision maps
@@ -67,6 +79,7 @@ class Scene():
                 #prepare sprite list for drawing
                 self.lst_sprites.append(((x, y), item.surface))
                 #populate collision maps
+                #precompute for faster detection
                 width, height = item.array.shape
                 identifier = (x, y, x+width, y+height, item)
                 if item.ally :
@@ -76,12 +89,18 @@ class Scene():
                     target_map.append(identifier)
             elif isinstance(item, projectiles.Projectile) :
                 for i in range(len(item.positions)) :
-                    x, y = item.position(i)
+                    x, y = item.draw_position(i)
                     self.lst_sprites.append(((x, y), item.surface))
-                    if item.ally :
-                        ship_proj_map.append((x, y, item, i))
+                    #blasts have wide damage zone other are on a pixel only
+                    if isinstance(item, projectiles.Blasts) :
+                        identifier = (x, y, x+item.width, item.width, item, i)
                     else :
-                        target_proj_map.append((x, y, item, i))
+                        x, y = item.position(i)
+                        identifier = (x, y, 1, 1, item, i)
+                    if item.ally :
+                        ship_proj_map.append(identifier)
+                    else :
+                        target_proj_map.append(identifier)
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map)
         self.collide(target_proj_map, ship_map)

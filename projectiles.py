@@ -5,13 +5,18 @@ from parameters import *
 
 class Projectile() :
     """projectile positions should be accessed with position(index)"""
-    def __init__(self, scene, direction) :
+    def __init__(self, scene, direction, identity) :
         self.scene = scene
         #load in scene
         self.scene.content.append(self)
         self.direction = direction
+        self.identity = identity
         self.positions = [] #floats for exact positions
         self.ally = False
+        self.surface = self.scene.font.render(self.identity, False, txt_color)
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        self.center_offset = self.width/2, self.height/2
 
     def collided(self, index) :
         l = len(self.positions)
@@ -21,20 +26,23 @@ class Projectile() :
     def damage(self, index) :
         return 1
 
-    def position(self, index) :
-        """give rounded position of a projectile"""
+    def draw_position(self, index) :
+        """give rounded position of a projectile surface"""
         pos = self.positions[index]
         return int(pos[0]), int(pos[1])
+
+    def position(self, index) :
+        """the physical position of projectile"""
+        pos = self.positions[index]
+        return int(pos[0]+self.center_offset[0]), int(pos[1]+self.center_offset[1])
+
 
 class Bullets(Projectile) :
     """a map of bullets
     """
-    def __init__(self, scene, direction) :
-        Projectile.__init__(self, scene, direction)
-        self.surface = self.scene.font.render('H', False, txt_color)
-        self.array = pygame.surfarray.array2d(self.surface).astype(bool)
-        self.width = self.surface.get_width()
-        self.height = self.surface.get_height()
+    def __init__(self, scene, direction, identity) :
+        Projectile.__init__(self, scene, direction, identity)
+
 
     def update(self, interval) :
         #should consider time passed
@@ -60,13 +68,17 @@ class Bullets(Projectile) :
         
 class Blasts(Projectile) :
     """charged shots"""
-    def __init__(self, scene, direction) :
-        Projectile.__init__(self, scene, direction)
-        self.surface = self.scene.font.render('Oo..oO', False, txt_color)
-        self.array = pygame.surfarray.array2d(self.surface).astype(bool)
-        self.width = self.surface.get_width()
-        self.height = self.surface.get_height()
-        
+    def __init__(self, scene, direction, identity) :
+        Projectile.__init__(self, scene, direction, identity)
+
+    def collided(self, index) :
+        pass
+
+    def damage(self, index) :
+        amount = self.positions[index][2] * 5 + 1
+        print amount
+        return amount
+    
     def update(self, interval) :
         #should consider time passed
         offset = BULLET_SPEED * interval

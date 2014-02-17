@@ -84,6 +84,12 @@ class Fighter(Mobile_sprite) :
         else :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
             w.positions.append((x, y, power))
+
+    def die(self) :
+        Mobile_sprite.die(self)
+        #remove of scene if necessary
+        if self.aura != None :
+            self.scene.content.remove(self.aura)
         
     def update(self, interval) :
         Mobile_sprite.update(self, interval)
@@ -130,8 +136,6 @@ class Charge(Mobile_sprite) :
         self.scene.font.render('#', False, txt_color),
         self.scene.font.render('##', False, txt_color),
         self.scene.font.render('###', False, txt_color)]
-        self.arrays = [ pygame.surfarray.array2d(surface).astype(bool)
-        for surface in self.levels ]
 
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
@@ -139,15 +143,11 @@ class Charge(Mobile_sprite) :
     def update(self, interval) :
         if self.ship.charge >= 1 :
             self.surface = self.levels[3]
-            self.array = self.arrays[3]
         elif self.ship.charge > 0.5 :
             self.surface = self.levels[2]
-            self.array = self.arrays[2]
         elif self.ship.charge > 0 :
             self.surface = self.levels[1]
-            self.array = self.arrays[1]
         elif self.ship.charge == 0 :
             self.surface = self.levels[0]
-            self.array = self.arrays[0]
         self.shift_pos()
         Mobile_sprite.update(self, interval)
