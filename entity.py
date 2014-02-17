@@ -125,6 +125,12 @@ class Ship(Fighter) :
         and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
             self._pos = new_pos
 
+    def die(self) :
+        Fighter.die(self)
+        #player is dead
+        self.scene.player.alive = False
+
+
 class Charge(Mobile_sprite) :
     """showing the charge of ship"""
     def __init__(self, scene, ship) :

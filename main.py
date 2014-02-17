@@ -76,9 +76,7 @@ class Shooter():
         interval = new_time - self.last_iter
         self.last_iter = new_time
         #recompute scene status
-        self.player.update(interval)
         self.scene.update(interval)
-        
 
     def on_render(self) :
         self.display.fill(bg_color)

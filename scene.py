@@ -15,6 +15,7 @@ class Player() :
         self.go_up = False
         self.go_down = False
         self.ship = self.scene.ship
+        self.alive = True
 
     def update(self, interval) :
         #where is going the ship ?
@@ -118,6 +119,9 @@ class Scene():
                             itemP.collided(index)
         
     def update(self, interval = 0) :
+        #update player status
+        if self.player.alive :
+            self.player.update(interval)
         #collision maps
         ship_map = []
         target_map = []
