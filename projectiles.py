@@ -13,6 +13,13 @@ class Projectile() :
         self.positions = [] #floats for exact positions
         self.ally = False
 
+    def collided(self, index) :
+        if len(self.positions) > 0 :
+            self.positions.pop(index)
+
+    def damage(self, index) :
+        return 1
+
     def position(self, index) :
         """give rounded position of a projectile"""
         pos = self.positions[index]

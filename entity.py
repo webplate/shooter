@@ -15,16 +15,14 @@ class Mobile_sprite() :
         self.ally = False
         self.speed = 0
         self.orientation = 0
+        self.trajectory = None
+        self.life = 10
         if self.identity == 'ship' and USE_PICS :
             self.surface = surftools.load_image('ship.png')
             self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
         else :
             self.surface = self.scene.font.render(identity, False, txt_color)
             self.array = pygame.surfarray.array2d(self.surface).astype(bool)
-        
-        self.center = surftools.get_center(self.pos, self.surface)
-
-    def update(self, interval=0) :
         self.center = surftools.get_center(self.pos, self.surface)
 
     def _get_pos(self) :
@@ -32,6 +30,30 @@ class Mobile_sprite() :
         position = int(self._pos[0]), int(self._pos[1])
         return position
     pos = property(_get_pos)
+    
+    def move(self, interval) :
+        if self.trajectory == None :
+            offset = interval * TARGET_SPEED
+            #move only if far enough
+            distance = abs(self.center[0] - self.scene.ship.center[0])
+            if distance > offset  :
+                if self.scene.ship.center[0] > self.center[0] :
+                    self._pos = self._pos[0] + offset, self._pos[1]
+                elif self.scene.ship.pos[0] < self.center[0] :
+                    self._pos = self._pos[0] - offset, self._pos[1]
+    
+    def collided(self, projectile, index) :
+        self.life -= projectile.damage(index)
+
+    def die(self) :
+        #remove of scene
+        self.scene.content.remove(self)
+
+    def update(self, interval) :
+        self.center = surftools.get_center(self.pos, self.surface)
+        self.move(interval)
+        if self.life < 0 :
+            self.die()
 
 class Fighter(Mobile_sprite) :
     """a shooting mobile sprite"""
@@ -63,8 +85,8 @@ class Fighter(Mobile_sprite) :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
             w.positions.append((x, y, power))
         
-    def update(self, interval=0) :
-        Mobile_sprite.update(self)
+    def update(self, interval) :
+        Mobile_sprite.update(self, interval)
         #autofire
         self.shoot()
         #create charging blast if necessary
@@ -75,13 +97,14 @@ class Ship(Fighter) :
     """A ship controlled by player and shooting"""
     def __init__(self, scene, pos, identity) :
         Fighter.__init__(self, scene, pos, identity)
+        self.trajectory = 'manual'
         self.ally = True
-        self.speed_power = BASE_POWER
+        self.speed = BASE_SPEED
         self.fire_cooldown = SHIP_COOLDOWN
 
-    def move(self, direction, interval) :
+    def fly(self, direction, interval) :
         #should consider time passed
-        offset = self.speed_power * interval
+        offset = self.speed * interval
         if direction == 'right' :
             new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :
@@ -113,7 +136,7 @@ class Charge(Mobile_sprite) :
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
         
-    def update(self, interval=0) :
+    def update(self, interval) :
         if self.ship.charge >= 1 :
             self.surface = self.levels[3]
             self.array = self.arrays[3]
@@ -127,4 +150,4 @@ class Charge(Mobile_sprite) :
             self.surface = self.levels[0]
             self.array = self.arrays[0]
         self.shift_pos()
-        Mobile_sprite.update(self)
+        Mobile_sprite.update(self, interval)

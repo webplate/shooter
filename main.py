@@ -35,6 +35,16 @@ class Player() :
             self.go_down = True
         elif not self.keys['down'] and self.go_down :
             self.go_down = False
+        
+        #command ship !!
+        if self.go_right :
+            self.ship.fly('right', interval)
+        elif self.go_left :
+            self.ship.fly('left', interval)
+        if self.go_up :
+            self.ship.fly('up', interval)
+        elif self.go_down :
+            self.ship.fly('down', interval)
         #is the ship charging ?
         if self.keys['shoot'] :
             offset = CHARGE_RATE * interval
@@ -42,17 +52,8 @@ class Player() :
                 self.ship.charge = 1.
             else :
                 self.ship.charge += offset
-        #command ship !!
-        if self.go_right :
-            self.ship.move('right', interval)
-        elif self.go_left :
-            self.ship.move('left', interval)
-        if self.go_up :
-            self.ship.move('up', interval)
-        elif self.go_down :
-            self.ship.move('down', interval)
-        #charged shot
-        if not self.keys['shoot'] :
+        else :
+            #charged shot
             if self.ship.charge > 0.5 :
                 self.ship.shoot('projectiles.Blasts', self.ship.charge)
             self.ship.charge = 0.
