@@ -7,6 +7,8 @@ class Projectile() :
     """projectile positions should be accessed with position(index)"""
     def __init__(self, scene, direction) :
         self.scene = scene
+        #load in scene
+        self.scene.content.append(self)
         self.direction = direction
         self.positions = [] #floats for exact positions
         self.ally = False

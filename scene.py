@@ -19,22 +19,19 @@ def load_content(scene) :
     ship.new_weapon(ship_blasts)
     fighter.new_weapon(targ_bullets)
     fighter2.new_weapon(targ_bullets)
-    content = [ship, fighter, fighter2, ship_bullets, ship_blasts,
-    targ_bullets]
-    return content
 
 class Scene():
     def __init__(self, font) :
         self.font = font
         self.limits = window_size
         self.content = []
-        self.content = load_content(self)
+        load_content(self)
         for item in self.content :
             if isinstance(item, entity.Ship) :
                 self.ship = item
                 break
         self.lst_sprites = []
-        self.update(0)
+        self.update()
 
     def update(self, interval = 0) :
         #collision maps
@@ -47,7 +44,7 @@ class Scene():
         for item in self.content :
             #shoot and stuff
             item.update(interval)
-            if isinstance(item, entity.Fighter) :
+            if isinstance(item, entity.Mobile_sprite) :
                 #prepare sprite list for drawing
                 self.lst_sprites.append((item.pos, item.surface))
                 if item.ally :

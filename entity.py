@@ -8,12 +8,14 @@ class Mobile_sprite() :
     """a mobile sprite"""
     def __init__(self, scene, pos, identity) :
         self.scene = scene
+        #load in scene
+        self.scene.content.append(self)
         self._pos = pos
         self.identity = identity
         self.ally = False
         self.speed = 0
         self.orientation = 0
-        if self.identity == 'ship' :
+        if self.identity == 'ship' and USE_PICS :
             self.surface = surftools.load_image('ship.png')
             self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
         else :
@@ -38,10 +40,8 @@ class Fighter(Mobile_sprite) :
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
         self.weapons = {}
-        self.charge = 0
+        self.charge = 0.
         self.aura = None
-        #add new object in scene
-        self.scene.content.append(self.aura)
 
     def new_weapon(self, projectile_map) :
         #set map allied status
@@ -62,14 +62,15 @@ class Fighter(Mobile_sprite) :
         else :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
             w.positions.append((x, y, power))
+        
     
     def update(self, interval=0) :
         Mobile_sprite.update(self)
+        #autofire
         self.shoot()
-        if self.charge > 0 :
-            if self.aura == None :
-                self.aura = Charge(self.scene, self, '')
-            self.aura.update(self.charge)
+        #create charging blast if necessary
+        if self.charge > 0 and self.aura == None :
+            self.aura = Charge(self.scene, self)
 
 class Ship(Fighter) :
     """A ship controlled by player and shooting"""
@@ -98,20 +99,30 @@ class Ship(Fighter) :
 
 class Charge(Mobile_sprite) :
     """showing the charge of ship"""
-    def __init__(self, scene, ship, identity) :
+    def __init__(self, scene, ship) :
+        self.scene = scene
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile_sprite.__init__(self, scene, self.pos, identity)
-        self.levels = [self.scene.font.render('.....', False, txt_color),
-        self.scene.font.render('_____', False, txt_color),
-        self.scene.font.render('ooooo', False, txt_color),
-        self.scene.font.render('OOOOO', False, txt_color)]
+        Mobile_sprite.__init__(self, scene, self.ship.pos, '')
+        self.levels = [self.scene.font.render('', False, txt_color),
+        self.scene.font.render('#', False, txt_color),
+        self.scene.font.render('##', False, txt_color),
+        self.scene.font.render('###', False, txt_color)]
         self.arrays = [ pygame.surfarray.array2d(surface).astype(bool)
         for surface in self.levels ]
         
-    def update(self, charge) :
-        self.pos = self.ship.pos
-        if charge == 0 :
+    def update(self, interval=0) :
+        if self.ship.charge >= 1 :
+            self.surface = self.levels[3]
+            self.array = self.arrays[3]
+        elif self.ship.charge > 0.5 :
+            self.surface = self.levels[2]
+            self.array = self.arrays[2]
+        elif self.ship.charge > 0 :
+            self.surface = self.levels[1]
+            self.array = self.arrays[1]
+        elif self.ship.charge == 0 :
             self.surface = self.levels[0]
             self.array = self.arrays[0]
+        self.pos = self.ship.pos
         Mobile_sprite.update(self)

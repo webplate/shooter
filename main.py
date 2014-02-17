@@ -14,8 +14,6 @@ class Player() :
         self.go_left = False
         self.go_up = False
         self.go_down = False
-        self.initcharge = 0
-        self.chargepower = 0
         self.ship = ship
 
     def update(self, interval) :
@@ -38,11 +36,12 @@ class Player() :
         elif not self.keys['down'] and self.go_down :
             self.go_down = False
         #is the ship charging ?
-        if self.keys['shoot'] and self.chargepower <= 1 :
-            self.chargepower += CHARGE_RATE * interval
-        self.ship.charge = self.chargepower
-
-            
+        if self.keys['shoot'] :
+            offset = CHARGE_RATE * interval
+            if self.ship.charge + offset > 1 :
+                self.ship.charge = 1.
+            else :
+                self.ship.charge += offset
         #command ship !!
         if self.go_right :
             self.ship.move('right', interval)
@@ -54,9 +53,9 @@ class Player() :
             self.ship.move('down', interval)
         #charged shot
         if not self.keys['shoot'] :
-            if self.chargepower > 0.5 :
-                self.ship.shoot('projectiles.Blasts', self.chargepower)
-            self.chargepower = 0
+            if self.ship.charge > 0.5 :
+                self.ship.shoot('projectiles.Blasts', self.ship.charge)
+            self.ship.charge = 0.
 
 class Shooter():
     """a pygame shooter
