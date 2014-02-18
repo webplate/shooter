@@ -108,7 +108,9 @@ class Shooter():
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
         #rescale for display on hd hardware
-        pygame.transform.scale2x(self.screen, self.display)
+        #~ eagle mode
+        #~ pygame.transform.scale2x(self.screen, self.display)
+        pygame.transform.scale(self.screen, self.winsize, self.display)
         #flip every 16ms only (for smooth animation, particularly on linux)
         if pygame.time.get_ticks() > self.last_flip + 8 :
             self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)

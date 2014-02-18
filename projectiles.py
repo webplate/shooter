@@ -76,7 +76,7 @@ class Blasts(Projectile) :
     def damage(self, index) :
         amount = self.positions[index][2] * BLASTPOWER
         return amount
-    
+
     def update(self, interval, time) :
         #should consider time passed
         offset = BULLET_SPEED * interval

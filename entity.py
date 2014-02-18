@@ -134,6 +134,7 @@ class Ship(Fighter) :
         Fighter.die(self)
         #player is dead
         self.scene.player.alive = False
+        print 'Score : ', self.scene.player.score
 
 
 class Charge(Mobile_sprite) :

@@ -130,7 +130,6 @@ class Scene():
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in itemT.array[minx:maxx, miny:maxy] :
-                            print yP, yPe - yP,yT, yTe - yT
                             itemT.collided(itemP, index, time)
                             itemP.collided(index)
 
@@ -182,9 +181,8 @@ class Scene():
                     else :
                         target_proj_map.append(identifier)
         #detect collisions and update accordingly
-        #~ print len(ship_proj_map), len(target_map), len(target_proj_map), len(ship_map)
         self.collide(ship_proj_map, target_map, time)
-        #~ self.collide(target_proj_map, ship_map)
+        self.collide(target_proj_map, ship_map, time)
         #evolution of scenery
         if self.nb_fighters < NBENEMIES :
             self.bestiary.load_fighter('target')
