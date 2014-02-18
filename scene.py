@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 from parameters import *
-import entity, projectiles
+import entity, projectiles, surftools
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -18,7 +18,7 @@ class Player() :
         self.alive = True
         self.score = 0
 
-    def update(self, interval) :
+    def update(self, interval, time) :
         #where is going the ship ?
         if self.keys['right'] and not self.go_right and not self.keys['left'] :
             self.go_right = True
@@ -57,9 +57,38 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
-                self.ship.shoot('projectiles.Blasts', self.ship.charge)
+                self.ship.shoot(time, 'projectiles.Blasts', self.ship.charge)
             self.ship.charge = 0.
 
+class Bestiary() :
+    """object loading and tuning every game objects"""
+    def __init__(self, scene) :
+        self.scene = scene
+        
+    def skin(self, name) :
+        """make surface according to theme pack"""
+        if USE_PICS :
+            surface = surftools.load_image(name)
+        else :
+            surface = surftools.font_skin(self.scene.font, name)
+        return surface
+
+    def load_fighter(self, name) :
+        surface = self.skin(name)
+        coord = random.randint(0, self.scene.limits[0]), self.scene.limits[1]/6
+        fighter = entity.Fighter(self.scene, coord, surface)
+        #link fighters to projectile maps
+        fighter.new_weapon(self.bulletF)
+
+    def load_content(self) :
+        #projectile maps
+        blastS = projectiles.Blasts(self.scene, 'up', self.skin('OOO00000'))
+        bulletS = projectiles.Bullets(self.scene, 'up', self.skin('o'))
+        self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('H'))
+        
+        ship = entity.Ship(self.scene, (0,self.scene.limits[1]-2*txt_inter), self.skin('ship'))
+        ship.new_weapon(blastS)
+        ship.new_weapon(bulletS)
 
 class Scene():
     def __init__(self, game) :
@@ -67,7 +96,8 @@ class Scene():
         self.limits = game.limits
         self.font = game.font
         self.content = []
-        self.load_content()
+        self.bestiary = Bestiary(self)
+        self.bestiary.load_content()
         for item in self.content :
             if isinstance(item, entity.Ship) :
                 self.ship = item
@@ -78,27 +108,6 @@ class Scene():
         self.last_txt_flip = 0
         self.fps_surf = self.game.font.render('', False, txt_color)
         self.update()
-
-    
-    def load_fighter(self, identity, targ_bullets) :
-        coord = random.randint(0, self.limits[0]), self.limits[1]/6
-        fighter = entity.Fighter(self, coord, identity)
-        #link fighters to projectile maps
-        fighter.new_weapon(targ_bullets)
-
-    def load_ship(self, identity, ship_bullets, ship_blasts) :
-        ship = entity.Ship(self, (0,self.limits[1]-2*txt_inter), identity)
-        ship.new_weapon(ship_bullets)
-        ship.new_weapon(ship_blasts)
-        
-    def load_content(self) :
-        #projectile maps
-        self.ship_blasts = projectiles.Blasts(self, 'up', 'OOO')
-        self.ship_bullets = projectiles.Bullets(self, 'up', 'o')
-        self.targ_bullets = projectiles.Bullets(self, 'down', 'H')
-
-        self.load_ship('ship', self.ship_bullets, self.ship_blasts)
-
 
     def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites"""
@@ -176,12 +185,12 @@ class Scene():
         #~ self.collide(target_proj_map, ship_map)
         #evolution of scenery
         if self.nb_fighters < NBENEMIES :
-            self.load_fighter('target', self.targ_bullets)
+            self.bestiary.load_fighter('target')
         #update individuals
         for item in self.content :
             #shoot and stuff
-            item.update(interval)
+            item.update(interval, time)
         #update player status
         if self.player.alive :
-            self.player.update(interval)
+            self.player.update(interval, time)
     

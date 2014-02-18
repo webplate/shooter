@@ -1,5 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
 import platform, os, time, pygame
 from parameters import *
 import scene
@@ -65,7 +82,6 @@ class Shooter():
                     HWSURFACE | FULLSCREEN | DOUBLEBUF)
                     pygame.mouse.set_visible(False)     #hide cursor
 
-            
         elif event.type == KEYUP :
             if event.key == R_key :
                 self.player.keys['right'] = False
@@ -91,10 +107,10 @@ class Shooter():
         self.screen.fill(bg_color)
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
-        #rescale and display on hd hardware
+        #rescale for display on hd hardware
         pygame.transform.scale2x(self.screen, self.display)
         #flip every 16ms only (for smooth animation, particularly on linux)
-        if pygame.time.get_ticks() > self.last_flip + 16 :
+        if pygame.time.get_ticks() > self.last_flip + 8 :
             self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
             pygame.display.flip()
             self.last_flip = pygame.time.get_ticks()
@@ -108,8 +124,9 @@ class Shooter():
             self.running = False
         #Main loop
         self.frame = 0
-        self.last_flip = pygame.time.get_ticks()
-        self.last_iter = pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
+        self.last_flip = now
+        self.last_iter = now
         while self.running:
             #EVENTS
             evts = pygame.event.get()

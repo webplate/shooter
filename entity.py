@@ -1,28 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import pygame
 import surftools
 from parameters import *
 
 class Mobile_sprite() :
     """a mobile sprite"""
-    def __init__(self, scene, pos, identity) :
+    def __init__(self, scene, pos, surface) :
         self.scene = scene
         #load in scene
         self.scene.content.append(self)
         self._pos = pos
-        self.identity = identity
+        self.surface = surface
         self.speed = 0
         self.ally = False
         self.trajectory = None
         self.life = BASELIFE
         self.last_hit = 0
-        if self.identity == 'ship' and USE_PICS :
-            self.surface = surftools.load_image('ship.png')
-            self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
-        else :
-            self.surface = self.scene.font.render(identity, False, txt_color)
-            self.array = pygame.surfarray.array2d(self.surface).astype(bool)
+        self.array = surftools.make_array(self.surface)
         self.center = surftools.get_center(self.pos, self.surface)
 
     def _get_pos(self) :
@@ -36,23 +30,16 @@ class Mobile_sprite() :
     
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
-        #~ p_time = 'time_'+str(projectile.__class__)
-        #~ try :
-            #~ last_hit = getattr(self, p_time)
-        #~ except AttributeError :
-            #~ setattr(self, p_time, pygame.time.get_ticks())
-        #~ else :
         if time - self.last_hit > projectile.pulse :
             #take damage
             self.life -= projectile.damage(index)
-            #~ setattr(self, p_time, pygame.time.get_ticks())
             self.last_hit = time
 
     def die(self) :
         #remove of scene
         self.scene.content.remove(self)
         #reward shooter
-        if self.identity != 'ship' :
+        if not self.ally :
             self.scene.player.score += 1
 
     def update(self, interval) :
@@ -63,8 +50,8 @@ class Mobile_sprite() :
 
 class Fighter(Mobile_sprite) :
     """a shooting mobile sprite"""
-    def __init__(self, scene, pos, identity) :
-        Mobile_sprite.__init__(self, scene, pos, identity)
+    def __init__(self, scene, pos, surface) :
+        Mobile_sprite.__init__(self, scene, pos, surface)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
         self.weapons = {}
@@ -88,7 +75,7 @@ class Fighter(Mobile_sprite) :
         #keep trace of weapon
         self.weapons.update({str(projectile_map.__class__) : projectile_map})
 
-    def shoot(self, weapon='projectiles.Bullets', power=None, time = 0) :
+    def shoot(self, time, weapon='projectiles.Bullets', power=None) :
         w = self.weapons[weapon]
         #most projectiles aren't charged
         if power == None :
@@ -108,18 +95,18 @@ class Fighter(Mobile_sprite) :
         if self.aura != None :
             self.scene.content.remove(self.aura)
         
-    def update(self, interval) :
+    def update(self, interval, time) :
         Mobile_sprite.update(self, interval)
         #autofire
-        self.shoot()
+        self.shoot(time)
         #create charging blast if necessary
         if self.charge > 0 and self.aura == None :
             self.aura = Charge(self.scene, self)
 
 class Ship(Fighter) :
     """A ship controlled by player and shooting"""
-    def __init__(self, scene, pos, identity) :
-        Fighter.__init__(self, scene, pos, identity)
+    def __init__(self, scene, pos, surface) :
+        Fighter.__init__(self, scene, pos, surface)
         self.trajectory = 'manual'
         self.ally = True
         self.speed = BASE_SPEED
@@ -155,7 +142,8 @@ class Charge(Mobile_sprite) :
         self.scene = scene
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile_sprite.__init__(self, scene, self.ship.pos, '')
+        Mobile_sprite.__init__(self, scene, self.ship.pos,
+        self.scene.font.render('', False, txt_color))
         self.levels = [self.scene.font.render('', False, txt_color),
         self.scene.font.render('#', False, txt_color),
         self.scene.font.render('##', False, txt_color),
@@ -164,7 +152,7 @@ class Charge(Mobile_sprite) :
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
 
-    def update(self, interval) :
+    def update(self, interval, time) :
         if self.ship.charge >= 1 :
             self.surface = self.levels[3]
         elif self.ship.charge > 0.5 :

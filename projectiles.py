@@ -4,16 +4,15 @@ from parameters import *
 
 class Projectile() :
     """projectile positions should be accessed with position(index)"""
-    def __init__(self, scene, direction, identity) :
+    def __init__(self, scene, direction, surface) :
         self.scene = scene
         #load in scene
         self.scene.content.append(self)
         self.direction = direction
-        self.identity = identity
+        self.surface = surface
         self.positions = [] #floats for exact positions
         self.ally = False
         self.pulse = BASEPULSE
-        self.surface = self.scene.font.render(self.identity, False, txt_color)
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
@@ -40,11 +39,11 @@ class Projectile() :
 class Bullets(Projectile) :
     """a map of bullets
     """
-    def __init__(self, scene, direction, identity) :
-        Projectile.__init__(self, scene, direction, identity)
+    def __init__(self, scene, direction, surface) :
+        Projectile.__init__(self, scene, direction, surface)
 
 
-    def update(self, interval) :
+    def update(self, interval, time) :
         #should consider time passed
         offset = BULLET_SPEED * interval
         if self.direction == 'up' :
@@ -68,8 +67,8 @@ class Bullets(Projectile) :
         
 class Blasts(Projectile) :
     """charged shots"""
-    def __init__(self, scene, direction, identity) :
-        Projectile.__init__(self, scene, direction, identity)
+    def __init__(self, scene, direction, surface) :
+        Projectile.__init__(self, scene, direction, surface)
 
     def collided(self, index) :
         pass
@@ -78,7 +77,7 @@ class Blasts(Projectile) :
         amount = self.positions[index][2] * BLASTPOWER
         return amount
     
-    def update(self, interval) :
+    def update(self, interval, time) :
         #should consider time passed
         offset = BULLET_SPEED * interval
         if self.direction == 'up' :
