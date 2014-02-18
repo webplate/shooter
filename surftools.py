@@ -24,4 +24,4 @@ def font_skin(font, name) :
     """if no pics create from font"""
     surface = font.render(name, False, txt_color)
     return surface
-    
+

@@ -126,8 +126,10 @@ class Scene():
             #rectangular projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
-                    if xP < xTe and xPe > xT and yP < yTe and yPe > yT :
-                        if True in itemT.array[xP-xT:xPe-xT, yP-yT:yPe-yT] :
+                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+                        minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
+                        miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
+                        if True in itemT.array[minx:maxx, miny:maxy] :
                             print yP, yPe - yP,yT, yTe - yT
                             itemT.collided(itemP, index, time)
                             itemP.collided(index)
