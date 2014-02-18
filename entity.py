@@ -12,9 +12,11 @@ class Mobile_sprite() :
         self.scene.content.append(self)
         self._pos = pos
         self.identity = identity
+        self.speed = 0
         self.ally = False
         self.trajectory = None
         self.life = BASELIFE
+        self.last_hit = 0
         if self.identity == 'ship' and USE_PICS :
             self.surface = surftools.load_image('ship.png')
             self.array = pygame.surfarray.array_alpha(self.surface).astype(bool)
@@ -30,25 +32,28 @@ class Mobile_sprite() :
     pos = property(_get_pos)
     
     def move(self, interval) :
-        if self.trajectory == None :
-            offset = interval * TARGET_SPEED
-            #move only if far enough
-            distance = abs(self.center[0] - self.scene.ship.center[0])
-            if distance > offset  :
-                if self.scene.ship.center[0] > self.center[0] :
-                    self._pos = self._pos[0] + offset, self._pos[1]
-                elif self.scene.ship.pos[0] < self.center[0] :
-                    self._pos = self._pos[0] - offset, self._pos[1]
+        pass
     
-    def collided(self, projectile, index) :
-        #take damage
-        self.life -= projectile.damage(index)
-        #reward shooter
-        self.scene.player.score += 1
-        
+    def collided(self, projectile, index, time) :
+        #persistent projectiles have damage pulse
+        #~ p_time = 'time_'+str(projectile.__class__)
+        #~ try :
+            #~ last_hit = getattr(self, p_time)
+        #~ except AttributeError :
+            #~ setattr(self, p_time, pygame.time.get_ticks())
+        #~ else :
+        if time - self.last_hit > projectile.pulse :
+            #take damage
+            self.life -= projectile.damage(index)
+            #~ setattr(self, p_time, pygame.time.get_ticks())
+            self.last_hit = time
+
     def die(self) :
         #remove of scene
         self.scene.content.remove(self)
+        #reward shooter
+        if self.identity != 'ship' :
+            self.scene.player.score += 1
 
     def update(self, interval) :
         self.center = surftools.get_center(self.pos, self.surface)
@@ -65,6 +70,17 @@ class Fighter(Mobile_sprite) :
         self.weapons = {}
         self.charge = 0.
         self.aura = None
+    
+    def move(self, interval) :
+        if self.trajectory == None :
+            offset = interval * TARGET_SPEED
+            #move only if far enough
+            distance = abs(self.center[0] - self.scene.ship.center[0])
+            if distance > offset  :
+                if self.scene.ship.center[0] > self.center[0] :
+                    self._pos = self._pos[0] + offset, self._pos[1]
+                elif self.scene.ship.pos[0] < self.center[0] :
+                    self._pos = self._pos[0] - offset, self._pos[1]
 
     def new_weapon(self, projectile_map) :
         #set map allied status
@@ -72,16 +88,16 @@ class Fighter(Mobile_sprite) :
         #keep trace of weapon
         self.weapons.update({str(projectile_map.__class__) : projectile_map})
 
-    def shoot(self, weapon='projectiles.Bullets', power=None) :
+    def shoot(self, weapon='projectiles.Bullets', power=None, time = 0) :
         w = self.weapons[weapon]
         #most projectiles aren't charged
         if power == None :
             #limit fire rate and stop when charging
-            if (pygame.time.get_ticks() > self.last_shoot + self.fire_cooldown
+            if (time > self.last_shoot + self.fire_cooldown
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y))
-                self.last_shoot = pygame.time.get_ticks()
+                self.last_shoot = time
         else :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
             w.positions.append((x, y, power))
@@ -108,6 +124,7 @@ class Ship(Fighter) :
         self.ally = True
         self.speed = BASE_SPEED
         self.fire_cooldown = SHIP_COOLDOWN
+        self.life = SHIPLIFE
 
     def fly(self, direction, interval) :
         #should consider time passed
@@ -130,7 +147,6 @@ class Ship(Fighter) :
         Fighter.die(self)
         #player is dead
         self.scene.player.alive = False
-        print self.scene.player.score
 
 
 class Charge(Mobile_sprite) :

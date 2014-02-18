@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import pygame
 from parameters import *
 
 class Projectile() :
@@ -13,6 +12,7 @@ class Projectile() :
         self.identity = identity
         self.positions = [] #floats for exact positions
         self.ally = False
+        self.pulse = BASEPULSE
         self.surface = self.scene.font.render(self.identity, False, txt_color)
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
@@ -75,7 +75,7 @@ class Blasts(Projectile) :
         pass
 
     def damage(self, index) :
-        amount = self.positions[index][2] * 5 + 1
+        amount = self.positions[index][2] * BLASTPOWER
         return amount
     
     def update(self, interval) :

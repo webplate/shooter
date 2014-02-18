@@ -2,6 +2,14 @@ add trajectory object, weapon object?
 
 collision should return culprit
 
+check collision boxes
+
 period of immunity for certain projectiles
+
+blasts shouldn't pass through
+
+identities as dicts of name, sprites (if none render font), weapons, trajectory...
+
+entity and projectiles shouldn't import pygame... (like scene)
 
 idea: one thread for positions, one thread for drawing

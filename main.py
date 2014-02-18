@@ -20,12 +20,12 @@ class Shooter():
 
         #Initialize pygame
         pygame.init()
-        if full_screen:
-            self.display = pygame.display.set_mode(window_size,
-            HWSURFACE | FULLSCREEN | DOUBLEBUF)
-            pygame.mouse.set_visible(False)     #hide cursor
-        else:
-            self.display = pygame.display.set_mode(window_size)
+        self.limits = GAMESIZE
+        self.winsize = WINSIZE
+        self.display = pygame.display.set_mode(self.winsize)
+        self.screen = pygame.Surface(self.limits)
+        self.fullscreen = False
+        self.fps = 0
 
         #load fonts
         self.font = pygame.font.Font(txt_font, txt_size) #name, size
@@ -38,7 +38,7 @@ class Shooter():
             mon_joystick.init() #Initialisation
         
         #Initialize scene
-        self.scene = scene.Scene(self.font)
+        self.scene = scene.Scene(self)
         #Players
         self.player = self.scene.player
 
@@ -56,6 +56,14 @@ class Shooter():
                 self.player.keys['down'] = True
             elif event.key == Shoot_key :
                 self.player.keys['shoot'] = True
+
+            elif event.key == fullscreen_key :
+                if self.fullscreen :
+                    self.display = pygame.display.set_mode(self.winsize)
+                else :
+                    self.display = pygame.display.set_mode(self.winsize,
+                    HWSURFACE | FULLSCREEN | DOUBLEBUF)
+                    pygame.mouse.set_visible(False)     #hide cursor
 
             
         elif event.type == KEYUP :
@@ -76,18 +84,18 @@ class Shooter():
         interval = new_time - self.last_iter
         self.last_iter = new_time
         #recompute scene status
-        self.scene.update(interval)
+        self.scene.update(interval, new_time)
 
     def on_render(self) :
-        self.display.fill(bg_color)
+        #compute low res game screen
+        self.screen.fill(bg_color)
         for pos, surf in self.scene.lst_sprites :
-            self.display.blit(surf, pos)
+            self.screen.blit(surf, pos)
+        #rescale and display on hd hardware
+        pygame.transform.scale2x(self.screen, self.display)
         #flip every 16ms only (for smooth animation, particularly on linux)
         if pygame.time.get_ticks() > self.last_flip + 16 :
-            fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
-            fps = str(int(fps))
-            surf = self.font.render(fps, False, txt_color)
-            self.display.blit(surf, (0,0))
+            self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
             pygame.display.flip()
             self.last_flip = pygame.time.get_ticks()
             self.frame += 1
