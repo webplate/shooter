@@ -150,7 +150,7 @@ class Scene():
         self.nb_fighters = 0
         #explore scene
         for item in self.content :
-            if isinstance(item, entity.Mobile_sprite) :
+            if isinstance(item, entity.Mobile) :
                 x, y = item.pos
                 #prepare sprite list for drawing
                 self.lst_sprites.append(((x, y), item.surface))

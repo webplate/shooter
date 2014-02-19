@@ -10,7 +10,7 @@ def getattr_deep(start, attr):
         obj = getattr(obj, part)
     return obj
 
-class Mobile_sprite() :
+class Mobile() :
     """a mobile sprite"""
     def __init__(self, scene, pos, surface) :
         self.scene = scene
@@ -19,27 +19,32 @@ class Mobile_sprite() :
         self._pos = pos
         self.base_surface = surface
         self.surface = surface
-        self.hit_surface = surftools.make_white(self.surface)
-        self.speed = 0
-        self.ally = False
-        self.killer = None
-        self.score = 0
-        self.trajectory = None
-        self.life = BASELIFE
-        self.last_hit = 0
         self.array = surftools.make_array(self.surface)
         self.center = surftools.get_center(self.pos, self.surface)
-        
-        
+        self.speed = 0
+        self.trajectory = None
+        self.ally = False
+
     def _get_pos(self) :
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
         return position
     pos = property(_get_pos)
 
-    def move(self, interval) :
-        pass
+    def update(self, interval, time) :
+        self.center = surftools.get_center(self.pos, self.surface)
 
+class Fragile(Mobile) :
+    """this one can be hurt"""
+    def __init__(self, scene, pos, surface) :
+        Mobile.__init__(self, scene, pos, surface)
+        self.scene = scene
+        self.hit_surface = surftools.make_white(self.surface)
+        self.killer = None
+        self.score = 0
+        self.life = BASELIFE
+        self.last_hit = 0
+        
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
         if time - self.last_hit > projectile.pulse :
@@ -58,29 +63,28 @@ class Mobile_sprite() :
         self.scene.content.remove(self)
         #reward shooter
         self.killer.score += 1
-
+        
     def update(self, interval, time) :
-        self.center = surftools.get_center(self.pos, self.surface)
-        self.move(interval)
+        Mobile.update(self, interval, time)
         #return to unhit appearance
         #~ self.surface = self.base_surface
         if self.life <= 0 :
             self.die()
 
-
-class Fighter(Mobile_sprite) :
+class Fighter(Fragile) :
     """a shooting mobile sprite"""
     def __init__(self, scene, pos, surface) :
-        Mobile_sprite.__init__(self, scene, pos, surface)
+        Fragile.__init__(self, scene, pos, surface)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
         self.weapons = {}
         self.charge = 0.
         self.aura = None
+        self.speed = TARGET_SPEED
 
     def move(self, interval) :
         if self.trajectory == None :
-            offset = interval * TARGET_SPEED
+            offset =  self.speed * interval
             #move only if far enough
             distance = abs(self.center[0] - self.scene.ship.center[0])
             if distance > offset  :
@@ -111,13 +115,14 @@ class Fighter(Mobile_sprite) :
             w.positions.append((x, y, [self, power]))
 
     def die(self) :
-        Mobile_sprite.die(self)
+        Fragile.die(self)
         #remove of scene if necessary
         if self.aura != None :
             self.scene.content.remove(self.aura)
 
     def update(self, interval, time) :
-        Mobile_sprite.update(self, interval, time)
+        Fragile.update(self, interval, time)
+        self.move(interval)
         #autofire
         self.shoot(time)
         #create charging blast if necessary
@@ -157,13 +162,13 @@ class Ship(Fighter) :
         self.scene.player.alive = False
 
 
-class Charge(Mobile_sprite) :
+class Charge(Mobile) :
     """showing the charge of ship"""
     def __init__(self, scene, ship) :
         self.scene = scene
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile_sprite.__init__(self, scene, self.ship.pos,
+        Mobile.__init__(self, scene, self.ship.pos,
         self.scene.font.render('', False, txt_color))
         self.levels = [self.scene.font.render('', False, txt_color),
         self.scene.font.render('#', False, txt_color),
@@ -183,7 +188,7 @@ class Charge(Mobile_sprite) :
         elif self.ship.charge == 0 :
             self.surface = self.levels[0]
         self.shift_pos()
-        Mobile_sprite.update(self, interval, time)
+        Mobile.update(self, interval, time)
 
 class Widget():
     def __init__(self, scene, path, parameters) :

@@ -5,7 +5,8 @@ add score, life for each player --> a widget object !!
 
 show damage taken
 
-add Fragile class
+add Fragile class  BUG de vitesse entre vaisseau et target
+bug de aura à enlever alors qu'elle est partie
 
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 
