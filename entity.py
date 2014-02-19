@@ -67,7 +67,8 @@ class Fragile(Mobile) :
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #return to unhit appearance
-        #~ self.surface = self.base_surface
+        if time > self.last_hit + BASEPULSE :
+            self.surface = self.base_surface
         if self.life <= 0 :
             self.die()
 
