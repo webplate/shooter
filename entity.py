@@ -24,10 +24,10 @@ class Mobile_sprite() :
         position = int(self._pos[0]), int(self._pos[1])
         return position
     pos = property(_get_pos)
-    
+
     def move(self, interval) :
         pass
-    
+
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
         if time - self.last_hit > projectile.pulse :
@@ -57,7 +57,7 @@ class Fighter(Mobile_sprite) :
         self.weapons = {}
         self.charge = 0.
         self.aura = None
-    
+
     def move(self, interval) :
         if self.trajectory == None :
             offset = interval * TARGET_SPEED
@@ -78,23 +78,25 @@ class Fighter(Mobile_sprite) :
     def shoot(self, time, weapon='projectiles.Bullets', power=None) :
         w = self.weapons[weapon]
         #most projectiles aren't charged
-        if power == None :
+        if weapon == 'projectiles.Bullets' :
             #limit fire rate and stop when charging
             if (time > self.last_shoot + self.fire_cooldown
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-                w.positions.append((x, y))
+                w.positions.append((x, y, [self]))
                 self.last_shoot = time
+        #blast shot
         else :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-            w.positions.append((x, y, power))
+            print (x, y, self, power)
+            w.positions.append((x, y, [self, power]))
 
     def die(self) :
         Mobile_sprite.die(self)
         #remove of scene if necessary
         if self.aura != None :
             self.scene.content.remove(self.aura)
-        
+
     def update(self, interval, time) :
         Mobile_sprite.update(self, interval)
         #autofire

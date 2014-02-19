@@ -57,6 +57,7 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
+                print time, 'projectiles.Blasts', self.ship.charge
                 self.ship.shoot(time, 'projectiles.Blasts', self.ship.charge)
             self.ship.charge = 0.
 
@@ -86,7 +87,9 @@ class Bestiary() :
         bulletS = projectiles.Bullets(self.scene, 'up', self.skin('o'))
         self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('H'))
         
-        ship = entity.Ship(self.scene, (0,self.scene.limits[1]-2*txt_inter), self.skin('ship'))
+        ship = entity.Ship(self.scene,
+        (self.scene.limits[0]/2,self.scene.limits[1]-4*txt_inter),
+        self.skin('ship'))
         ship.new_weapon(blastS)
         ship.new_weapon(bulletS)
 
