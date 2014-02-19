@@ -5,15 +5,17 @@ from pygame.locals import *
 
 WINSIZE = (640, 480)
 GAMESIZE = (320, 240) #~neo geo
+COLORDEPTH = 32
 
 
 #interface style
-bg_color = (50, 0, 0)
-txt_color = (100, 100, 100)
+bg_color = (100, 100, 100)
+txt_color = (200, 200, 200)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
 txt_inter = txt_size * 2
 USE_PICS = True
+HITPULSE = 16 #ms
 
 fullscreen_key = K_f
 #control settings
@@ -28,7 +30,7 @@ Shoot_key = K_SPACE
 BASE_SPEED = 0.2 #px/ms
 SHIP_COOLDOWN = 100 #ms
 CHARGE_RATE = 0.001
-SHIPLIFE = 10
+SHIPLIFE = 1000
 #enemies
 TARGET_SPEED = BASE_SPEED  / 2
 BASE_COOLDOWN = SHIP_COOLDOWN * 6
@@ -37,9 +39,12 @@ BASELIFE = 5
 #projectile
 BASEPULSE = 100 #ms
 BULLET_SPEED = BASE_SPEED * 2
+#~ BULLET_SPEED = BASE_SPEED / 10
 BASEDAMAGE = 1
 BLASTPOWER = 3
 
-NBENEMIES = 30
+NBENEMIES = 1
+
+
 
 

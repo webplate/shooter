@@ -52,14 +52,8 @@ class Fragile(Mobile) :
             self.life -= projectile.damage(index)
             #recognize killer in the distance
             if self.life <= 0 :
-                ###HACK
-                if index < len(projectile.positions) :
-                    proj = projectile.positions[index]
-                    self.killer = proj[2][0]
-                else :
-                    print('Error identifying projectile ', index,
-                    ' in ', projectile, ' killing ', self)
-                    self.killer = 'unknown'
+                proj = projectile.positions[index]
+                self.killer = proj[2][0]
             #change color for some time
             self.surface = self.hit_surface
 
@@ -72,7 +66,7 @@ class Fragile(Mobile) :
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #return to unhit appearance
-        if time > self.last_hit + BASEPULSE :
+        if time > self.last_hit + HITPULSE :
             self.surface = self.base_surface
         if self.life <= 0 :
             self.die()

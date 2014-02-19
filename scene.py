@@ -77,9 +77,9 @@ class Bestiary() :
         return surface
 
     def load_fighter(self, name) :
-        #shouldn't make a new surface...!!!!!
         surface = self.skin(name)
-        coord = random.randint(0, self.scene.limits[0]), self.scene.limits[1]/6
+        coord = (random.randint(0, self.scene.limits[0]),
+        random.randint(0, self.scene.limits[1]/6))
         fighter = entity.Fighter(self.scene, coord, surface)
         #link fighters to projectile maps
         fighter.new_weapon(self.bulletF)
@@ -87,8 +87,8 @@ class Bestiary() :
     def load_content(self) :
         #projectile maps
         blastS = projectiles.Blasts(self.scene, 'up', self.skin('^^^^^'))
-        bulletS = projectiles.Bullets(self.scene, 'up', self.skin('o'))
-        self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('H'))
+        bulletS = projectiles.Bullets(self.scene, 'up', self.skin('.'))
+        self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('o'))
         
         ship = entity.Ship(self.scene,
         (self.scene.limits[0]/2,self.scene.limits[1]-2*txt_inter),

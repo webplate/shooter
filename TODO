@@ -1,19 +1,23 @@
 
+skin class to load only once surface and hit_surface
+
 class for follower (charge, explosion...)
 
 add trajectory object, weapon object?
+target not on same line
 
 add score, life for each player --> a widget object !!
+support four players
 
 show damage taken with white highlight
+set_color key for transparency
 
 use pygame rect object for collisions
+collisions between entities
 
 special sprites for going right left up down
 
-bug l56 in entity   collided (projectiles having several collisions are removed with friends)
-
-
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
+debug levels (stress test, low-motion..)
 
 idea: one thread for positions, one thread for drawing
