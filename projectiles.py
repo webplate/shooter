@@ -78,5 +78,4 @@ class Blasts(Bullets) :
     def damage(self, index) :
         #get power of charged shot
         amount = self.positions[index][2][1] * BLASTPOWER
-        print amount
         return amount

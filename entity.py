@@ -3,6 +3,13 @@
 import surftools
 from parameters import *
 
+def getattr_deep(start, attr):
+    """useful function for accessing attributes of attributes..."""
+    obj = start
+    for part in attr.split('.'):
+        obj = getattr(obj, part)
+    return obj
+
 class Mobile_sprite() :
     """a mobile sprite"""
     def __init__(self, scene, pos, surface) :
@@ -13,6 +20,8 @@ class Mobile_sprite() :
         self.surface = surface
         self.speed = 0
         self.ally = False
+        self.killer = None
+        self.score = 0
         self.trajectory = None
         self.life = BASELIFE
         self.last_hit = 0
@@ -33,16 +42,19 @@ class Mobile_sprite() :
         if time - self.last_hit > projectile.pulse :
             #take damage
             self.life -= projectile.damage(index)
+            #recognize killer in the distance
+            if self.life < 0 :
+                proj = projectile.positions[index]
+                self.killer = proj[2][0]
             self.last_hit = time
 
     def die(self) :
         #remove of scene
         self.scene.content.remove(self)
         #reward shooter
-        if not self.ally :
-            self.scene.player.score += 1
+        self.killer.score += 1
 
-    def update(self, interval) :
+    def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
         self.move(interval)
         if self.life < 0 :
@@ -88,7 +100,6 @@ class Fighter(Mobile_sprite) :
         #blast shot
         else :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-            print (x, y, self, power)
             w.positions.append((x, y, [self, power]))
 
     def die(self) :
@@ -98,7 +109,7 @@ class Fighter(Mobile_sprite) :
             self.scene.content.remove(self.aura)
 
     def update(self, interval, time) :
-        Mobile_sprite.update(self, interval)
+        Mobile_sprite.update(self, interval, time)
         #autofire
         self.shoot(time)
         #create charging blast if necessary
@@ -136,7 +147,6 @@ class Ship(Fighter) :
         Fighter.die(self)
         #player is dead
         self.scene.player.alive = False
-        print 'Score : ', self.scene.player.score
 
 
 class Charge(Mobile_sprite) :
@@ -165,4 +175,46 @@ class Charge(Mobile_sprite) :
         elif self.ship.charge == 0 :
             self.surface = self.levels[0]
         self.shift_pos()
-        Mobile_sprite.update(self, interval)
+        Mobile_sprite.update(self, interval, time)
+
+class Widget():
+    def __init__(self, scene, path, parameters) :
+        self.scene = scene
+        #load in scene
+        self.scene.content.append(self)
+        self.path = path
+        self.parameters = parameters
+        self.value = getattr_deep(self.scene, path)
+        self.surface = self.scene.font.render(self.skin(self.value), False, txt_color)
+        self.shape = self.surface.get_width(), self.surface.get_height()
+        self.pos = (0, 0)
+        self.update(0, 0)
+
+    def align(self) :
+        #recompute coordinates
+        if 'center' in self.parameters :
+            self.pos = (self.scene.limits[0]/2-self.shape[0]/2,
+            self.scene.limits[1]/2-self.shape[1]/2)
+        if 'left' in self.parameters :
+            self.pos = (0, self.pos[1])
+        if 'right' in self.parameters :
+            self.pos = (self.scene.limits[0]-self.shape[0], self.pos[1])
+        if 'top' in self.parameters :
+            self.pos = (self.pos[0], 0)
+        if 'bottom' in self.parameters :
+            self.pos = (self.pos[0], self.scene.limits[1]-self.shape[1])
+
+    def skin(self, value) :
+        return str(int(value))
+        
+
+    def update(self, interval, time) :
+        #recompute surface
+        new_value = getattr_deep(self.scene, self.path)
+        if self.value != new_value :
+            self.value = new_value
+            self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
+            new_shape = self.surface.get_width(), self.surface.get_height()
+            if self.shape != new_shape :
+                self.shape = new_shape
+                self.align()

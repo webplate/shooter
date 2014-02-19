@@ -12,7 +12,7 @@ bg_color = (50, 0, 0)
 txt_color = (100, 100, 100)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
-txt_inter = txt_size + 2
+txt_inter = txt_size * 2
 USE_PICS = False
 
 fullscreen_key = K_f

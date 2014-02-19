@@ -57,7 +57,6 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
-                print time, 'projectiles.Blasts', self.ship.charge
                 self.ship.shoot(time, 'projectiles.Blasts', self.ship.charge)
             self.ship.charge = 0.
 
@@ -83,16 +82,22 @@ class Bestiary() :
 
     def load_content(self) :
         #projectile maps
-        blastS = projectiles.Blasts(self.scene, 'up', self.skin('OOO00000'))
+        blastS = projectiles.Blasts(self.scene, 'up', self.skin('^^^^^'))
         bulletS = projectiles.Bullets(self.scene, 'up', self.skin('o'))
         self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('H'))
         
         ship = entity.Ship(self.scene,
-        (self.scene.limits[0]/2,self.scene.limits[1]-4*txt_inter),
+        (self.scene.limits[0]/2,self.scene.limits[1]-2*txt_inter),
         self.skin('ship'))
         ship.new_weapon(blastS)
         ship.new_weapon(bulletS)
 
+    def load_interface(self) :
+        #interface
+        score = entity.Widget(self.scene, 'ship.score', ['top', 'left'])
+        fps = entity.Widget(self.scene, 'game.fps', ['top', 'right'])
+        life = entity.Widget(self.scene, 'ship.life', ['bottom', 'right'])
+        
 class Scene():
     def __init__(self, game) :
         self.game = game
@@ -105,11 +110,9 @@ class Scene():
             if isinstance(item, entity.Ship) :
                 self.ship = item
                 break
+        self.bestiary.load_interface()
         self.player = Player(self)
         self.lst_sprites = []
-        #textual info
-        self.last_txt_flip = 0
-        self.fps_surf = self.game.font.render('', False, txt_color)
         self.update()
 
     def collide(self, proj_map, target_map, time) :
@@ -145,14 +148,6 @@ class Scene():
         #sprite list for drawing
         self.lst_sprites = []
         self.nb_fighters = 0
-        #show fps but not every frame
-        if time > self.last_txt_flip + 500 :
-            fps = str(int(self.game.fps))
-            self.fps_surf = self.game.font.render(fps, False, txt_color)
-            self.lst_sprites.append(((0, 0), self.fps_surf))
-            self.last_txt_flip = time
-        else :
-            self.lst_sprites.append(((0, 0), self.fps_surf))
         #explore scene
         for item in self.content :
             if isinstance(item, entity.Mobile_sprite) :
@@ -183,6 +178,10 @@ class Scene():
                         ship_proj_map.append(identifier)
                     else :
                         target_proj_map.append(identifier)
+            elif isinstance(item, entity.Widget) :
+                x, y = item.pos
+                #prepare sprite list for drawing
+                self.lst_sprites.append(((x, y), item.surface))
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map, time)
         self.collide(target_proj_map, ship_map, time)
@@ -196,4 +195,3 @@ class Scene():
         #update player status
         if self.player.alive :
             self.player.update(interval, time)
-    

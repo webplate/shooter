@@ -1,8 +1,7 @@
-better classes for projectiles
 
 add trajectory object, weapon object?
 
-collision should return culprit
+add score, life for each player --> an widget object !!
 
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 
