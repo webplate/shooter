@@ -13,7 +13,7 @@ txt_color = (100, 100, 100)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
 txt_inter = txt_size * 2
-USE_PICS = False
+USE_PICS = True
 
 fullscreen_key = K_f
 #control settings
@@ -40,6 +40,6 @@ BULLET_SPEED = BASE_SPEED * 2
 BASEDAMAGE = 1
 BLASTPOWER = 3
 
-NBENEMIES = 1
+NBENEMIES = 30
 
 

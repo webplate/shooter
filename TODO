@@ -1,12 +1,18 @@
 
+class for follower (charge, explosion...)
+
 add trajectory object, weapon object?
 
 add score, life for each player --> a widget object !!
 
-show damage taken
+show damage taken with white highlight
 
-add Fragile class  BUG de vitesse entre vaisseau et target
-bug de aura à enlever alors qu'elle est partie
+use pygame rect object for collisions
+
+special sprites for going right left up down
+
+bug l56 in entity   collided (projectiles having several collisions are removed with friends)
+
 
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 

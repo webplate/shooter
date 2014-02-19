@@ -41,7 +41,6 @@ class Fragile(Mobile) :
         self.scene = scene
         self.hit_surface = surftools.make_white(self.surface)
         self.killer = None
-        self.score = 0
         self.life = BASELIFE
         self.last_hit = 0
         
@@ -53,8 +52,14 @@ class Fragile(Mobile) :
             self.life -= projectile.damage(index)
             #recognize killer in the distance
             if self.life <= 0 :
-                proj = projectile.positions[index]
-                self.killer = proj[2][0]
+                ###HACK
+                if index < len(projectile.positions) :
+                    proj = projectile.positions[index]
+                    self.killer = proj[2][0]
+                else :
+                    print('Error identifying projectile ', index,
+                    ' in ', projectile, ' killing ', self)
+                    self.killer = 'unknown'
             #change color for some time
             self.surface = self.hit_surface
 
@@ -82,6 +87,8 @@ class Fighter(Fragile) :
         self.charge = 0.
         self.aura = None
         self.speed = TARGET_SPEED
+        self.score = 0
+
 
     def move(self, interval) :
         if self.trajectory == None :

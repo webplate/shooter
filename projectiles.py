@@ -15,11 +15,13 @@ class Projectile() :
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
+        self.to_remove = []
 
     def collided(self, index) :
-        l = len(self.positions)
-        if l > 0 and index < l :
-            self.positions.pop(index)
+        #~ l = len(self.positions)
+        #~ if l > 0 and index < l :
+            #~ self.positions.pop(index)
+        self.to_remove.append(index)
 
     def damage(self, index) :
         return BASEDAMAGE
@@ -43,8 +45,19 @@ class Projectile() :
             return True
 
     def update(self) :
+        #~ new_positions = []
         #delete if outside screen
         self.positions = [pos for pos in self.positions if self.in_screen(pos)]
+        #delete if marked
+        self.positions = [self.positions[i] for i in range(len(self.positions)) if i not in self.to_remove]
+        self.to_remove = []
+        #~ for pos, i in enumerate(self.positions) :
+            #~ if i not in self.to_remove :
+                #~ print self.to_remove, pos
+                #~ new_positions.append(pos)
+        #~ self.positions = new_positions
+        #~ [pos for pos, i in enumerate(self.positions)
+        #~ if (self.in_screen(pos) and i not in self.to_remove)]
 
 class Bullets(Projectile) :
     """a map of bullets

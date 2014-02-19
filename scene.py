@@ -64,16 +64,20 @@ class Bestiary() :
     """object loading and tuning every game objects"""
     def __init__(self, scene) :
         self.scene = scene
+        self.surfaces = {}
         
     def skin(self, name) :
-        """make surface according to theme pack"""
-        if USE_PICS :
-            surface = surftools.load_image(name)
+        """make surface according to theme pack
+        and avoid duplicate loading"""
+        if name in self.surfaces :
+            surface = self.surfaces[name]
         else :
-            surface = surftools.font_skin(self.scene.font, name)
+            surface = surftools.load_image(name, self.scene.font)
+            self.surfaces.update({name : surface})
         return surface
 
     def load_fighter(self, name) :
+        #shouldn't make a new surface...!!!!!
         surface = self.skin(name)
         coord = random.randint(0, self.scene.limits[0]), self.scene.limits[1]/6
         fighter = entity.Fighter(self.scene, coord, surface)
@@ -125,9 +129,9 @@ class Scene():
                     if xP < xTe and xP > xT and yP < yTe and yP > yT :
                         #per pixel collision
                         if itemT.array[xP - xT, yP - yT] :
-                            #remove or not, colliding projectile
                             #hurt or not, entity
                             itemT.collided(itemP, index, time)
+                            #remove or not, colliding projectile
                             itemP.collided(index)
             #rectangular projectile
             else :
