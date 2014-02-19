@@ -20,6 +20,10 @@ def load_image(file):
 def make_array(surface) :
     return pygame.surfarray.array2d(surface).astype(bool)
 
+def make_white(surface) :
+    array = pygame.PixelArray(surface)
+    return array.make_surface()
+
 def font_skin(font, name) :
     """if no pics create from font"""
     surface = font.render(name, False, txt_color)

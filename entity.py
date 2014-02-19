@@ -17,7 +17,9 @@ class Mobile_sprite() :
         #load in scene
         self.scene.content.append(self)
         self._pos = pos
+        self.base_surface = surface
         self.surface = surface
+        self.hit_surface = surftools.make_white(self.surface)
         self.speed = 0
         self.ally = False
         self.killer = None
@@ -27,7 +29,8 @@ class Mobile_sprite() :
         self.last_hit = 0
         self.array = surftools.make_array(self.surface)
         self.center = surftools.get_center(self.pos, self.surface)
-
+        
+        
     def _get_pos(self) :
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
@@ -40,13 +43,15 @@ class Mobile_sprite() :
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
         if time - self.last_hit > projectile.pulse :
+            self.last_hit = time
             #take damage
             self.life -= projectile.damage(index)
             #recognize killer in the distance
             if self.life <= 0 :
                 proj = projectile.positions[index]
                 self.killer = proj[2][0]
-            self.last_hit = time
+            #change color for some time
+            self.surface = self.hit_surface
 
     def die(self) :
         #remove of scene
@@ -57,8 +62,11 @@ class Mobile_sprite() :
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
         self.move(interval)
+        #return to unhit appearance
+        #~ self.surface = self.base_surface
         if self.life <= 0 :
             self.die()
+
 
 class Fighter(Mobile_sprite) :
     """a shooting mobile sprite"""

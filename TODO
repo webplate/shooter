@@ -1,7 +1,11 @@
 
 add trajectory object, weapon object?
 
-add score, life for each player --> an widget object !!
+add score, life for each player --> a widget object !!
+
+show damage taken
+
+add Fragile class
 
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 
