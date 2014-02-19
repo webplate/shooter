@@ -95,8 +95,8 @@ class Bestiary() :
     def load_interface(self) :
         #interface
         score = entity.Widget(self.scene, 'ship.score', ['top', 'left'])
-        fps = entity.Widget(self.scene, 'game.fps', ['top', 'right'])
-        life = entity.Widget(self.scene, 'ship.life', ['bottom', 'right'])
+        fps = entity.Widget(self.scene, 'game.fps', ['bottom', 'right', 'low_flip'])
+        life = entity.Widget(self.scene, 'ship.life', ['top', 'right'])
         
 class Scene():
     def __init__(self, game) :

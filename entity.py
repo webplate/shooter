@@ -43,7 +43,7 @@ class Mobile_sprite() :
             #take damage
             self.life -= projectile.damage(index)
             #recognize killer in the distance
-            if self.life < 0 :
+            if self.life <= 0 :
                 proj = projectile.positions[index]
                 self.killer = proj[2][0]
             self.last_hit = time
@@ -57,7 +57,7 @@ class Mobile_sprite() :
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
         self.move(interval)
-        if self.life < 0 :
+        if self.life <= 0 :
             self.die()
 
 class Fighter(Mobile_sprite) :
@@ -188,7 +188,13 @@ class Widget():
         self.surface = self.scene.font.render(self.skin(self.value), False, txt_color)
         self.shape = self.surface.get_width(), self.surface.get_height()
         self.pos = (0, 0)
-        self.update(0, 0)
+        self.align()
+        #support delayed updates
+        if 'low_flip' in self.parameters :
+            self.low = True
+            self.last_flip = 0
+        else :
+            self.low = False
 
     def align(self) :
         #recompute coordinates
@@ -202,6 +208,7 @@ class Widget():
         if 'top' in self.parameters :
             self.pos = (self.pos[0], 0)
         if 'bottom' in self.parameters :
+            
             self.pos = (self.pos[0], self.scene.limits[1]-self.shape[1])
 
     def skin(self, value) :
@@ -210,11 +217,23 @@ class Widget():
 
     def update(self, interval, time) :
         #recompute surface
-        new_value = getattr_deep(self.scene, self.path)
-        if self.value != new_value :
-            self.value = new_value
-            self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
-            new_shape = self.surface.get_width(), self.surface.get_height()
-            if self.shape != new_shape :
-                self.shape = new_shape
-                self.align()
+        new_value = getattr_deep(self.scene, self.path)  
+        if not self.low :
+            if self.value != new_value :
+                self.value = new_value
+                self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
+                new_shape = self.surface.get_width(), self.surface.get_height()
+                if self.shape != new_shape :
+                    self.shape = new_shape
+                    self.align()
+        else :
+            if time > self.last_flip + 500 and self.value != new_value :
+                self.value = new_value
+                self.last_flip = time
+                self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
+                new_shape = self.surface.get_width(), self.surface.get_height()
+                if self.shape != new_shape :
+                    self.shape = new_shape
+                    self.align()
+            
+            
