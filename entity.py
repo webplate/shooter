@@ -51,7 +51,6 @@ class Fragile(Mobile) :
     """this one can be hurt"""
     def __init__(self, scene, pos, name) :
         Mobile.__init__(self, scene, pos, name)
-        self.scene = scene
         self.hit_surface = self.scene.cont.hit[name]
         self.killer = None
         self.life = BASELIFE
@@ -100,7 +99,7 @@ class Fighter(Fragile) :
         self.speed = TARGET_SPEED
         self.score = 0
         #can have a charge display
-        self.aura = Charge(self.scene, self)
+        self.aura = Charge(self.scene, self, (0, -txt_inter))
 
     def move(self, interval) :
         if self.trajectory == None :
@@ -179,20 +178,24 @@ class Ship(Fighter) :
 
 class Follower(Mobile) :
     """a sprite following another"""
-    def __init__(self, scene, parent) :
+    def __init__(self, scene, parent, offset) :
         Mobile.__init__(self, scene, (0, 0), ' ')
         self.parent = parent
+        self.offset = offset
         self.center_on(self.parent)
 
     def move(self, interval) :
         """move to be centered on parent"""
         self.center_on(self.parent)
+        new_pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
+        self._pos = new_pos
 
 
 class Charge(Follower) :
     """showing the charge of ship"""
-    def __init__(self, scene, parent) :
-        Follower.__init__(self, scene, parent)
+    def __init__(self, scene, parent, offset) :
+        #offset to show over ship
+        Follower.__init__(self, scene, parent, offset)
         self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('#'),
         self.scene.cont.surf('##'),
@@ -211,8 +214,8 @@ class Charge(Follower) :
 
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
-    def __init__(self, scene, parent) :
-        Follower.__init__(self, scene, parent)
+    def __init__(self, scene, parent, offset=(0,0)) :
+        Follower.__init__(self, scene, parent, offset)
         self.levels = [self.scene.cont.surf('0000000'),
         self.scene.cont.surf('00000'),
         self.scene.cont.surf('000')]
