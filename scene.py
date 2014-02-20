@@ -60,39 +60,49 @@ class Player() :
                 self.ship.shoot(time, 'projectiles.Blasts', self.ship.charge)
             self.ship.charge = 0.
 
+class Container():
+    """stock surfaces prevent duplicates"""
+    def __init__(self, scene) :
+        self.scene = scene
+        self.theme = self.scene.theme
+        self.surfaces = {}
+        self.array = {}
+        self.hit = {}
+
+    def surf(self, name) :
+        """avoid duplicate loading"""
+        if name in self.surfaces :
+            surface = self.surfaces[name]
+        else :
+            surface = surftools.load_image(name, self.theme, self.scene.font)
+            hit = surftools.make_white(surface)
+            array = surftools.make_array(surface)
+            self.surfaces.update({name : surface})
+            self.hit.update({name : hit})
+            self.array.update({name : array})
+        return surface
+
+
 class Bestiary() :
     """object loading and tuning every game objects"""
     def __init__(self, scene) :
         self.scene = scene
-        self.surfaces = {}
-        
-    def skin(self, name) :
-        """make surface according to theme pack
-        and avoid duplicate loading"""
-        if name in self.surfaces :
-            surface = self.surfaces[name]
-        else :
-            surface = surftools.load_image(name, self.scene.font)
-            self.surfaces.update({name : surface})
-        return surface
 
     def load_fighter(self, name) :
-        surface = self.skin(name)
         coord = (random.randint(0, self.scene.limits[0]),
         random.randint(0, self.scene.limits[1]/6))
-        fighter = entity.Fighter(self.scene, coord, surface)
+        fighter = entity.Fighter(self.scene, coord, name)
         #link fighters to projectile maps
         fighter.new_weapon(self.bulletF)
 
     def load_content(self) :
         #projectile maps
-        blastS = projectiles.Blasts(self.scene, 'up', self.skin('^^^^^'))
-        bulletS = projectiles.Bullets(self.scene, 'up', self.skin('.'))
-        self.bulletF = projectiles.Bullets(self.scene, 'down', self.skin('o'))
+        blastS = projectiles.Blasts(self.scene, 'up', 'oOOo')
+        bulletS = projectiles.Bullets(self.scene, 'up', 'A')
+        self.bulletF = projectiles.Bullets(self.scene, 'down','o')
         
         ship = entity.Ship(self.scene,
-        (self.scene.limits[0]/2,self.scene.limits[1]-2*txt_inter),
-        self.skin('ship'))
+        (self.scene.limits[0]/2,self.scene.limits[1]-2*txt_inter), 'ship')
         ship.new_weapon(blastS)
         ship.new_weapon(bulletS)
 
@@ -101,12 +111,14 @@ class Bestiary() :
         score = entity.Widget(self.scene, 'ship.score', ['top', 'left'])
         fps = entity.Widget(self.scene, 'game.fps', ['bottom', 'right', 'low_flip'])
         life = entity.Widget(self.scene, 'ship.life', ['top', 'right'])
-        
+
 class Scene():
     def __init__(self, game) :
         self.game = game
         self.limits = game.limits
         self.font = game.font
+        self.theme = THEME
+        self.cont = Container(self)
         self.content = []
         self.bestiary = Bestiary(self)
         self.bestiary.load_content()

@@ -4,11 +4,11 @@ from parameters import *
 
 class Projectile() :
     """projectile positions should be accessed with position(index)"""
-    def __init__(self, scene, surface) :
+    def __init__(self, scene, name) :
         self.scene = scene
         #load in scene
         self.scene.content.append(self)
-        self.surface = surface
+        self.surface = self.scene.cont.surf(name)
         self.positions = [] #floats for exact positions
         self.ally = False
         self.pulse = BASEPULSE

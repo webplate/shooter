@@ -7,10 +7,10 @@ def get_center(pos, surface) :
     center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
     return center
 
-def load_image(file, font):
+def load_image(file, theme, font):
     """loads an image, prepares it for play
     or create a label if image absent"""
-    path = os.path.join('imgs', file + '.png')
+    path = os.path.join('imgs', theme, file + '.png')
     if USE_PICS :
         try:
             surface = pygame.image.load(path)
@@ -32,7 +32,6 @@ def make_array(surface) :
     w, h = array.shape
     for i in range(w) :
         for j in range(h) :
-            print array[i, j], colorkey
             if array[i, j] != colorkey :
                 array[i, j] = True
             else :
@@ -45,9 +44,9 @@ def make_white(surface) :
     covered = make_array(surface)
     surface = pygame.Surface(surface.get_size(), depth = 8)
     surface.set_palette([black, white])
-    
     pix_array = pygame.PixelArray(surface)
     w, h = covered.shape
+    print w, h
     for i in range(w) :
         for j in range(h) :
             if covered[i,j] :
@@ -55,7 +54,6 @@ def make_white(surface) :
             else :
                 pix_array[i,j] = black
     surface.set_colorkey(black)
-    print 'one more', surface
     return surface
 
 def font_skin(font, name) :

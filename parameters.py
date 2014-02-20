@@ -5,7 +5,7 @@ from pygame.locals import *
 
 WINSIZE = (640, 480)
 GAMESIZE = (320, 240) #~neo geo
-COLORDEPTH = 32
+COLORDEPTH = 16
 
 
 #interface style
@@ -14,6 +14,7 @@ txt_color = (200, 200, 200)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
 txt_inter = txt_size * 2
+THEME = 'ironbrain'
 USE_PICS = True
 HITPULSE = 16 #ms
 
@@ -43,7 +44,7 @@ BULLET_SPEED = BASE_SPEED * 2
 BASEDAMAGE = 1
 BLASTPOWER = 3
 
-NBENEMIES = 1
+NBENEMIES = 30
 
 
 

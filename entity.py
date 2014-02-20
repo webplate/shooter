@@ -12,14 +12,14 @@ def getattr_deep(start, attr):
 
 class Mobile() :
     """a mobile sprite"""
-    def __init__(self, scene, pos, surface) :
+    def __init__(self, scene, pos, name) :
         self.scene = scene
         #load in scene
         self.scene.content.append(self)
+        self.surface = self.scene.cont.surf(name)
+        self.array = self.scene.cont.array[name]
+        self.base_surface = self.surface
         self._pos = pos
-        self.base_surface = surface
-        self.surface = surface
-        self.array = surftools.make_array(self.surface)
         self.center = surftools.get_center(self.pos, self.surface)
         self.speed = 0
         self.trajectory = None
@@ -36,10 +36,10 @@ class Mobile() :
 
 class Fragile(Mobile) :
     """this one can be hurt"""
-    def __init__(self, scene, pos, surface) :
-        Mobile.__init__(self, scene, pos, surface)
+    def __init__(self, scene, pos, name) :
+        Mobile.__init__(self, scene, pos, name)
         self.scene = scene
-        self.hit_surface = surftools.make_white(self.surface)
+        self.hit_surface = self.scene.cont.hit[name]
         self.killer = None
         self.life = BASELIFE
         self.last_hit = 0
@@ -73,8 +73,8 @@ class Fragile(Mobile) :
 
 class Fighter(Fragile) :
     """a shooting mobile sprite"""
-    def __init__(self, scene, pos, surface) :
-        Fragile.__init__(self, scene, pos, surface)
+    def __init__(self, scene, pos, name) :
+        Fragile.__init__(self, scene, pos, name)
         self.fire_cooldown = BASE_COOLDOWN
         self.last_shoot = 0
         self.weapons = {}
@@ -133,8 +133,8 @@ class Fighter(Fragile) :
 
 class Ship(Fighter) :
     """A ship controlled by player and shooting"""
-    def __init__(self, scene, pos, surface) :
-        Fighter.__init__(self, scene, pos, surface)
+    def __init__(self, scene, pos, name) :
+        Fighter.__init__(self, scene, pos, name)
         self.trajectory = 'manual'
         self.ally = True
         self.speed = BASE_SPEED
@@ -170,12 +170,11 @@ class Charge(Mobile) :
         self.scene = scene
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile.__init__(self, scene, self.ship.pos,
-        self.scene.font.render('', False, txt_color))
-        self.levels = [self.scene.font.render('', False, txt_color),
-        self.scene.font.render('#', False, txt_color),
-        self.scene.font.render('##', False, txt_color),
-        self.scene.font.render('###', False, txt_color)]
+        Mobile.__init__(self, scene, self.ship.pos, '')
+        self.levels = [self.scene.cont.surf(''),
+        self.scene.cont.surf('#'),
+        self.scene.cont.surf('##'),
+        self.scene.cont.surf('###')]
 
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
