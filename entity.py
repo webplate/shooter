@@ -31,6 +31,10 @@ class Mobile() :
         return position
     pos = property(_get_pos)
 
+    def remove(self) :
+        """remove from scene"""
+        self.scene.content.remove(self)
+
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
 
@@ -43,8 +47,9 @@ class Fragile(Mobile) :
         self.killer = None
         self.life = BASELIFE
         self.last_hit = 0
+        self.time_of_death = None
         #fragile can explode
-        #~ self.end = Follower
+        self.end = Explosion(self.scene, self)
         
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
@@ -52,8 +57,9 @@ class Fragile(Mobile) :
             self.last_hit = time
             #take damage
             self.life -= projectile.damage(index)
-            #recognize killer in the distance
             if self.life <= 0 :
+                self.time_of_death = time
+                #recognize killer in the distance
                 proj = projectile.positions[index]
                 self.killer = proj[2][0]
             #change color for some time
@@ -61,7 +67,7 @@ class Fragile(Mobile) :
 
     def die(self) :
         #remove of scene
-        self.scene.content.remove(self)
+        self.remove()
         #reward shooter
         self.killer.score += 1
         
@@ -122,8 +128,8 @@ class Fighter(Fragile) :
 
     def die(self) :
         Fragile.die(self)
-        #remove of scene
-        self.scene.content.remove(self.aura)
+        #remove also charge display
+        self.aura.remove()
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
@@ -169,11 +175,11 @@ class Follower(Mobile) :
     def __init__(self, scene, parent) :
         self.scene = scene
         self.parent = parent
-        self.pos = self.parent.pos
-        Mobile.__init__(self, scene, self.parent.pos, ' ')
+        self.shift_pos()
+        Mobile.__init__(self, self.scene, self.pos, ' ')
 
     def shift_pos(self) :
-        self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
+        self.pos = self.parent.pos[0], self.parent.pos[1]+txt_inter
 
     def update(self, interval, time) :
         #follow with shift_pos function
@@ -201,6 +207,29 @@ class Charge(Follower) :
             self.surface = self.levels[1]
         elif self.ship.charge == 0 :
             self.surface = self.levels[0]
+
+class Explosion(Follower) :
+    """showing explosion of ship at last standing point"""
+    def __init__(self, scene, fragile) :
+        self.scene = scene
+        self.fragile = fragile
+        Follower.__init__(self, scene, self.fragile)
+        self.levels = [self.scene.cont.surf('0000'),
+        self.scene.cont.surf('000'),
+        self.scene.cont.surf('00')]
+
+    def update(self, interval, time) :
+        if self.fragile.life <= 0 :
+            Follower.update(self, interval, time)
+            if time > self.fragile.time_of_death + 1000 :
+                self.remove()
+            elif time > self.fragile.time_of_death + 500 :
+                self.surface = self.levels[2]
+            elif time > self.fragile.time_of_death + 200 :
+                self.surface = self.levels[1]
+            elif time > self.fragile.time_of_death :
+                self.surface = self.levels[0]
+
 
 class Widget():
     def __init__(self, scene, path, parameters) :
