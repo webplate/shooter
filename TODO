@@ -1,5 +1,5 @@
-
-class for follower (charge, explosion...)
+??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
+debug levels (stress test, low-motion..)
 
 add trajectory object, weapon object?
 target not on same line
@@ -7,13 +7,11 @@ target not on same line
 add score, life for each player --> a widget object !!
 support four players
 
-use pygame rect object for collisions
+??use pygame rect object for collisions
 collisions between entities
 
 special sprites for going right left up down
 
-??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
-debug levels (stress test, low-motion..)
 
 test makewhite on 1px (H&v) image
 

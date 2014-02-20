@@ -180,8 +180,7 @@ class Ship(Fighter) :
 class Follower(Mobile) :
     """a sprite following another"""
     def __init__(self, scene, parent) :
-        Mobile.__init__(self, self.scene, (0, 0), ' ')
-        self.scene = scene
+        Mobile.__init__(self, scene, (0, 0), ' ')
         self.parent = parent
         self.center_on(self.parent)
 
@@ -192,10 +191,8 @@ class Follower(Mobile) :
 
 class Charge(Follower) :
     """showing the charge of ship"""
-    def __init__(self, scene, ship) :
-        self.scene = scene
-        self.ship = ship
-        Follower.__init__(self, scene, self.ship)
+    def __init__(self, scene, parent) :
+        Follower.__init__(self, scene, parent)
         self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('#'),
         self.scene.cont.surf('##'),
@@ -203,40 +200,38 @@ class Charge(Follower) :
 
     def update(self, interval, time) :
         Follower.update(self, interval, time)
-        if self.ship.charge >= 1 :
+        if self.parent.charge >= 1 :
             self.surface = self.levels[3]
-        elif self.ship.charge > 0.5 :
+        elif self.parent.charge > 0.5 :
             self.surface = self.levels[2]
-        elif self.ship.charge > 0 :
+        elif self.parent.charge > 0 :
             self.surface = self.levels[1]
-        elif self.ship.charge == 0 :
+        elif self.parent.charge == 0 :
             self.surface = self.levels[0]
 
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
-    def __init__(self, scene, fragile) :
-        self.scene = scene
-        self.fragile = fragile
-        Follower.__init__(self, scene, self.fragile)
+    def __init__(self, scene, parent) :
+        Follower.__init__(self, scene, parent)
         self.levels = [self.scene.cont.surf('0000000'),
         self.scene.cont.surf('00000'),
         self.scene.cont.surf('000')]
         self.pulse = EXPLOSIONPULSE
 
     def update(self, interval, time) :
-        if self.fragile.life <= 0 :
+        if self.parent.life <= 0 :
             Follower.update(self, interval, time)
-            if time > self.fragile.time_of_death + self.pulse*3 :
+            if time > self.parent.time_of_death + self.pulse*3 :
                 self.remove()
-            elif time > self.fragile.time_of_death + self.pulse*2 :
+            elif time > self.parent.time_of_death + self.pulse*2 :
                 self.surface = self.levels[2]
-            elif time > self.fragile.time_of_death + self.pulse :
+            elif time > self.parent.time_of_death + self.pulse :
                 self.surface = self.levels[1]
-            elif time > self.fragile.time_of_death :
+            elif time > self.parent.time_of_death :
                 self.surface = self.levels[0]
 
 
-class Widget():
+class Widget(Mobile):
     def __init__(self, scene, path, parameters) :
         self.scene = scene
         #load in scene

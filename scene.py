@@ -84,7 +84,7 @@ class Container():
 
 
 class Bestiary() :
-    """object loading and tuning every game objects"""
+    """loading and tuning every game objects"""
     def __init__(self, scene) :
         self.scene = scene
 
@@ -170,16 +170,17 @@ class Scene():
                 x, y = item.pos
                 #prepare sprite list for drawing
                 self.lst_sprites.append(((x, y), item.surface))
-                #populate collision maps
-                #precompute for faster detection
-                width, height = item.array.shape
-                identifier = (x, y, x+width, y+height, item)
-                if item.ally :
-                    ship_map.append(identifier)
-                else :
-                    if isinstance(item, entity.Fighter) :
-                        self.nb_fighters += 1
-                    target_map.append(identifier)
+                if isinstance(item, entity.Fragile) :
+                    #populate collision maps
+                    #precompute for faster detection
+                    width, height = item.array.shape
+                    identifier = (x, y, x+width, y+height, item)
+                    if item.ally :
+                        ship_map.append(identifier)
+                    else :
+                        if isinstance(item, entity.Fighter) :
+                            self.nb_fighters += 1
+                        target_map.append(identifier)
             elif isinstance(item, projectiles.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
@@ -194,10 +195,6 @@ class Scene():
                         ship_proj_map.append(identifier)
                     else :
                         target_proj_map.append(identifier)
-            elif isinstance(item, entity.Widget) :
-                x, y = item.pos
-                #prepare sprite list for drawing
-                self.lst_sprites.append(((x, y), item.surface))
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map, time)
         self.collide(target_proj_map, ship_map, time)

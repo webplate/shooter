@@ -5,7 +5,7 @@ from pygame.locals import *
 
 GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
-RESCALE = 'none' #set to 2x or mame
+RESCALE = '2x' #set to 2x or mame
 
 #interface style
 bg_color = (100, 100, 100)
