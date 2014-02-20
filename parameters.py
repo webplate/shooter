@@ -13,7 +13,7 @@ txt_color = (200, 200, 200)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
 txt_inter = txt_size * 2
-THEME = 'derval'
+THEME = None
 USE_PICS = True
 HITPULSE = 16 #ms
 
@@ -42,6 +42,7 @@ BULLET_SPEED = BASE_SPEED * 2
 #~ BULLET_SPEED = BASE_SPEED / 10
 BASEDAMAGE = 1
 BLASTPOWER = 3
+EXPLOSIONPULSE = 100
 
 NBENEMIES = 3
 

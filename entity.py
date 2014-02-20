@@ -20,7 +20,6 @@ class Mobile() :
         self.array = self.scene.cont.array[name]
         self.base_surface = self.surface
         self._pos = pos
-        self.center = surftools.get_center(self.pos, self.surface)
         self.speed = 0
         self.trajectory = None
         self.ally = False
@@ -31,12 +30,22 @@ class Mobile() :
         return position
     pos = property(_get_pos)
 
+    def move(self, interval) :
+        pass
+        
+    def center_on(self, mobile) :
+        x, y = mobile.pos
+        w, h = mobile.surface.get_width()/2, mobile.surface.get_height()/2
+        sw, sh = self.surface.get_width()/2, self.surface.get_height()/2
+        self._pos = x + w - sw, y + h - sh 
+        
     def remove(self) :
         """remove from scene"""
         self.scene.content.remove(self)
 
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
+        self.move(interval)
 
 class Fragile(Mobile) :
     """this one can be hurt"""
@@ -93,7 +102,6 @@ class Fighter(Fragile) :
         #can have a charge display
         self.aura = Charge(self.scene, self)
 
-
     def move(self, interval) :
         if self.trajectory == None :
             offset =  self.speed * interval
@@ -133,7 +141,6 @@ class Fighter(Fragile) :
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
-        self.move(interval)
         #autofire
         self.shoot(time)
             
@@ -173,18 +180,15 @@ class Ship(Fighter) :
 class Follower(Mobile) :
     """a sprite following another"""
     def __init__(self, scene, parent) :
+        Mobile.__init__(self, self.scene, (0, 0), ' ')
         self.scene = scene
         self.parent = parent
-        self.shift_pos()
-        Mobile.__init__(self, self.scene, self.pos, ' ')
+        self.center_on(self.parent)
 
-    def shift_pos(self) :
-        self.pos = self.parent.pos[0], self.parent.pos[1]+txt_inter
+    def move(self, interval) :
+        """move to be centered on parent"""
+        self.center_on(self.parent)
 
-    def update(self, interval, time) :
-        #follow with shift_pos function
-        self.shift_pos()
-        Mobile.update(self, interval, time)
 
 class Charge(Follower) :
     """showing the charge of ship"""
@@ -214,18 +218,19 @@ class Explosion(Follower) :
         self.scene = scene
         self.fragile = fragile
         Follower.__init__(self, scene, self.fragile)
-        self.levels = [self.scene.cont.surf('0000'),
-        self.scene.cont.surf('000'),
-        self.scene.cont.surf('00')]
+        self.levels = [self.scene.cont.surf('0000000'),
+        self.scene.cont.surf('00000'),
+        self.scene.cont.surf('000')]
+        self.pulse = EXPLOSIONPULSE
 
     def update(self, interval, time) :
         if self.fragile.life <= 0 :
             Follower.update(self, interval, time)
-            if time > self.fragile.time_of_death + 1000 :
+            if time > self.fragile.time_of_death + self.pulse*3 :
                 self.remove()
-            elif time > self.fragile.time_of_death + 500 :
+            elif time > self.fragile.time_of_death + self.pulse*2 :
                 self.surface = self.levels[2]
-            elif time > self.fragile.time_of_death + 200 :
+            elif time > self.fragile.time_of_death + self.pulse :
                 self.surface = self.levels[1]
             elif time > self.fragile.time_of_death :
                 self.surface = self.levels[0]
