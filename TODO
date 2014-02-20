@@ -1,6 +1,4 @@
 
-skin class to load only once surface and hit_surface AND charge...
-
 class for follower (charge, explosion...)
 
 add trajectory object, weapon object?

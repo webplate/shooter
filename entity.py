@@ -43,6 +43,8 @@ class Fragile(Mobile) :
         self.killer = None
         self.life = BASELIFE
         self.last_hit = 0
+        #fragile can explode
+        #~ self.end = Follower
         
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
@@ -82,6 +84,8 @@ class Fighter(Fragile) :
         self.aura = None
         self.speed = TARGET_SPEED
         self.score = 0
+        #can have a charge display
+        self.aura = Charge(self.scene, self)
 
 
     def move(self, interval) :
@@ -118,18 +122,15 @@ class Fighter(Fragile) :
 
     def die(self) :
         Fragile.die(self)
-        #remove of scene if necessary
-        if self.aura != None :
-            self.scene.content.remove(self.aura)
+        #remove of scene
+        self.scene.content.remove(self.aura)
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
         self.move(interval)
         #autofire
         self.shoot(time)
-        #create charging blast if necessary
-        if self.charge > 0 and self.aura == None :
-            self.aura = Charge(self.scene, self)
+            
 
 class Ship(Fighter) :
     """A ship controlled by player and shooting"""
@@ -163,23 +164,35 @@ class Ship(Fighter) :
         #player is dead
         self.scene.player.alive = False
 
-
-class Charge(Mobile) :
-    """showing the charge of ship"""
-    def __init__(self, scene, ship) :
+class Follower(Mobile) :
+    """a sprite following another"""
+    def __init__(self, scene, parent) :
         self.scene = scene
-        self.ship = ship
-        self.pos = self.ship.pos
-        Mobile.__init__(self, scene, self.ship.pos, ' ')
-        self.levels = [self.scene.cont.surf(' '),
-        self.scene.cont.surf('#'),
-        self.scene.cont.surf('##'),
-        self.scene.cont.surf('###')]
+        self.parent = parent
+        self.pos = self.parent.pos
+        Mobile.__init__(self, scene, self.parent.pos, ' ')
 
     def shift_pos(self) :
         self.pos = self.ship.pos[0], self.ship.pos[1]+txt_inter
 
     def update(self, interval, time) :
+        #follow with shift_pos function
+        self.shift_pos()
+        Mobile.update(self, interval, time)
+
+class Charge(Follower) :
+    """showing the charge of ship"""
+    def __init__(self, scene, ship) :
+        self.scene = scene
+        self.ship = ship
+        Follower.__init__(self, scene, self.ship)
+        self.levels = [self.scene.cont.surf(' '),
+        self.scene.cont.surf('#'),
+        self.scene.cont.surf('##'),
+        self.scene.cont.surf('###')]
+
+    def update(self, interval, time) :
+        Follower.update(self, interval, time)
         if self.ship.charge >= 1 :
             self.surface = self.levels[3]
         elif self.ship.charge > 0.5 :
@@ -188,8 +201,6 @@ class Charge(Mobile) :
             self.surface = self.levels[1]
         elif self.ship.charge == 0 :
             self.surface = self.levels[0]
-        self.shift_pos()
-        Mobile.update(self, interval, time)
 
 class Widget():
     def __init__(self, scene, path, parameters) :
