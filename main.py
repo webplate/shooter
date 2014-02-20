@@ -38,7 +38,11 @@ class Shooter():
         #Initialize pygame
         pygame.init()
         self.limits = GAMESIZE
-        self.winsize = WINSIZE
+        self.scale = RESCALE
+        if self.scale in ['mame', '2x'] :
+            self.winsize = self.limits[0]*2, self.limits[1]*2
+        else :
+            self.winsize = self.limits
         self.display = pygame.display.set_mode(self.winsize)
         self.screen = pygame.Surface(self.limits)
         self.fullscreen = False
@@ -108,9 +112,12 @@ class Shooter():
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
         #rescale for display on hd hardware
-        #~ MAME rescale  
-        #~ pygame.transform.scale2x(self.screen, self.display)
-        pygame.transform.scale(self.screen, self.winsize, self.display)
+        if self.scale == 'mame' :
+            pygame.transform.scale2x(self.screen, self.display)
+        elif self.scale == '2x' :
+            pygame.transform.scale(self.screen, self.winsize, self.display)
+        else :
+            self.display.blit(self.screen, (0,0))
         #flip every 16ms only (for smooth animation, particularly on linux)
         if pygame.time.get_ticks() > self.last_flip + 8 :
             self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)

@@ -3,10 +3,9 @@
 from pygame.locals import *
 
 
-WINSIZE = (640, 480)
 GAMESIZE = (320, 240) #~neo geo
-COLORDEPTH = 16
-
+COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
+RESCALE = 'none' #set to 2x or mame
 
 #interface style
 bg_color = (100, 100, 100)
@@ -14,7 +13,7 @@ txt_color = (200, 200, 200)
 txt_font = "./fonts/Fipps-Regular.otf"
 txt_size = 8
 txt_inter = txt_size * 2
-THEME = 'ironbrain'
+THEME = 'derval'
 USE_PICS = True
 HITPULSE = 16 #ms
 
@@ -44,7 +43,7 @@ BULLET_SPEED = BASE_SPEED * 2
 BASEDAMAGE = 1
 BLASTPOWER = 3
 
-NBENEMIES = 30
+NBENEMIES = 3
 
 
 

@@ -170,8 +170,8 @@ class Charge(Mobile) :
         self.scene = scene
         self.ship = ship
         self.pos = self.ship.pos
-        Mobile.__init__(self, scene, self.ship.pos, '')
-        self.levels = [self.scene.cont.surf(''),
+        Mobile.__init__(self, scene, self.ship.pos, ' ')
+        self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('#'),
         self.scene.cont.surf('##'),
         self.scene.cont.surf('###')]

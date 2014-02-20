@@ -1,5 +1,5 @@
 
-skin class to load only once surface and hit_surface
+skin class to load only once surface and hit_surface AND charge...
 
 class for follower (charge, explosion...)
 
@@ -9,9 +9,6 @@ target not on same line
 add score, life for each player --> a widget object !!
 support four players
 
-show damage taken with white highlight
-set_color key for transparency
-
 use pygame rect object for collisions
 collisions between entities
 
@@ -19,5 +16,7 @@ special sprites for going right left up down
 
 ??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 debug levels (stress test, low-motion..)
+
+test makewhite on 1px (H&v) image
 
 idea: one thread for positions, one thread for drawing

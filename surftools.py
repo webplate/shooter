@@ -10,11 +10,12 @@ def get_center(pos, surface) :
 def load_image(file, theme, font):
     """loads an image, prepares it for play
     or create a label if image absent"""
-    path = os.path.join('imgs', theme, file + '.png')
-    if USE_PICS :
+    if theme != None :
+        path = os.path.join('imgs', theme, file + '.png')
         try:
             surface = pygame.image.load(path)
         except pygame.error:
+            #if no corresponding png generate from label
             surface = font_skin(font, file)
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
@@ -23,6 +24,7 @@ def load_image(file, theme, font):
             color = surface.get_at((0, 0))
             surface.set_colorkey(color)
     else :
+        #no themepack : use labels as sprites 
         surface = font_skin(font, file)
     return surface
 
@@ -46,7 +48,6 @@ def make_white(surface) :
     surface.set_palette([black, white])
     pix_array = pygame.PixelArray(surface)
     w, h = covered.shape
-    print w, h
     for i in range(w) :
         for j in range(h) :
             if covered[i,j] :
