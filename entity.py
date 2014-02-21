@@ -10,8 +10,8 @@ def getattr_deep(start, attr):
         obj = getattr(obj, part)
     return obj
 
-class Mobile() :
-    """a mobile sprite
+class Actor() :
+    """a parametrable actor of scene
     """
     def __init__(self, scene, parameters={}) :
         self.scene = scene
@@ -23,21 +23,30 @@ class Mobile() :
         #default is not ally
         if 'ally' not in parameters :
             self.ally = False
-        if 'speed' not in parameters :
-            self.speed = 0
         #load in scene
         self.scene.content.append(self)
         self.surface = self.scene.cont.surf(self.name)
-        self.array = self.scene.cont.array[self.name]
-        self.base_surface = self.surface
-        self._pos = (0, 0)
-        self.trajectory = None
-        
 
     def set_param(self, parameters) :
         self.parameters = parameters
         for p in self.parameters :
             setattr(self, p, self.parameters[p])
+
+    def remove(self) :
+        """remove from scene"""
+        self.scene.content.remove(self)
+
+class Mobile(Actor) :
+    """a mobile sprite
+    """
+    def __init__(self, scene, parameters={}) :
+        Actor.__init__(self, scene, parameters)
+        if 'speed' not in parameters :
+            self.speed = 0
+        self.array = self.scene.cont.array[self.name]
+        self.base_surface = self.surface
+        self._pos = (0, 0)
+        self.trajectory = None
 
     def _get_pos(self) :
         """world wants exact position"""
@@ -56,10 +65,6 @@ class Mobile() :
         w, h = mobile.surface.get_width()/2, mobile.surface.get_height()/2
         sw, sh = self.surface.get_width()/2, self.surface.get_height()/2
         self._pos = x + w - sw, y + h - sh 
-
-    def remove(self) :
-        """remove from scene"""
-        self.scene.content.remove(self)
 
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
@@ -82,7 +87,7 @@ class Fragile(Mobile) :
 
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
-        if time - self.last_hit > projectile.cooldown :
+        if time - self.last_hit > self.scene.gameplay['hit_pulse'] :
             self.last_hit = time
             #take damage
             self.life -= projectile.get_damage(index)
@@ -147,7 +152,7 @@ class Fighter(Fragile) :
     def shoot(self, time, weapon, power=None) :
         w = self.arms[weapon]
         #most projectiles aren't charged
-        if weapon == 'projectiles.Bullet' :
+        if weapon == 'entity.Bullet' :
             #limit fire rate and stop when charging
             if (time > self.last_shoot + w.cooldown
             and self.charge == 0 ) :
@@ -167,7 +172,7 @@ class Fighter(Fragile) :
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
         #autofire
-        self.shoot(time, 'projectiles.Bullet')
+        self.shoot(time, 'entity.Bullet')
             
 
 class Ship(Fighter) :
@@ -260,9 +265,7 @@ class Explosion(Follower) :
 
 class Widget(Mobile):
     def __init__(self, scene, path, parameters) :
-        self.scene = scene
-        #load in scene
-        self.scene.content.append(self)
+        Mobile.__init__(self, scene, {})
         self.path = path
         self.parameters = parameters
         self.value = getattr_deep(self.scene, path)
@@ -290,13 +293,11 @@ class Widget(Mobile):
         if 'top' in self.parameters :
             self.pos = (self.pos[0], 0)
         if 'bottom' in self.parameters :
-            
             self.pos = (self.pos[0], self.scene.limits[1]-self.shape[1])
 
     def skin(self, value) :
         return str(int(value))
         
-
     def update(self, interval, time) :
         #recompute surface
         new_value = getattr_deep(self.scene, self.path)  
@@ -319,5 +320,92 @@ class Widget(Mobile):
                 if self.shape != new_shape :
                     self.shape = new_shape
                     self.align()
-            
+
+# PROJECTILE MAPS ###############
+#################################
+class Projectile(Actor) :
+    """projectile positions should be accessed with position(index)
+    damage
+    """
+    def __init__(self, scene, parameters) :
+        Actor.__init__(self, scene, parameters)
+        self.positions = [] #floats for exact positions
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        self.center_offset = self.width/2, self.height/2
+        self.to_remove = []
+
+    def collided(self, index) :
+        #mark_bullet for removal (if not already)
+        if index not in self.to_remove :
+            self.to_remove.append(index)
+
+    def get_damage(self, index) :
+        return self.damage
+
+    def draw_position(self, index) :
+        """give rounded position of a projectile surface"""
+        pos = self.positions[index]
+        return int(pos[0]), int(pos[1])
+
+    def position(self, index) :
+        """the physical position of projectile"""
+        pos = self.positions[index]
+        return int(pos[0]+self.center_offset[0]), int(pos[1]+self.center_offset[1])
+
+    def in_screen(self, pos) :
+        #bad if outside screen
+        if (pos[0] > self.scene.limits[0] or pos[1] > self.scene.limits[1]
+        or pos[0] + self.width < 0 or pos[1] + self.height < 0) :
+            return False
+        else :
+            return True
+
+    def update(self) :
+        remaining_positions = []
+        for i in range(len(self.positions)) :
+            #delete if marked
+            if i not in self.to_remove :
+                #delete if outside screen
+                if self.in_screen(self.positions[i]) :
+                    remaining_positions.append(self.positions[i])
+        self.positions = remaining_positions
+        self.to_remove = []
+
+class Bullet(Projectile) :
+    """a map of bullets
+    direction
+    speed
+    """
+    def __init__(self, scene, parameters) :
+        Projectile.__init__(self, scene, parameters)
+
+    def update(self, interval, time) :
+        #should consider time passed
+        offset = self.speed * interval
+        #move every projectile in one direction
+        for index, projectile in enumerate(self.positions) :
+            if self.direction == 'up' :
+                self.positions[index] = (projectile[0],
+                projectile[1]-offset, projectile[2])
+            elif self.direction == 'down' :
+                self.positions[index] = (projectile[0],
+                projectile[1]+offset, projectile[2])
+        Projectile.update(self)
+
+
+class Blast(Bullet) :
+    """charged shots
+    power
+    """
+    def __init__(self, scene, parameters) :
+        Bullet.__init__(self, scene, parameters)
+
+    def collided(self, index) :
+        pass
+
+    def get_damage(self, index) :
+        #get power of charged shot
+        amount = self.positions[index][2][1] * self.power
+        return amount
             

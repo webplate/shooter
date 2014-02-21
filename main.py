@@ -21,6 +21,14 @@ import platform, os, time, pygame
 from parameters import *
 import scene
 
+def load_level(level) :
+    """make sure the loaded level is playable"""
+    ref = DEFAULTLEVEL
+    for key in ref :
+        if key not in level :
+            level.update({key : ref[key]})
+    return level
+
 class Shooter():
     """a pygame shooter
     """
@@ -48,7 +56,7 @@ class Shooter():
         self.fullscreen = False
         self.fps = 0
 
-        self.level = LEVEL
+        self.level = load_level(LEVEL)
         self.theme = self.level['theme']
         #load fonts
         self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])

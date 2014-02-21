@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 from parameters import *
-import entity, projectiles, surftools
+import entity, surftools
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -57,7 +57,7 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
-                self.ship.shoot(time, 'projectiles.Blast', self.ship.charge)
+                self.ship.shoot(time, 'entity.Blast', self.ship.charge)
             self.ship.charge = 0.
 
 class Container():
@@ -88,10 +88,11 @@ class Container():
     def proj(self, parameters) :
         if parameters['name'] in self.maps :
             projectile = self.maps[parameters['name']]
-        #instantiate according to specified type
-        targetClass = getattr(projectiles, parameters['type'])
-        projectile = targetClass(self.scene, parameters)
-        #~ raise Exception('Warning : Unknown projectile type : '+parameters['type'])
+        else :
+            #instantiate according to specified type
+            targetClass = getattr(entity, parameters['type'])
+            projectile = targetClass(self.scene, parameters)
+            self.maps.update({parameters['name'] : projectile})
         return projectile
 
 class Bestiary() :
@@ -106,11 +107,15 @@ class Bestiary() :
         fighter.set_pos(coord)
 
     def load_content(self) :
-        ship = entity.Ship(self.scene, SHIP)
-        #init position
-        coord = (self.scene.limits[0]/2,
-        self.scene.limits[1]-2*self.scene.theme['txt_inter'])
-        ship.set_pos(coord)
+        to_load = self.scene.level['content']
+        for parameters in to_load :
+            #instantiate according to specified type
+            targetClass = getattr(entity, parameters['type'])
+            item = targetClass(self.scene, parameters)
+            #init position
+            coord = (self.scene.limits[0]/2,
+            self.scene.limits[1]-2*self.scene.theme['txt_inter'])
+            item.set_pos(coord)
 
     def load_interface(self) :
         #interface
@@ -189,12 +194,12 @@ class Scene():
                         if isinstance(item, entity.Fighter) :
                             self.nb_fighters += 1
                         target_map.append(identifier)
-            elif isinstance(item, projectiles.Projectile) :
+            elif isinstance(item, entity.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
                     self.lst_sprites.append(((x, y), item.surface))
                     #blasts have wide damage zone other are on a pixel only
-                    if isinstance(item, projectiles.Blast) :
+                    if isinstance(item, entity.Blast) :
                         identifier = (x, y, x+item.width, y+item.height, False, item, i)
                     else :
                         x, y = item.position(i)

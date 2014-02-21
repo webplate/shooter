@@ -31,7 +31,7 @@ SLOWMO = {'name':'default',
 GAMEPLAY = DEFAULTPLAY
 
 #Theme packs
-TEXTTHEME = {'name' : None,
+TXTTHEME = {'name' : None,
 'explosion_pulse' : 100,
 'bg_color' : (50, 50, 50),
 'txt_color' : (200, 200, 200),
@@ -93,6 +93,15 @@ SHIP = {'name' : 'ship',
 'weapons' : [BULLET, BLAST]
 }
 
+INVINCIBLE = {'name' : 'ship',
+'type' : 'Ship',
+'ally' : True,
+'speed' : GAMEPLAY['speed'],
+'charge_rate' : 0.001,
+'life' : 100,
+'weapons' : [BULLET, BLAST]
+}
+
 TARGET = {'name':'target',
 'type' : 'Fighter',
 'speed':GAMEPLAY['speed'] / 2,
@@ -100,25 +109,24 @@ TARGET = {'name':'target',
 'weapons' : [BULLET2]
 }
 
-LEVELDEFAULT = {'name':'default',
-'theme' : IRONBRAIN,
+#The reference playable level used to complete others
+DEFAULTLEVEL = {'name':'default',
+'theme' : TXTTHEME,
 'gameplay' : GAMEPLAY,
-'content' : [],
+'content' : [SHIP],
 'nb_enemies' : 3
 }
 
 LEVELSLOW = {'name':'slowmo',
-'theme' : TEXTTHEME,
+'theme' : TXTTHEME,
 'gameplay' : SLOWMO,
-'content' : [],
 'nb_enemies' : 3
 }
 
 LEVELSTRESS = {'name':'stress',
 'theme' : DERVAL,
-'gameplay' : DEFAULTPLAY,
-'content' : [],
-'nb_enemies' : 50
+'nb_enemies' : 50,
+'content' : [INVINCIBLE]
 }
 
-LEVEL = LEVELDEFAULT
+LEVEL = LEVELSTRESS

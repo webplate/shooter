@@ -1,11 +1,9 @@
-??HOW to describe level ?identities as dicts of name, sprites (if none render font), weapons, trajectory...
 debug levels (stress test, low-motion..)
+a default working level should be used to guarantee loading !!
 
 add trajectory object, weapon object?
-target not on same line
+describe init position in trajectory object
 
-add score, life for each player --> a widget object !!
-support four players
 
 ??use pygame rect object for collisions
 collisions between entities
@@ -17,4 +15,6 @@ widget should inherit from mobile
 
 test makewhite on 1px (H&v) image
 
+add score, life for each player --> a widget object !!
+support four players
 idea: one thread for positions, one thread for drawing
