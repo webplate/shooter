@@ -11,25 +11,43 @@ def getattr_deep(start, attr):
     return obj
 
 class Mobile() :
-    """a mobile sprite"""
-    def __init__(self, scene, pos, name) :
+    """a mobile sprite
+    """
+    def __init__(self, scene, parameters={}) :
         self.scene = scene
+        #set attributes from parameters
+        self.set_param(parameters)
+        #must have a name
+        if 'name' not in parameters :
+            self.name = ' '
+        #default is not ally
+        if 'ally' not in parameters :
+            self.ally = False
+        if 'speed' not in parameters :
+            self.speed = 0
         #load in scene
         self.scene.content.append(self)
-        self.surface = self.scene.cont.surf(name)
-        self.array = self.scene.cont.array[name]
+        self.surface = self.scene.cont.surf(self.name)
+        self.array = self.scene.cont.array[self.name]
         self.base_surface = self.surface
-        self._pos = pos
-        self.speed = 0
+        self._pos = (0, 0)
         self.trajectory = None
-        self.ally = False
+        
+
+    def set_param(self, parameters) :
+        self.parameters = parameters
+        for p in self.parameters :
+            setattr(self, p, self.parameters[p])
 
     def _get_pos(self) :
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
         return position
     pos = property(_get_pos)
-
+    
+    def set_pos(self, new_position) :
+        self._pos = new_position[0], new_position[1]
+    
     def move(self, interval) :
         pass
         
@@ -38,7 +56,7 @@ class Mobile() :
         w, h = mobile.surface.get_width()/2, mobile.surface.get_height()/2
         sw, sh = self.surface.get_width()/2, self.surface.get_height()/2
         self._pos = x + w - sw, y + h - sh 
-        
+
     def remove(self) :
         """remove from scene"""
         self.scene.content.remove(self)
@@ -48,23 +66,26 @@ class Mobile() :
         self.move(interval)
 
 class Fragile(Mobile) :
-    """this one can be hurt"""
-    def __init__(self, scene, pos, name) :
-        Mobile.__init__(self, scene, pos, name)
-        self.hit_surface = self.scene.cont.hit[name]
+    """this one can be hurt
+    parameters should contain :
+    -life
+    """
+    def __init__(self, scene, parameters) :
+        Mobile.__init__(self, scene, parameters)
+        #load and avoid duplicate
+        self.hit_surface = self.scene.cont.hit[self.name]
         self.killer = None
-        self.life = BASELIFE
         self.last_hit = 0
         self.time_of_death = None
         #fragile can explode
         self.end = Explosion(self.scene, self)
-        
+
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
-        if time - self.last_hit > projectile.pulse :
+        if time - self.last_hit > projectile.cooldown :
             self.last_hit = time
             #take damage
-            self.life -= projectile.damage(index)
+            self.life -= projectile.get_damage(index)
             if self.life <= 0 :
                 self.time_of_death = time
                 #recognize killer in the distance
@@ -82,24 +103,27 @@ class Fragile(Mobile) :
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #return to unhit appearance
-        if time > self.last_hit + HITPULSE :
+        if time > self.last_hit + self.scene.gameplay['flash_pulse'] :
             self.surface = self.base_surface
         if self.life <= 0 :
             self.die()
 
 class Fighter(Fragile) :
-    """a shooting mobile sprite"""
-    def __init__(self, scene, pos, name) :
-        Fragile.__init__(self, scene, pos, name)
-        self.fire_cooldown = BASE_COOLDOWN
+    """a shooting mobile sprite
+    charge_rate"""
+    def __init__(self, scene, parameters) :
+        Fragile.__init__(self, scene, parameters)
         self.last_shoot = 0
-        self.weapons = {}
+        self.arms = {}
+        #instantiate projectile maps for weapons
+        if 'weapons' in parameters :
+            for weapon in parameters['weapons'] :
+                self.new_weapon(weapon)
         self.charge = 0.
         self.aura = None
-        self.speed = TARGET_SPEED
         self.score = 0
         #can have a charge display
-        self.aura = Charge(self.scene, self, (0, -txt_inter))
+        self.aura = Charge(self.scene, self, (0, -self.scene.theme['txt_inter']))
 
     def move(self, interval) :
         if self.trajectory == None :
@@ -112,18 +136,20 @@ class Fighter(Fragile) :
                 elif self.scene.ship.pos[0] < self.center[0] :
                     self._pos = self._pos[0] - offset, self._pos[1]
 
-    def new_weapon(self, projectile_map) :
+    def new_weapon(self, parameters) :
+        #load and avoid duplicate in scene
+        projectile_map = self.scene.cont.proj(parameters)
         #set map allied status
         projectile_map.ally = self.ally
         #keep trace of weapon
-        self.weapons.update({str(projectile_map.__class__) : projectile_map})
+        self.arms.update({str(projectile_map.__class__) : projectile_map})
 
-    def shoot(self, time, weapon='projectiles.Bullets', power=None) :
-        w = self.weapons[weapon]
+    def shoot(self, time, weapon, power=None) :
+        w = self.arms[weapon]
         #most projectiles aren't charged
-        if weapon == 'projectiles.Bullets' :
+        if weapon == 'projectiles.Bullet' :
             #limit fire rate and stop when charging
-            if (time > self.last_shoot + self.fire_cooldown
+            if (time > self.last_shoot + w.cooldown
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
@@ -141,22 +167,20 @@ class Fighter(Fragile) :
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
         #autofire
-        self.shoot(time)
+        self.shoot(time, 'projectiles.Bullet')
             
 
 class Ship(Fighter) :
-    """A ship controlled by player and shooting"""
-    def __init__(self, scene, pos, name) :
-        Fighter.__init__(self, scene, pos, name)
+    """A ship controlled by player and shooting
+    ally"""
+    def __init__(self, scene, parameters) :
+        Fighter.__init__(self, scene, parameters)
         self.trajectory = 'manual'
-        self.ally = True
-        self.speed = BASE_SPEED
-        self.fire_cooldown = SHIP_COOLDOWN
-        self.life = SHIPLIFE
 
     def fly(self, direction, interval) :
         #should consider time passed
         offset = self.speed * interval
+        
         if direction == 'right' :
             new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :
@@ -179,7 +203,7 @@ class Ship(Fighter) :
 class Follower(Mobile) :
     """a sprite following another"""
     def __init__(self, scene, parent, offset) :
-        Mobile.__init__(self, scene, (0, 0), ' ')
+        Mobile.__init__(self, scene)
         self.parent = parent
         self.offset = offset
         self.center_on(self.parent)
@@ -219,7 +243,7 @@ class Explosion(Follower) :
         self.levels = [self.scene.cont.surf('0000000'),
         self.scene.cont.surf('00000'),
         self.scene.cont.surf('000')]
-        self.pulse = EXPLOSIONPULSE
+        self.pulse = self.scene.theme['explosion_pulse']
 
     def update(self, interval, time) :
         if self.parent.life <= 0 :
@@ -242,7 +266,8 @@ class Widget(Mobile):
         self.path = path
         self.parameters = parameters
         self.value = getattr_deep(self.scene, path)
-        self.surface = self.scene.font.render(self.skin(self.value), False, txt_color)
+        self.surface = self.scene.font.render(self.skin(self.value),
+        False, self.scene.theme['txt_color'])
         self.shape = self.surface.get_width(), self.surface.get_height()
         self.pos = (0, 0)
         self.align()
@@ -278,7 +303,8 @@ class Widget(Mobile):
         if not self.low :
             if self.value != new_value :
                 self.value = new_value
-                self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
+                self.surface = self.scene.font.render(self.skin(new_value),
+                False, self.scene.theme['txt_color'])
                 new_shape = self.surface.get_width(), self.surface.get_height()
                 if self.shape != new_shape :
                     self.shape = new_shape
@@ -287,7 +313,8 @@ class Widget(Mobile):
             if time > self.last_flip + 500 and self.value != new_value :
                 self.value = new_value
                 self.last_flip = time
-                self.surface = self.scene.font.render(self.skin(new_value), False, txt_color)
+                self.surface = self.scene.font.render(self.skin(new_value),
+                False, self.scene.theme['txt_color'])
                 new_shape = self.surface.get_width(), self.surface.get_height()
                 if self.shape != new_shape :
                     self.shape = new_shape

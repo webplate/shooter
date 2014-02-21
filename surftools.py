@@ -7,7 +7,7 @@ def get_center(pos, surface) :
     center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
     return center
 
-def load_image(file, theme, font):
+def load_image(file, theme, scene):
     """loads an image, prepares it for play
     or create a label if image absent"""
     if theme != None :
@@ -16,7 +16,7 @@ def load_image(file, theme, font):
             surface = pygame.image.load(path)
         except pygame.error:
             #if no corresponding png generate from label
-            surface = font_skin(font, file)
+            surface = font_skin(scene, file)
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(COLORDEPTH)
@@ -25,7 +25,7 @@ def load_image(file, theme, font):
             surface.set_colorkey(color)
     else :
         #no themepack : use labels as sprites 
-        surface = font_skin(font, file)
+        surface = font_skin(scene, file)
     return surface
 
 def make_array(surface) :
@@ -57,8 +57,8 @@ def make_white(surface) :
     surface.set_colorkey(black)
     return surface
 
-def font_skin(font, name) :
+def font_skin(scene, name) :
     """if no pics create from font"""
-    surface = font.render(name, False, txt_color)
+    surface = scene.font.render(name, False, scene.theme['txt_color'])
     return surface
 

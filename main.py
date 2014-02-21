@@ -48,8 +48,10 @@ class Shooter():
         self.fullscreen = False
         self.fps = 0
 
+        self.level = LEVEL
+        self.theme = self.level['theme']
         #load fonts
-        self.font = pygame.font.Font(txt_font, txt_size) #name, size
+        self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])
 
         #On compte les joysticks
         nb_joysticks = pygame.joystick.get_count()
@@ -108,7 +110,7 @@ class Shooter():
 
     def on_render(self) :
         #compute low res game screen
-        self.screen.fill(bg_color)
+        self.screen.fill(self.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
         #rescale for display on hd hardware

@@ -12,6 +12,8 @@ collisions between entities
 
 special sprites for going right left up down
 
+class Actor for entities and projectiles
+widget should inherit from mobile
 
 test makewhite on 1px (H&v) image
 

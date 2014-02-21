@@ -3,27 +3,36 @@
 from parameters import *
 
 class Projectile() :
-    """projectile positions should be accessed with position(index)"""
-    def __init__(self, scene, name) :
+    """projectile positions should be accessed with position(index)
+    name
+    damage
+    """
+    def __init__(self, scene, parameters) :
         self.scene = scene
+        #set attributes from parameters
+        self.set_param(parameters)
         #load in scene
         self.scene.content.append(self)
-        self.surface = self.scene.cont.surf(name)
+        self.surface = self.scene.cont.surf(self.name)
         self.positions = [] #floats for exact positions
         self.ally = False
-        self.pulse = BASEPULSE
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
         self.to_remove = []
+
+    def set_param(self, parameters) :
+        self.parameters = parameters
+        for p in self.parameters :
+            setattr(self, p, self.parameters[p])
 
     def collided(self, index) :
         #mark_bullet for removal (if not already)
         if index not in self.to_remove :
             self.to_remove.append(index)
 
-    def damage(self, index) :
-        return BASEDAMAGE
+    def get_damage(self, index) :
+        return self.damage
 
     def draw_position(self, index) :
         """give rounded position of a projectile surface"""
@@ -54,16 +63,17 @@ class Projectile() :
         self.positions = remaining_positions
         self.to_remove = []
 
-class Bullets(Projectile) :
+class Bullet(Projectile) :
     """a map of bullets
+    direction
+    speed
     """
-    def __init__(self, scene, direction, surface) :
-        Projectile.__init__(self, scene, surface)
-        self.direction = direction
+    def __init__(self, scene, parameters) :
+        Projectile.__init__(self, scene, parameters)
 
     def update(self, interval, time) :
         #should consider time passed
-        offset = BULLET_SPEED * interval
+        offset = self.speed * interval
         #move every projectile in one direction
         for index, projectile in enumerate(self.positions) :
             if self.direction == 'up' :
@@ -75,15 +85,17 @@ class Bullets(Projectile) :
         Projectile.update(self)
 
 
-class Blasts(Bullets) :
-    """charged shots"""
-    def __init__(self, scene, direction, surface) :
-        Bullets.__init__(self, scene, direction, surface)
+class Blast(Bullet) :
+    """charged shots
+    power
+    """
+    def __init__(self, scene, parameters) :
+        Bullet.__init__(self, scene, parameters)
 
     def collided(self, index) :
         pass
 
-    def damage(self, index) :
+    def get_damage(self, index) :
         #get power of charged shot
-        amount = self.positions[index][2][1] * BLASTPOWER
+        amount = self.positions[index][2][1] * self.power
         return amount

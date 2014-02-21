@@ -49,7 +49,7 @@ class Player() :
             self.ship.fly('down', interval)
         #is the ship charging ?
         if self.keys['shoot'] :
-            offset = CHARGE_RATE * interval
+            offset = self.ship.charge_rate * interval
             if self.ship.charge + offset > 1 :
                 self.ship.charge = 1.
             else :
@@ -57,24 +57,27 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
-                self.ship.shoot(time, 'projectiles.Blasts', self.ship.charge)
+                self.ship.shoot(time, 'projectiles.Blast', self.ship.charge)
             self.ship.charge = 0.
 
 class Container():
-    """stock surfaces prevent duplicates"""
+    """stock surfaces and projectiles maps to prevent duplicates
+    """
     def __init__(self, scene) :
         self.scene = scene
-        self.theme = self.scene.theme
+        self.theme = self.scene.theme['name']
         self.surfaces = {}
         self.array = {}
         self.hit = {}
+        self.maps = {}
 
     def surf(self, name) :
         """avoid duplicate loading"""
         if name in self.surfaces :
             surface = self.surfaces[name]
         else :
-            surface = surftools.load_image(name, self.theme, self.scene.font)
+            surface = surftools.load_image(name, self.theme, self.scene)
+            #generate variants of image
             hit = surftools.make_white(surface)
             array = surftools.make_array(surface)
             self.surfaces.update({name : surface})
@@ -82,6 +85,16 @@ class Container():
             self.array.update({name : array})
         return surface
 
+    def proj(self, parameters) :
+        if parameters['name'] in self.maps :
+            projectile = self.maps[parameters['name']]
+        elif parameters['type'] == 'Bullet' :
+            projectile = projectiles.Bullet(self.scene, parameters)
+        elif parameters['type'] == 'Blast' :
+            projectile = projectiles.Blast(self.scene, parameters)
+        else :
+            raise Exception('Warning : Unknown projectile type : '+parameters['type'])
+        return projectile
 
 class Bestiary() :
     """loading and tuning every game objects"""
@@ -91,20 +104,15 @@ class Bestiary() :
     def load_fighter(self, name) :
         coord = (random.randint(0, self.scene.limits[0]),
         random.randint(0, self.scene.limits[1]/6))
-        fighter = entity.Fighter(self.scene, coord, name)
-        #link fighters to projectile maps
-        fighter.new_weapon(self.bulletF)
+        fighter = entity.Fighter(self.scene, TARGET)
+        fighter.set_pos(coord)
 
     def load_content(self) :
-        #projectile maps
-        blastS = projectiles.Blasts(self.scene, 'up', 'oOOo')
-        bulletS = projectiles.Bullets(self.scene, 'up', 'A')
-        self.bulletF = projectiles.Bullets(self.scene, 'down','o')
-        
-        ship = entity.Ship(self.scene,
-        (self.scene.limits[0]/2,self.scene.limits[1]-2*txt_inter), 'ship')
-        ship.new_weapon(blastS)
-        ship.new_weapon(bulletS)
+        ship = entity.Ship(self.scene, SHIP)
+        #init position
+        coord = (self.scene.limits[0]/2,
+        self.scene.limits[1]-2*self.scene.theme['txt_inter'])
+        ship.set_pos(coord)
 
     def load_interface(self) :
         #interface
@@ -117,7 +125,9 @@ class Scene():
         self.game = game
         self.limits = game.limits
         self.font = game.font
-        self.theme = THEME
+        self.level = self.game.level
+        self.theme = self.level['theme']
+        self.gameplay = self.level['gameplay']
         self.cont = Container(self)
         self.content = []
         self.bestiary = Bestiary(self)
@@ -186,7 +196,7 @@ class Scene():
                     x, y = item.draw_position(i)
                     self.lst_sprites.append(((x, y), item.surface))
                     #blasts have wide damage zone other are on a pixel only
-                    if isinstance(item, projectiles.Blasts) :
+                    if isinstance(item, projectiles.Blast) :
                         identifier = (x, y, x+item.width, y+item.height, False, item, i)
                     else :
                         x, y = item.position(i)
@@ -199,7 +209,7 @@ class Scene():
         self.collide(ship_proj_map, target_map, time)
         self.collide(target_proj_map, ship_map, time)
         #evolution of scenery
-        if self.nb_fighters < NBENEMIES :
+        if self.nb_fighters < self.level['nb_enemies'] :
             self.bestiary.load_fighter('target')
         #update individuals
         for item in self.content :
