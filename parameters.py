@@ -101,7 +101,7 @@ TARGET = {'name':'target',
 }
 
 LEVELDEFAULT = {'name':'default',
-'theme' : DERVAL,
+'theme' : IRONBRAIN,
 'gameplay' : GAMEPLAY,
 'content' : [],
 'nb_enemies' : 3
@@ -121,4 +121,4 @@ LEVELSTRESS = {'name':'stress',
 'nb_enemies' : 50
 }
 
-LEVEL = LEVELSTRESS
+LEVEL = LEVELDEFAULT

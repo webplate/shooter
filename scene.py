@@ -88,12 +88,10 @@ class Container():
     def proj(self, parameters) :
         if parameters['name'] in self.maps :
             projectile = self.maps[parameters['name']]
-        elif parameters['type'] == 'Bullet' :
-            projectile = projectiles.Bullet(self.scene, parameters)
-        elif parameters['type'] == 'Blast' :
-            projectile = projectiles.Blast(self.scene, parameters)
-        else :
-            raise Exception('Warning : Unknown projectile type : '+parameters['type'])
+        #instantiate according to specified type
+        targetClass = getattr(projectiles, parameters['type'])
+        projectile = targetClass(self.scene, parameters)
+        #~ raise Exception('Warning : Unknown projectile type : '+parameters['type'])
         return projectile
 
 class Bestiary() :
