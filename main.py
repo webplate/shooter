@@ -17,7 +17,8 @@
 #  MA 02110-1301, USA.
 #  
 #  
-import platform, os, time, pygame
+import platform, os, pygame
+import pygame.locals as p_l
 from parameters import *
 import scene
 
@@ -33,16 +34,14 @@ class Shooter():
     """a pygame shooter
     """
     def __init__(self):
+        """initialize game"""
         self.running = True
-        
-    def on_init(self):
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
-           os.environ['SDL_VIDEODRIVER'] = 'directx'
+            os.environ['SDL_VIDEODRIVER'] = 'directx'
         elif system == 'Darwin':   # tested with MacOS 10.5 and 10.6
-           os.environ['SDL_VIDEODRIVER'] = 'Quartz'
-
+            os.environ['SDL_VIDEODRIVER'] = 'Quartz'
         #Initialize pygame
         pygame.init()
         self.limits = GAMESIZE
@@ -55,28 +54,28 @@ class Shooter():
         self.screen = pygame.Surface(self.limits)
         self.fullscreen = False
         self.fps = 0
-
+        #load content from file
         self.level = load_level(LEVEL)
         self.theme = self.level['theme']
         #load fonts
         self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])
-
         #On compte les joysticks
         nb_joysticks = pygame.joystick.get_count()
         #Et on en crée un s'il y en a au moins un
         if nb_joysticks > 0:
             mon_joystick = pygame.joystick.Joystick(0)
             mon_joystick.init() #Initialisation
-        
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
         self.player = self.scene.player
 
     def on_event(self, event):
-        if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+        """propagate and interpret events"""
+        if (event.type == p_l.QUIT or
+        (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)):
             self.running = False
-        elif event.type == KEYDOWN :
+        elif event.type == p_l.KEYDOWN :
             if event.key == R_key :
                 self.player.keys['right'] = True
             elif event.key == L_key :
@@ -93,10 +92,10 @@ class Shooter():
                     self.display = pygame.display.set_mode(self.winsize)
                 else :
                     self.display = pygame.display.set_mode(self.winsize,
-                    HWSURFACE | FULLSCREEN | DOUBLEBUF)
+                    p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                     pygame.mouse.set_visible(False)     #hide cursor
 
-        elif event.type == KEYUP :
+        elif event.type == p_l.KEYUP :
             if event.key == R_key :
                 self.player.keys['right'] = False
             elif event.key == L_key :
@@ -117,6 +116,7 @@ class Shooter():
         self.scene.update(interval, new_time)
 
     def on_render(self) :
+        """create screen frames"""
         #compute low res game screen
         self.screen.fill(self.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites :
@@ -127,7 +127,7 @@ class Shooter():
         elif self.scale == '2x' :
             pygame.transform.scale(self.screen, self.winsize, self.display)
         else :
-            self.display.blit(self.screen, (0,0))
+            self.display.blit(self.screen, (0, 0))
         #flip every 16ms only (for smooth animation, particularly on linux)
         if pygame.time.get_ticks() > self.last_flip + 8 :
             self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
@@ -139,8 +139,7 @@ class Shooter():
         pygame.quit()
 
     def on_execute(self):
-        if self.on_init() == False :
-            self.running = False
+        """launch mainloop"""
         #Main loop
         self.frame = 0
         now = pygame.time.get_ticks()
@@ -159,6 +158,6 @@ class Shooter():
 
 
 if __name__ == "__main__" :
-    the_app = Shooter()
-    the_app.on_execute()
+    app = Shooter()
+    app.on_execute()
 

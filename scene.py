@@ -57,7 +57,7 @@ class Player() :
         else :
             #charged shot
             if self.ship.charge > 0.5 :
-                self.ship.shoot(time, 'entity.Blast', self.ship.charge)
+                self.ship.shoot(time, 'Blast', self.ship.charge)
             self.ship.charge = 0.
 
 class Container():
@@ -104,7 +104,7 @@ class Bestiary() :
         coord = (random.randint(0, self.scene.limits[0]),
         random.randint(0, self.scene.limits[1]/6))
         fighter = entity.Fighter(self.scene, TARGET)
-        fighter.set_pos(coord)
+        fighter.pos = coord
 
     def load_content(self) :
         to_load = self.scene.level['content']
@@ -115,7 +115,7 @@ class Bestiary() :
             #init position
             coord = (self.scene.limits[0]/2,
             self.scene.limits[1]-2*self.scene.theme['txt_inter'])
-            item.set_pos(coord)
+            item.pos = coord
 
     def load_interface(self) :
         #interface

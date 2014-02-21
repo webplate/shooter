@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import surftools
-from parameters import *
 
 def getattr_deep(start, attr):
     """useful function for accessing attributes of attributes..."""
@@ -10,7 +9,7 @@ def getattr_deep(start, attr):
         obj = getattr(obj, part)
     return obj
 
-class Actor() :
+class Actor(object) :
     """a parametrable actor of scene
     """
     def __init__(self, scene, parameters={}) :
@@ -52,10 +51,9 @@ class Mobile(Actor) :
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
         return position
-    pos = property(_get_pos)
-    
-    def set_pos(self, new_position) :
+    def _set_pos(self, new_position) :
         self._pos = new_position[0], new_position[1]
+    pos = property(_get_pos, _set_pos)
     
     def move(self, interval) :
         pass
@@ -147,12 +145,12 @@ class Fighter(Fragile) :
         #set map allied status
         projectile_map.ally = self.ally
         #keep trace of weapon
-        self.arms.update({str(projectile_map.__class__) : projectile_map})
+        self.arms.update({projectile_map.type : projectile_map})
 
     def shoot(self, time, weapon, power=None) :
         w = self.arms[weapon]
         #most projectiles aren't charged
-        if weapon == 'entity.Bullet' :
+        if weapon == 'Bullet' :
             #limit fire rate and stop when charging
             if (time > self.last_shoot + w.cooldown
             and self.charge == 0 ) :
@@ -172,7 +170,7 @@ class Fighter(Fragile) :
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
         #autofire
-        self.shoot(time, 'entity.Bullet')
+        self.shoot(time, 'Bullet')
             
 
 class Ship(Fighter) :
@@ -243,7 +241,7 @@ class Charge(Follower) :
 
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
-    def __init__(self, scene, parent, offset=(0,0)) :
+    def __init__(self, scene, parent, offset=(0, 0)) :
         Follower.__init__(self, scene, parent, offset)
         self.levels = [self.scene.cont.surf('0000000'),
         self.scene.cont.surf('00000'),

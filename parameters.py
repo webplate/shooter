@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pygame.locals import *
+import pygame.locals as p_l
 
 GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
-fullscreen_key = K_f
+fullscreen_key = p_l.K_f
 #control settings
-R_key = K_RIGHT
-L_key = K_LEFT
-U_key = K_UP
-D_key = K_DOWN
-Shoot_key = K_SPACE
+R_key = p_l.K_RIGHT
+L_key = p_l.K_LEFT
+U_key = p_l.K_UP
+D_key = p_l.K_DOWN
+Shoot_key = p_l.K_SPACE
 
 DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
