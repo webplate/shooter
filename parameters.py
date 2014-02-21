@@ -6,13 +6,14 @@ GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
-fullscreen_key = p_l.K_f
 #control settings
-R_key = p_l.K_RIGHT
-L_key = p_l.K_LEFT
-U_key = p_l.K_UP
-D_key = p_l.K_DOWN
-Shoot_key = p_l.K_SPACE
+KEYMAP = {p_l.K_f : 'fullscreen',
+p_l.K_RIGHT : 'right',
+p_l.K_LEFT : 'left',
+p_l.K_UP : 'up',
+p_l.K_DOWN : 'down',
+p_l.K_SPACE : 'shoot'
+}
 
 DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms

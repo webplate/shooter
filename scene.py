@@ -10,6 +10,7 @@ class Player() :
         self.scene = scene
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
+        self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
         self.go_right = False
         self.go_left = False
         self.go_up = False
@@ -214,10 +215,10 @@ class Scene():
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             self.bestiary.load_fighter('target')
+        #update player status
+        if self.player.alive :
+            self.player.update(interval, time)
         #update individuals
         for item in self.content :
             #shoot and stuff
             item.update(interval, time)
-        #update player status
-        if self.player.alive :
-            self.player.update(interval, time)

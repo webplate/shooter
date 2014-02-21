@@ -9,9 +9,6 @@ weapon object
 link player keys , projectile maps, and ships weapons...
 
 
-
-
-
 ??use pygame rect object for collisions
 collisions between entities
 

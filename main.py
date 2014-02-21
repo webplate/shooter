@@ -19,12 +19,11 @@
 #  
 import platform, os, pygame
 import pygame.locals as p_l
-from parameters import *
-import scene
+import scene, parameters
 
 def load_level(level) :
     """make sure the loaded level is playable"""
-    ref = DEFAULTLEVEL
+    ref = parameters.DEFAULTLEVEL
     for key in ref :
         if key not in level :
             level.update({key : ref[key]})
@@ -44,8 +43,8 @@ class Shooter():
             os.environ['SDL_VIDEODRIVER'] = 'Quartz'
         #Initialize pygame
         pygame.init()
-        self.limits = GAMESIZE
-        self.scale = RESCALE
+        self.limits = parameters.GAMESIZE
+        self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x'] :
             self.winsize = self.limits[0]*2, self.limits[1]*2
         else :
@@ -55,7 +54,7 @@ class Shooter():
         self.fullscreen = False
         self.fps = 0
         #load content from file
-        self.level = load_level(LEVEL)
+        self.level = load_level(parameters.LEVEL)
         self.theme = self.level['theme']
         #load fonts
         self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])
@@ -73,39 +72,26 @@ class Shooter():
     def on_event(self, event):
         """propagate and interpret events"""
         if (event.type == p_l.QUIT or
-        (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)):
+        (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)) :
             self.running = False
         elif event.type == p_l.KEYDOWN :
-            if event.key == R_key :
-                self.player.keys['right'] = True
-            elif event.key == L_key :
-                self.player.keys['left'] = True
-            elif event.key == U_key :
-                self.player.keys['up'] = True
-            elif event.key == D_key :
-                self.player.keys['down'] = True
-            elif event.key == Shoot_key :
-                self.player.keys['shoot'] = True
-
-            elif event.key == fullscreen_key :
+            #update player key status
+            key = parameters.KEYMAP[event.key]
+            if key in self.player.key_lst :
+                self.player.keys[key] = True
+            #switch to fullscreen
+            if key == 'fullscreen' :
                 if self.fullscreen :
                     self.display = pygame.display.set_mode(self.winsize)
                 else :
                     self.display = pygame.display.set_mode(self.winsize,
                     p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                     pygame.mouse.set_visible(False)     #hide cursor
-
         elif event.type == p_l.KEYUP :
-            if event.key == R_key :
-                self.player.keys['right'] = False
-            elif event.key == L_key :
-                self.player.keys['left'] = False
-            elif event.key == U_key :
-                self.player.keys['up'] = False
-            elif event.key == D_key :
-                self.player.keys['down'] = False
-            elif event.key == Shoot_key :
-                self.player.keys['shoot'] = False
+            #update player key status
+            key = parameters.KEYMAP[event.key]
+            if key in self.player.key_lst :
+                self.player.keys[key] = False
 
     def on_loop(self):
         """alter and move objects according to altitude, movement..."""
