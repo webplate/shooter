@@ -14,16 +14,44 @@ U_key = K_UP
 D_key = K_DOWN
 Shoot_key = K_SPACE
 
-GAMEPLAY = {'name':'default',
+DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
 'hit_pulse' : 100,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.4
 }
 
-THEME = {'name':'derval',
+SLOWMO = {'name':'default',
+'flash_pulse': 500,     #ms
+'hit_pulse' : 100,
+'speed' : 0.2,     #px/ms
+'bullet_speed': 0.02
+}
+
+GAMEPLAY = DEFAULTPLAY
+
+#Theme packs
+TEXTTHEME = {'name' : None,
 'explosion_pulse' : 100,
-'bg_color' : (100, 100, 100),
+'bg_color' : (50, 50, 50),
+'txt_color' : (200, 200, 200),
+'font' : "./fonts/Fipps-Regular.otf",
+'txt_size' : 8,
+'txt_inter' : 8
+}
+
+DERVAL = {'name':'derval',
+'explosion_pulse' : 100,
+'bg_color' : (50, 50, 100),
+'txt_color' : (200, 200, 200),
+'font' : "./fonts/Fipps-Regular.otf",
+'txt_size' : 8,
+'txt_inter' : 8
+}
+
+IRONBRAIN = {'name':'ironbrain',
+'explosion_pulse' : 100,
+'bg_color' : (100, 150, 100),
 'txt_color' : (200, 200, 200),
 'font' : "./fonts/Fipps-Regular.otf",
 'txt_size' : 8,
@@ -72,9 +100,25 @@ TARGET = {'name':'target',
 'weapons' : [BULLET2]
 }
 
-LEVEL = {'name':'default',
-'theme' : THEME,
+LEVELDEFAULT = {'name':'default',
+'theme' : DERVAL,
 'gameplay' : GAMEPLAY,
 'content' : [],
-'nb_enemies' : 1
+'nb_enemies' : 3
 }
+
+LEVELSLOW = {'name':'slowmo',
+'theme' : TEXTTHEME,
+'gameplay' : SLOWMO,
+'content' : [],
+'nb_enemies' : 3
+}
+
+LEVELSTRESS = {'name':'stress',
+'theme' : DERVAL,
+'gameplay' : DEFAULTPLAY,
+'content' : [],
+'nb_enemies' : 50
+}
+
+LEVEL = LEVELSTRESS
