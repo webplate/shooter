@@ -96,6 +96,37 @@ class Container():
             self.maps.update({parameters['name'] : projectile})
         return projectile
 
+class Ordered():
+    """stock objects of scene in layered priority
+    """
+    def __init__(self) :
+        self.content = []
+
+    def append(self, item, priority=0) :
+        """update size of container dynamically"""
+        while len(self.content) <= priority :
+            self.content.append([])
+        self.content[priority].append(item)
+
+    def remove(self, item) :
+        """remove item from content"""
+        for group in self.content :
+            if item in group :
+                group.remove(item)
+
+    def prioritize(self, item, priority) :
+        """reorder an item in a specific layer of priority"""
+        #eliminate prior version
+        self.remove(item)
+        #insert with new priority
+        self.append(item, priority)
+
+    def __iter__(self) :
+        """a generator to emit content in right order"""
+        for group in self.content :
+            for item in group :
+                yield item
+
 class Bestiary() :
     """loading and tuning every game objects"""
     def __init__(self, scene) :
@@ -132,8 +163,10 @@ class Scene():
         self.level = self.game.level
         self.theme = self.level['theme']
         self.gameplay = self.level['gameplay']
+        #an object for efficient loading
         self.cont = Container(self)
-        self.content = []
+        #content in priority update order
+        self.content = Ordered()
         self.bestiary = Bestiary(self)
         self.bestiary.load_content()
         for item in self.content :
@@ -142,7 +175,7 @@ class Scene():
                 break
         self.bestiary.load_interface()
         self.player = Player(self)
-        self.lst_sprites = []
+        self.lst_sprites = Ordered()
         self.update()
 
     def collide(self, proj_map, target_map, time) :

@@ -24,7 +24,10 @@ class Actor(object) :
             self.ally = False
         #load in scene
         self.scene.content.append(self)
+        #load image
         self.surface = self.scene.cont.surf(self.name)
+        #layer for drawing on screen
+        self.layer = 0
 
     def set_param(self, parameters) :
         self.parameters = parameters
@@ -67,6 +70,7 @@ class Mobile(Actor) :
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
         self.move(interval)
+
 
 class Fragile(Mobile) :
     """this one can be hurt
@@ -123,10 +127,10 @@ class Fighter(Fragile) :
             for weapon in parameters['weapons'] :
                 self.new_weapon(weapon)
         self.charge = 0.
-        self.aura = None
         self.score = 0
-        #can have a charge display
-        self.aura = Charge(self.scene, self, (0, -self.scene.theme['txt_inter']))
+        #can have a charge display following fighter
+        self.aura = Charge(self.scene, self,
+        (0, -self.scene.theme['txt_inter']))
 
     def move(self, interval) :
         if self.trajectory == None :
@@ -210,13 +214,18 @@ class Follower(Mobile) :
         self.parent = parent
         self.offset = offset
         self.center_on(self.parent)
+        #should be updated after parents
+        self.scene.content.prioritize(self, 1)
 
-    def move(self, interval) :
+    def move(self) :
         """move to be centered on parent"""
         self.center_on(self.parent)
         new_pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
         self._pos = new_pos
 
+    #followers aren't moved on update but by their parents
+    def update(self, interval, time) :
+        self.center = surftools.get_center(self.pos, self.surface)
 
 class Charge(Follower) :
     """showing the charge of ship"""
@@ -239,6 +248,7 @@ class Charge(Follower) :
         elif self.parent.charge == 0 :
             self.surface = self.levels[0]
 
+
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
     def __init__(self, scene, parent, offset=(0, 0)) :
@@ -259,6 +269,7 @@ class Explosion(Follower) :
                 self.surface = self.levels[1]
             elif time > self.parent.time_of_death :
                 self.surface = self.levels[0]
+        self.move()
 
 
 class Widget(Mobile):

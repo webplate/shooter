@@ -29,10 +29,10 @@ def load_level(level) :
             level.update({key : ref[key]})
     return level
 
-class Shooter():
+class Shooter() :
     """a pygame shooter
     """
-    def __init__(self):
+    def __init__(self) :
         """initialize game"""
         self.running = True
         #Set graphic driver according to platform
@@ -69,31 +69,33 @@ class Shooter():
         #Players
         self.player = self.scene.player
 
-    def on_event(self, event):
+    def on_event(self, event) :
         """propagate and interpret events"""
         if (event.type == p_l.QUIT or
         (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)) :
             self.running = False
         elif event.type == p_l.KEYDOWN :
-            #update player key status
-            key = parameters.KEYMAP[event.key]
-            if key in self.player.key_lst :
-                self.player.keys[key] = True
-            #switch to fullscreen
-            if key == 'fullscreen' :
-                if self.fullscreen :
-                    self.display = pygame.display.set_mode(self.winsize)
-                else :
-                    self.display = pygame.display.set_mode(self.winsize,
-                    p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
-                    pygame.mouse.set_visible(False)     #hide cursor
+            if event.key in parameters.KEYMAP :
+                #update player key status
+                key = parameters.KEYMAP[event.key]
+                if key in self.player.key_lst :
+                    self.player.keys[key] = True
+                #switch to fullscreen
+                if key == 'fullscreen' :
+                    if self.fullscreen :
+                        self.display = pygame.display.set_mode(self.winsize)
+                    else :
+                        self.display = pygame.display.set_mode(self.winsize,
+                        p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
+                        pygame.mouse.set_visible(False)     #hide cursor
         elif event.type == p_l.KEYUP :
-            #update player key status
-            key = parameters.KEYMAP[event.key]
-            if key in self.player.key_lst :
-                self.player.keys[key] = False
+            if event.key in parameters.KEYMAP :
+                #update player key status
+                key = parameters.KEYMAP[event.key]
+                if key in self.player.key_lst :
+                    self.player.keys[key] = False
 
-    def on_loop(self):
+    def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
         new_time = pygame.time.get_ticks()
         interval = new_time - self.last_iter
@@ -121,10 +123,10 @@ class Shooter():
             self.last_flip = pygame.time.get_ticks()
             self.frame += 1
 
-    def on_cleanup(self):
+    def on_cleanup(self) :
         pygame.quit()
 
-    def on_execute(self):
+    def on_execute(self) :
         """launch mainloop"""
         #Main loop
         self.frame = 0

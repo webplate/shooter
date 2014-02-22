@@ -1,6 +1,8 @@
 First prototype of a scrolling shooter.
 
+Move with arrows and charge shot with space bar.
 
 Windows users can download 'shooter_windows' and launch game.exe
 
-dependencies : python 2.7, pygame, numpy
+Dependencies :
+python 2.7, pygame, numpy
