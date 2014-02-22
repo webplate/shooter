@@ -14,17 +14,14 @@ import py2exe
 
 script = "main.py" # Starting .py or .pyw script
 dest_file = "game" # Final name of .exe file
-dest_folder = "windows" # Final folder to contain the executable, data files, etc.
-icon_file = "icon.png" # Icon file. Leave blank for the pygame icon.
+dest_folder = "shooter_windows" # Final folder to contain the executable, data files, etc.
+icon_file = "" # Icon file. Leave blank for the pygame icon.
 extra_data = ['imgs', 'fonts'] # Extra data to copy to the final folder
 extra_modules = [] # Extra modules to be included in the .exe (leave empty if no extra modules)
-dll_excludes = [] # excluded dlls ["w9xpopen.exe", "msvcr71.dll"]
+dll_excludes = ["w9xpopen.exe"] # excluded dlls ["w9xpopen.exe", "msvcr71.dll"]
 
 pygamedir = os.path.split(pygame.base.__file__)[0]
-extra_data.append(os.path.join(pygamedir, 'freesansbold.ttf'))
 extra_data.append(os.path.join(pygamedir, 'SDL.dll'))
-extra_data.append(os.path.join(pygamedir, 'SDL_ttf.dll'))
-extra_data.append(os.path.join(pygamedir, 'libfreetype-6.dll'))
 
 
 origIsSystemDLL = py2exe.build_exe.isSystemDLL
@@ -36,7 +33,7 @@ py2exe.build_exe.isSystemDLL = isSystemDLL
 
 
 #Libraries to exclude from the EXE (use to cut down the final EXE filesize.)
-lib_excludes = ["Tkinter", "tcl", "OpenGL", "Numeric", "numpy", "wxPython", "pyglet"]
+lib_excludes = ["Tkinter", "tcl", "OpenGL", "Numeric", "wxPython", "pyglet"]
 
 # Stuff to show who made it, etc.
 copyright = "Copyright (C) 2014"
