@@ -209,14 +209,15 @@ class Scene():
         ship_proj_map = []
         target_proj_map = []
         #sprite list for drawing
-        self.lst_sprites = []
+        self.lst_sprites = Ordered()
         self.nb_fighters = 0
         #explore scene
         for item in self.content :
             if isinstance(item, entity.Mobile) :
                 x, y = item.pos
                 #prepare sprite list for drawing
-                self.lst_sprites.append(((x, y), item.surface))
+                identifier = ((x, y), item.surface)
+                self.lst_sprites.append(identifier, item.layer)
                 if isinstance(item, entity.Fragile) :
                     #populate collision maps
                     #precompute for faster detection
@@ -231,7 +232,8 @@ class Scene():
             elif isinstance(item, entity.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
-                    self.lst_sprites.append(((x, y), item.surface))
+                    identifier = ((x, y), item.surface)
+                    self.lst_sprites.append(identifier, item.layer)
                     #blasts have wide damage zone other are on a pixel only
                     if isinstance(item, entity.Blast) :
                         identifier = (x, y, x+item.width, y+item.height, False, item, i)

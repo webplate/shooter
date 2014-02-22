@@ -217,15 +217,11 @@ class Follower(Mobile) :
         #should be updated after parents
         self.scene.content.prioritize(self, 1)
 
-    def move(self) :
+    def move(self, interval) :
         """move to be centered on parent"""
         self.center_on(self.parent)
         new_pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
         self._pos = new_pos
-
-    #followers aren't moved on update but by their parents
-    def update(self, interval, time) :
-        self.center = surftools.get_center(self.pos, self.surface)
 
 class Charge(Follower) :
     """showing the charge of ship"""
@@ -248,7 +244,6 @@ class Charge(Follower) :
         elif self.parent.charge == 0 :
             self.surface = self.levels[0]
 
-
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
     def __init__(self, scene, parent, offset=(0, 0)) :
@@ -269,7 +264,6 @@ class Explosion(Follower) :
                 self.surface = self.levels[1]
             elif time > self.parent.time_of_death :
                 self.surface = self.levels[0]
-        self.move()
 
 
 class Widget(Mobile):
