@@ -1,4 +1,6 @@
 First prototype of a scrolling shooter.
 
 
+Windows users can download 'shooter_windows' and launch game.exe
+
 dependencies : python 2.7, pygame, numpy
