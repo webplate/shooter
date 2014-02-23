@@ -106,7 +106,7 @@ class Shooter() :
     def on_render(self) :
         """create screen frames"""
         #compute low res game screen
-        self.screen.fill(self.theme['bg_color'])
+        #self.screen.fill(self.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
         #rescale for display on hd hardware

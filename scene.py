@@ -82,6 +82,7 @@ class Container():
         self.array = {}
         self.hit = {}
         self.maps = {}
+        self.background = {}
 
     def surf(self, name) :
         """avoid duplicate loading"""
@@ -106,6 +107,16 @@ class Container():
             projectile = targetClass(self.scene, parameters)
             self.maps.update({parameters['name'] : projectile})
         return projectile
+
+    def bg(self, name) :
+        """load background images"""
+        if name in self.background :
+            surface = self.background[name]
+        else :
+            surface = surftools.load_background(name, self.theme, self.scene)
+            #generate variants of image
+            self.background.update({name : surface})
+        return surface
 
 class Ordered():
     """stock objects of scene in layered priority
@@ -222,6 +233,7 @@ class Scene():
         target_proj_map = []
         #sprite list for drawing
         self.lst_sprites = Ordered()
+        self.lst_sprites.append(((0,0),self.cont.bg(self.theme['background'])),0)
         self.nb_fighters = 0
         #explore scene
         for item in self.content :
