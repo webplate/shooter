@@ -108,6 +108,8 @@ class Fragile(Mobile) :
         self.remove()
         #reward shooter
         self.killer.score += 1
+        #explode
+        self.end.ignited = True
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
@@ -268,19 +270,21 @@ class Charge(Follower) :
         #center on parent at the end of update
         Follower.update(self, interval, time)
 
-class Explosion(Follower) :
+class Explosion(Mobile) :
     """showing explosion of ship at last standing point"""
     def __init__(self, scene, parent, offset=(0, 0)) :
-        Follower.__init__(self, scene, parent, offset)
+        Mobile.__init__(self, scene)
+        self.parent = parent
         self.levels = [self.scene.cont.surf('OOOOOOO'),
         self.scene.cont.surf('OOOOO'),
         self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
+        self.ignited = False
 
     def update(self, interval, time) :
-        if self.parent.life <= 0 :
-            Follower.update(self, interval, time)
+        if self.ignited :
             if time > self.parent.time_of_death + self.pulse*3 :
+                #disappear after dissipation
                 self.remove()
             elif time > self.parent.time_of_death + self.pulse*2 :
                 self.surface = self.levels[2]
@@ -288,11 +292,11 @@ class Explosion(Follower) :
                 self.surface = self.levels[1]
             elif time > self.parent.time_of_death :
                 self.surface = self.levels[0]
-
+            self.center_on(self.parent)
 
 class Widget(Mobile):
     def __init__(self, scene, path, parameters) :
-        Mobile.__init__(self, scene, {})
+        Mobile.__init__(self, scene)
         self.path = path
         self.parameters = parameters
         self.value = getattr_deep(self.scene, path)

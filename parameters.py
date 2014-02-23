@@ -22,10 +22,10 @@ DEFAULTPLAY = {'name':'default',
 'bullet_speed': 0.4
 }
 
-SLOWMO = {'name':'default',
+SLOWMO = {'name':'slow',
 'flash_pulse': 500,     #ms
 'hit_pulse' : 100,
-'speed' : 0.2,     #px/ms
+'speed' : 0.1,     #px/ms
 'bullet_speed': 0.02
 }
 
