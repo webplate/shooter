@@ -86,7 +86,9 @@ class Circular(GoFront) :
         self.angular_speed = 2*math.pi / 1000
         
     def abs_pos(self) :
+        #rotate around reference
         angle = self.scene.now * self.angular_speed + self.init_angle
+        #oscillating radius
         radius = self.radius * math.sin(self.omega * self.scene.now)
         return pol2cart(radius, angle)
 

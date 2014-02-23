@@ -58,12 +58,11 @@ class Shooter() :
         self.theme = self.level['theme']
         #load fonts
         self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])
-        #On compte les joysticks
-        nb_joysticks = pygame.joystick.get_count()
-        #Et on en crée un s'il y en a au moins un
-        if nb_joysticks > 0:
-            mon_joystick = pygame.joystick.Joystick(0)
-            mon_joystick.init() #Initialisation
+        #joysticks
+        joysticks = [pygame.joystick.Joystick(x)
+        for x in range(pygame.joystick.get_count())]
+        for joy in joysticks :
+            joy.init()
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
@@ -78,8 +77,7 @@ class Shooter() :
             if event.key in parameters.KEYMAP :
                 #update player key status
                 key = parameters.KEYMAP[event.key]
-                if key in self.player.key_lst :
-                    self.player.keys[key] = True
+                self.player.keys[key] = True
                 #switch to fullscreen
                 if key == 'fullscreen' :
                     if self.fullscreen :
@@ -92,8 +90,37 @@ class Shooter() :
             if event.key in parameters.KEYMAP :
                 #update player key status
                 key = parameters.KEYMAP[event.key]
-                if key in self.player.key_lst :
-                    self.player.keys[key] = False
+                self.player.keys[key] = False
+        #Joystick events
+        elif event.type == p_l.JOYAXISMOTION :
+            tol = 0.8
+            if event.joy == 0 and event.axis == 0 :
+                if event.value < tol and event.value > -tol :
+                    self.player.keys['right'] = False
+                    self.player.keys['left'] = False
+                elif event.value < tol :
+                    self.player.keys['right'] = False
+                    self.player.keys['left'] = True
+                elif event.value > -tol :
+                    self.player.keys['right'] = True
+                    self.player.keys['left'] = False
+            elif event.joy == 0 and event.axis == 1 :
+                if event.value < tol and event.value > -tol :
+                    self.player.keys['up'] = False
+                    self.player.keys['down'] = False
+                elif event.value < tol :
+                    self.player.keys['up'] = True
+                    self.player.keys['down'] = False
+                elif event.value > -tol :
+                    self.player.keys['up'] = False
+                    self.player.keys['down'] = True
+        elif event.type == p_l.JOYBUTTONDOWN :
+            if event.joy == 0 and event.button == 2 :
+                self.player.keys['shoot'] = True
+        elif event.type == p_l.JOYBUTTONUP :
+            if event.joy == 0 and event.button == 2 :
+                self.player.keys['shoot'] = False
+            
 
     def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
