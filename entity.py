@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import surftools
+import movement, surftools
 
 def getattr_deep(start, attr):
     """useful function for accessing attributes of attributes..."""
@@ -43,14 +43,18 @@ class Mobile(Actor) :
     """
     def __init__(self, scene, parameters={}) :
         Actor.__init__(self, scene, parameters)
+        self._pos = (0, 0)
         if 'speed' not in parameters :
             self.speed = 0
+        if 'trajectory' not in parameters :
+            self.trajectory = None
+        else :
+            #a trajectory object to control position
+            targetClass = getattr(movement, self.trajectory)
+            self.movement = targetClass(self.scene, self)
         self.array = self.scene.cont.array[self.name]
         self.base_surface = self.surface
-        self._pos = (0, 0)
-        self.direction = None
-        self.trajectory = None
-
+        
     def _get_pos(self) :
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
@@ -60,7 +64,8 @@ class Mobile(Actor) :
     pos = property(_get_pos, _set_pos)
     
     def move(self, interval) :
-        pass
+        if self.trajectory != None :
+            self._pos = self.movement.new_pos(self._pos, interval)
         
     def center_on(self, mobile) :
         x, y = mobile.pos
@@ -131,17 +136,6 @@ class Fighter(Fragile) :
         self.aura = Charge(self.scene, self,
         (0, -self.scene.theme['txt_inter']))
 
-    def move(self, interval) :
-        if self.trajectory == None :
-            offset =  self.speed * interval
-            #move only if far enough
-            distance = abs(self.center[0] - self.scene.ship.center[0])
-            if distance > offset  :
-                if self.scene.ship.center[0] > self.center[0] :
-                    self._pos = self._pos[0] + offset, self._pos[1]
-                elif self.scene.ship.pos[0] < self.center[0] :
-                    self._pos = self._pos[0] - offset, self._pos[1]
-
     def new_weapon(self, parameters) :
         #load and avoid duplicate in scene
         projectile_map = self.scene.cont.proj(parameters)
@@ -184,7 +178,6 @@ class Ship(Fighter) :
         self.player = player
         #a base name to derive alternate states
         self.base_name = self.name
-        self.trajectory = 'manual'
 
     def fly(self, direction, interval) :
         #should consider time passed

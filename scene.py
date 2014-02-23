@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import random
 from parameters import *
 import entity, surftools
 
@@ -146,10 +145,7 @@ class Bestiary() :
         self.scene = scene
 
     def load_fighter(self, name) :
-        coord = (random.randint(0, self.scene.limits[0]),
-        random.randint(0, self.scene.limits[1]/6))
         fighter = entity.Fighter(self.scene, TARGET)
-        fighter.pos = coord
 
     def load_content(self) :
         to_load = self.scene.level['content']

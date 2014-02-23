@@ -107,7 +107,8 @@ TARGET = {'name':'target',
 'type' : 'Fighter',
 'speed':GAMEPLAY['speed'] / 2,
 'life': 5,
-'weapons' : [BULLET2]
+'weapons' : [BULLET2],
+'trajectory' : 'Align'
 }
 
 #The reference playable level used to complete others
