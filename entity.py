@@ -27,7 +27,7 @@ class Actor(object) :
         #load image
         self.surface = self.scene.cont.surf(self.name)
         #layer for drawing on screen
-        self.layer = 0
+        self.layer = 2
 
     def set_param(self, parameters) :
         self.parameters = parameters
@@ -121,7 +121,7 @@ class Fragile(Mobile) :
 
 class Fighter(Fragile) :
     """a shooting mobile sprite
-    charge_rate"""
+    """
     def __init__(self, scene, parameters) :
         Fragile.__init__(self, scene, parameters)
         self.last_shoot = 0
@@ -130,11 +130,7 @@ class Fighter(Fragile) :
         if 'weapons' in parameters :
             for weapon in parameters['weapons'] :
                 self.new_weapon(weapon)
-        self.charge = 0.
         self.score = 0
-        #can have a charge display following fighter
-        self.aura = Charge(self.scene, self,
-        (0, -self.scene.theme['txt_inter']))
 
     def new_weapon(self, parameters) :
         #load and avoid duplicate in scene
@@ -148,21 +144,11 @@ class Fighter(Fragile) :
         w = self.arms[weapon]
         #most projectiles aren't charged
         if weapon == 'Bullet' :
-            #limit fire rate and stop when charging
-            if (time > self.last_shoot + w.cooldown
-            and self.charge == 0 ) :
+            #limit fire rate
+            if time > self.last_shoot + w.cooldown :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
                 self.last_shoot = time
-        #blast shot
-        else :
-            x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-            w.positions.append((x, y, [self, power]))
-
-    def die(self) :
-        Fragile.die(self)
-        #remove also charge display
-        self.aura.remove()
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
@@ -170,11 +156,41 @@ class Fighter(Fragile) :
         self.shoot(time, 'Bullet')
             
 
-class Ship(Fighter) :
-    """A ship controlled by player and shooting
-    ally"""
-    def __init__(self, scene, player, parameters) :
+class ChargeFighter(Fighter) :
+    """a charging mobile sprite
+    charge_rate"""
+    def __init__(self, scene, parameters) :
         Fighter.__init__(self, scene, parameters)
+        self.charge = 0.
+        #can have a charge display following fighter
+        self.aura = Charge(self.scene, self,
+        (0, -self.scene.theme['txt_inter']))
+
+    def shoot(self, time, weapon, power=None) :
+        w = self.arms[weapon]
+        #most projectiles aren't charged
+        if weapon == 'Bullet' :
+            #limit fire rate and stop when charging
+            if (time > self.last_shoot + w.cooldown
+            and self.charge == 0 ) :
+                x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+                w.positions.append((x, y, [self]))
+                self.last_shoot = time
+        #blast shot
+        elif weapon == 'Blast' :
+            x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+            w.positions.append((x, y, [self, power]))
+
+    def die(self) :
+        Fighter.die(self)
+        #remove also charge display
+        self.aura.remove()
+
+class Ship(ChargeFighter) :
+    """A ship controlled by player and shooting
+    """
+    def __init__(self, scene, player, parameters) :
+        ChargeFighter.__init__(self, scene, parameters)
         self.player = player
         #a base name to derive alternate states
         self.base_name = self.name
@@ -197,7 +213,7 @@ class Ship(Fighter) :
             self._pos = new_pos
 
     def die(self) :
-        Fighter.die(self)
+        ChargeFighter.die(self)
         #player is dead
         self.scene.player.alive = False
 
@@ -210,7 +226,7 @@ class Ship(Fighter) :
         elif self.player.go_left :
             self.name = self.base_name + '-'
         self.surface = self.scene.cont.surf(self.name)
-        Fighter.update(self, interval, time)
+        ChargeFighter.update(self, interval, time)
 
 class Follower(Mobile) :
     """a sprite following another"""
@@ -232,14 +248,15 @@ class Charge(Follower) :
     """showing the charge of ship"""
     def __init__(self, scene, parent, offset) :
         #offset to show over ship
-        Follower.__init__(self, scene, parent, offset)
+        Follower.__init__(self, scene, parent, (0, 0))
         self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('#'),
         self.scene.cont.surf('##'),
         self.scene.cont.surf('###')]
+        #draw over background but under ship
+        self.layer = 1
 
     def update(self, interval, time) :
-        Follower.update(self, interval, time)
         if self.parent.charge >= 1 :
             self.surface = self.levels[3]
         elif self.parent.charge > 0.5 :
@@ -248,6 +265,8 @@ class Charge(Follower) :
             self.surface = self.levels[1]
         elif self.parent.charge == 0 :
             self.surface = self.levels[0]
+        #center on parent at the end of update
+        Follower.update(self, interval, time)
 
 class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
