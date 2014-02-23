@@ -214,6 +214,7 @@ class Scene():
                             itemP.collided(index)
 
     def update(self, interval = 0, time = 0) :
+        self.now = time
         #collision maps
         ship_map = []
         target_map = []

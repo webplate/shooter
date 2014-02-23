@@ -149,11 +149,13 @@ class Fighter(Fragile) :
             #limit fire rate
             if time > self.last_shoot + w.cooldown :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+                #~ print x, y, self.center
                 w.positions.append((x, y, [self]))
                 self.last_shoot = time
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
+        
         #autofire
         self.shoot(time, 'Bullet')
             
@@ -255,9 +257,9 @@ class Charge(Follower) :
         #offset to show over ship
         Follower.__init__(self, scene, parent, (0, 0))
         self.levels = [self.scene.cont.surf(' '),
-        self.scene.cont.surf('#'),
-        self.scene.cont.surf('##'),
-        self.scene.cont.surf('###')]
+        self.scene.cont.surf('B'),
+        self.scene.cont.surf('BB'),
+        self.scene.cont.surf('BBB')]
         #draw over background but under ship
         self.layer = 1
 
