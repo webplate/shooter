@@ -1,10 +1,3 @@
-debug levels (stress test, low-motion..)
-a default working level should be used to guarantee loading !!
-update and draw items with different priorities
-
-add trajectory object, 
-describe init position in trajectory object
-follower movements should be latest (after ship movements)
 
 weapon object
 link player keys , projectile maps, and ships weapons...

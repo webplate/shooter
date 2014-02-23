@@ -108,7 +108,7 @@ TARGET = {'name':'target',
 'speed':GAMEPLAY['speed'] / 2,
 'life': 5,
 'weapons' : [BULLET2],
-'trajectory' : 'Align'
+'trajectory' : 'GoFront'
 }
 
 #The reference playable level used to complete others
@@ -127,7 +127,7 @@ LEVELSLOW = {'name':'slowmo',
 
 LEVELSTRESS = {'name':'stress',
 'theme' : DERVAL,
-'nb_enemies' : 50,
+'nb_enemies' : 25,
 'content' : [INVINCIBLE]
 }
 
