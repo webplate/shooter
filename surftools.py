@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os, pygame
-from parameters import *
+import parameters
 
 def get_center(pos, surface) :
     center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
@@ -19,7 +19,7 @@ def load_image(file, theme, scene):
             surface = font_skin(scene, file)
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
-            surface = surface.convert(COLORDEPTH)
+            surface = surface.convert(parameters.COLORDEPTH)
             #first pixel sets transparent color
             color = surface.get_at((0, 0))
             surface.set_colorkey(color)

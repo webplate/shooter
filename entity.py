@@ -48,6 +48,7 @@ class Mobile(Actor) :
         self.array = self.scene.cont.array[self.name]
         self.base_surface = self.surface
         self._pos = (0, 0)
+        self.direction = None
         self.trajectory = None
 
     def _get_pos(self) :
@@ -79,8 +80,6 @@ class Fragile(Mobile) :
     """
     def __init__(self, scene, parameters) :
         Mobile.__init__(self, scene, parameters)
-        #load and avoid duplicate
-        self.hit_surface = self.scene.cont.hit[self.name]
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
@@ -98,8 +97,6 @@ class Fragile(Mobile) :
                 #recognize killer in the distance
                 proj = projectile.positions[index]
                 self.killer = proj[2][0]
-            #change color for some time
-            self.surface = self.hit_surface
 
     def die(self) :
         #remove of scene
@@ -109,9 +106,11 @@ class Fragile(Mobile) :
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
-        #return to unhit appearance
-        if time > self.last_hit + self.scene.gameplay['flash_pulse'] :
-            self.surface = self.base_surface
+        #change color for some time if hit recently
+        if time < self.last_hit + self.scene.gameplay['flash_pulse'] :
+            self.surface = self.scene.cont.hit[self.name]
+        else :
+            self.surface = self.scene.cont.surfaces[self.name]
         if self.life <= 0 :
             self.die()
 
@@ -180,14 +179,16 @@ class Fighter(Fragile) :
 class Ship(Fighter) :
     """A ship controlled by player and shooting
     ally"""
-    def __init__(self, scene, parameters) :
+    def __init__(self, scene, player, parameters) :
         Fighter.__init__(self, scene, parameters)
+        self.player = player
+        #a base name to derive alternate states
+        self.base_name = self.name
         self.trajectory = 'manual'
 
     def fly(self, direction, interval) :
         #should consider time passed
         offset = self.speed * interval
-        
         if direction == 'right' :
             new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :
@@ -206,6 +207,17 @@ class Ship(Fighter) :
         Fighter.die(self)
         #player is dead
         self.scene.player.alive = False
+
+    def update(self, interval, time) :
+        #show orientation of ship
+        if self.player.stop :
+            self.name = self.base_name
+        elif self.player.go_right :
+            self.name = '-' + self.base_name
+        elif self.player.go_left :
+            self.name = self.base_name + '-'
+        self.surface = self.scene.cont.surf(self.name)
+        Fighter.update(self, interval, time)
 
 class Follower(Mobile) :
     """a sprite following another"""
@@ -248,9 +260,9 @@ class Explosion(Follower) :
     """showing explosion of ship at last standing point"""
     def __init__(self, scene, parent, offset=(0, 0)) :
         Follower.__init__(self, scene, parent, offset)
-        self.levels = [self.scene.cont.surf('0000000'),
-        self.scene.cont.surf('00000'),
-        self.scene.cont.surf('000')]
+        self.levels = [self.scene.cont.surf('OOOOOOO'),
+        self.scene.cont.surf('OOOOO'),
+        self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
 
     def update(self, interval, time) :

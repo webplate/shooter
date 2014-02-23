@@ -15,31 +15,13 @@ class Player() :
         self.go_left = False
         self.go_up = False
         self.go_down = False
-        self.ship = self.scene.ship
+        self.stop = True
+        self.ship = None
         self.alive = True
         self.score = 0
 
-    def update(self, interval, time) :
-        #where is going the ship ?
-        if self.keys['right'] and not self.go_right and not self.keys['left'] :
-            self.go_right = True
-        elif not self.keys['right'] and self.go_right :
-            self.go_right = False
-        if self.keys['left'] and not self.go_left and not self.keys['right'] :
-            self.go_left = True
-        elif not self.keys['left'] and self.go_left :
-            self.go_left = False
-
-        if self.keys['up'] and not self.go_up and not self.keys['down'] :
-            self.go_up = True
-        elif not self.keys['up'] and self.go_up :
-            self.go_up = False
-        if self.keys['down'] and not self.go_down and not self.keys['up'] :
-            self.go_down = True
-        elif not self.keys['down'] and self.go_down :
-            self.go_down = False
-        
-        #command ship !!
+    def command(self, interval, time) :
+        """command ship !!"""
         if self.go_right :
             self.ship.fly('right', interval)
         elif self.go_left :
@@ -60,6 +42,37 @@ class Player() :
             if self.ship.charge > 0.5 :
                 self.ship.shoot(time, 'Blast', self.ship.charge)
             self.ship.charge = 0.
+
+    def update(self, interval, time) :
+        #where is going the ship ?
+        if self.keys['right'] and not self.go_right and not self.keys['left'] :
+            self.go_right = True
+            self.stop = False
+        elif not self.keys['right'] and self.go_right :
+            self.go_right = False
+        if self.keys['left'] and not self.go_left and not self.keys['right'] :
+            self.go_left = True
+            self.stop = False
+        elif not self.keys['left'] and self.go_left :
+            self.go_left = False
+
+        if self.keys['up'] and not self.go_up and not self.keys['down'] :
+            self.go_up = True
+            self.stop = False
+        elif not self.keys['up'] and self.go_up :
+            self.go_up = False
+        if self.keys['down'] and not self.go_down and not self.keys['up'] :
+            self.go_down = True
+            self.stop = False
+        elif not self.keys['down'] and self.go_down :
+            self.go_down = False
+
+        if ( not self.keys['up'] and not self.keys['down'] 
+        and not self.keys['right'] and not self.keys['left'] ) :
+            self.stop = True
+
+        if self.ship != None :
+            self.command(interval, time)
 
 class Container():
     """stock surfaces and projectiles maps to prevent duplicates
@@ -100,7 +113,13 @@ class Ordered():
     """stock objects of scene in layered priority
     """
     def __init__(self) :
-        self.content = []
+        self.content = [[]]
+
+    def __iter__(self) :
+        """a generator to emit content in right order"""
+        for group in self.content :
+            for item in group :
+                yield item
 
     def append(self, item, priority=0) :
         """update size of container dynamically"""
@@ -121,12 +140,6 @@ class Ordered():
         #insert with new priority
         self.append(item, priority)
 
-    def __iter__(self) :
-        """a generator to emit content in right order"""
-        for group in self.content :
-            for item in group :
-                yield item
-
 class Bestiary() :
     """loading and tuning every game objects"""
     def __init__(self, scene) :
@@ -143,7 +156,7 @@ class Bestiary() :
         for parameters in to_load :
             #instantiate according to specified type
             targetClass = getattr(entity, parameters['type'])
-            item = targetClass(self.scene, parameters)
+            item = targetClass(self.scene, self.scene.player, parameters)
             #init position
             coord = (self.scene.limits[0]/2,
             self.scene.limits[1]-2*self.scene.theme['txt_inter'])
@@ -163,10 +176,13 @@ class Scene():
         self.level = self.game.level
         self.theme = self.level['theme']
         self.gameplay = self.level['gameplay']
+        self.player = Player(self)
         #an object for efficient loading
         self.cont = Container(self)
         #content in priority update order
         self.content = Ordered()
+        #layers for drawing
+        self.lst_sprites = Ordered()
         self.bestiary = Bestiary(self)
         self.bestiary.load_content()
         for item in self.content :
@@ -174,9 +190,9 @@ class Scene():
                 self.ship = item
                 break
         self.bestiary.load_interface()
-        self.player = Player(self)
-        self.lst_sprites = Ordered()
         self.update()
+        #reference new ship to player
+        self.player.ship = self.ship
 
     def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites"""
@@ -244,15 +260,15 @@ class Scene():
                         ship_proj_map.append(identifier)
                     else :
                         target_proj_map.append(identifier)
+        #update player status
+        if self.player.alive :
+            self.player.update(interval, time)
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map, time)
         self.collide(target_proj_map, ship_map, time)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             self.bestiary.load_fighter('target')
-        #update player status
-        if self.player.alive :
-            self.player.update(interval, time)
         #update individuals
         for item in self.content :
             #shoot and stuff
