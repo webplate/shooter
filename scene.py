@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from parameters import *
-import entity, surftools
+import entity, surftools, parameters
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -145,7 +144,7 @@ class Bestiary() :
         self.scene = scene
 
     def load_fighter(self, name) :
-        fighter = entity.Fighter(self.scene, TARGET)
+        fighter = entity.Fighter(self.scene, parameters.TARGET)
 
     def load_content(self) :
         to_load = self.scene.level['content']
@@ -155,7 +154,7 @@ class Bestiary() :
             item = targetClass(self.scene, self.scene.player, parameters)
             #init position
             coord = (self.scene.limits[0]/2,
-            self.scene.limits[1]-2*self.scene.theme['txt_inter'])
+            self.scene.limits[1]-4*self.scene.theme['txt_inter'])
             item.pos = coord
 
     def load_interface(self) :

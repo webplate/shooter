@@ -196,7 +196,10 @@ class Ship(ChargeFighter) :
         self.player = player
         #a base name to derive alternate states
         self.base_name = self.name
-
+        #preload oriented sprites
+        self.scene.cont.surf('-' + self.base_name)
+        self.scene.cont.surf(self.base_name + '-')
+        
     def fly(self, direction, interval) :
         #should consider time passed
         offset = self.speed * interval
@@ -280,6 +283,7 @@ class Explosion(Mobile) :
         self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
         self.ignited = False
+        #explosions are in front
         self.layer = 3
 
     def update(self, interval, time) :
