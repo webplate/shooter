@@ -15,6 +15,14 @@ p_l.K_DOWN : 'down',
 p_l.K_SPACE : 'shoot'
 }
 
+JOYMAP = {p_l.K_f : 'fullscreen',
+p_l.K_RIGHT : 'right',
+p_l.K_LEFT : 'left',
+p_l.K_UP : 'up',
+p_l.K_DOWN : 'down',
+p_l.K_SPACE : 'shoot'
+}
+
 DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
 'hit_pulse' : 100,
@@ -105,10 +113,18 @@ INVINCIBLE = {'name' : 'ship',
 
 TARGET = {'name':'target',
 'type' : 'Fighter',
-'speed':GAMEPLAY['speed'] / 2,
+'speed':GAMEPLAY['speed'] / 4,
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular'
+}
+
+TARGETOLD = {'name':'target',
+'type' : 'Fighter',
+'speed':GAMEPLAY['speed'] / 2,
+'life': 5,
+'weapons' : [BULLET2],
+'trajectory' : 'AlignV'
 }
 
 #The reference playable level used to complete others
