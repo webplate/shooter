@@ -280,6 +280,7 @@ class Explosion(Mobile) :
         self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
         self.ignited = False
+        self.layer = 3
 
     def update(self, interval, time) :
         if self.ignited :
