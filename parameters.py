@@ -51,6 +51,7 @@ TXTTHEME = {'name' : None,
 
 DERVAL = {'name':'derval',
 'explosion_pulse' : 100,
+'background' : 'background',
 'bg_color' : (50, 50, 100),
 'txt_color' : (200, 200, 200),
 'font' : "./fonts/Fipps-Regular.otf",
@@ -143,7 +144,7 @@ LEVELSLOW = {'name':'slowmo',
 
 LEVELSTRESS = {'name':'stress',
 'theme' : DERVAL,
-'nb_enemies' : 10,
+'nb_enemies' : 20,
 'content' : [INVINCIBLE]
 }
 
