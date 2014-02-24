@@ -16,6 +16,7 @@ class Player() :
         self.go_down = False
         self.stop = True
         self.ship = None
+        self.latent = self.load_ship(parameters.SHIP)
         self.alive = False
         self.score = 0
         self.life = 0
@@ -23,14 +24,15 @@ class Player() :
     def load_ship(self, parameters) :
         #instantiate according to specified type
         targetClass = getattr(entity, parameters['type'])
-        self.ship = targetClass(self.scene, self, parameters)
+        ship = targetClass(self.scene, self, parameters)
         #init position
         coord = (self.scene.limits[0]/2,
         self.scene.limits[1]-4*self.scene.theme['txt_inter'])
-        self.ship.pos = coord
+        ship.pos = coord
         #link to ship attributes
-        self.life = self.ship.life
-        self.score = self.ship.score
+        self.life = ship.life
+        self.score = ship.score
+        return ship
 
     def command(self, interval, time) :
         """command ship !!"""
@@ -86,7 +88,9 @@ class Player() :
         #player 1 should autoload ship
         if (self.ship == None and self.keys['shoot']) :
             self.alive = True
-            self.load_ship(parameters.SHIP)
+            self.ship = self.latent
+            #summon in scene
+            self.ship.add()
         if self.alive :
             self.command(interval, time)
         #update info from ship if it exists
@@ -105,6 +109,7 @@ class Container():
         self.hit = {}
         self.maps = {}
         self.background = {}
+        self.pmap = {}
 
     def surf(self, name) :
         """avoid duplicate loading"""
@@ -165,7 +170,8 @@ class Ordered():
                 group.remove(item)
 
     def prioritize(self, item, priority) :
-        """reorder an item in a specific layer of priority"""
+        """reorder an item in a specific layer of priority
+        or add a new item"""
         #eliminate prior version
         self.remove(item)
         #insert with new priority
@@ -179,22 +185,23 @@ class Scene() :
         self.level = self.game.level
         self.theme = self.level['theme']
         self.gameplay = self.level['gameplay']
-        self.players = [Player(self, i) for i in range(4)]
-        self.player1 = self.players[0]
         #an object for efficient loading
         self.cont = Container(self)
         #content in priority update order
         self.content = Ordered()
-        #layers for drawing
-        self.lst_sprites = Ordered()
+        self.players = [Player(self, i) for i in range(4)]
+        self.player1 = self.players[0]
         self.load_interface()
         self.update()
 
     def load_interface(self) :
         #interface
-        score = entity.Widget(self, 'player1.score', ['top', 'left'])
-        fps = entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'])
-        life = entity.Widget(self, 'player1.life', ['top', 'right'])
+        self.interface = [entity.Widget(self, 'player1.score', ['top', 'left']),
+        entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip']),
+        entity.Widget(self, 'player1.life', ['top', 'right']) ]
+        #add in scene
+        for item in self.interface :
+            item.add()
 
     def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites"""
@@ -273,6 +280,8 @@ class Scene() :
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.TARGET)
+            #add in scene
+            fighter.add()
         #update individuals
         for item in self.content :
             #shoot and stuff

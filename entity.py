@@ -22,17 +22,21 @@ class Actor(object) :
         #default is not ally
         if 'ally' not in parameters :
             self.ally = False
-        #load in scene
-        self.scene.content.append(self)
         #load image
         self.surface = self.scene.cont.surf(self.name)
         #layer for drawing on screen
         self.layer = 2
+        #priority of update
+        self.priority = 0
 
     def set_param(self, parameters) :
         self.parameters = parameters
         for p in self.parameters :
             setattr(self, p, self.parameters[p])
+
+    def add(self) :
+        """load in scene"""
+        self.scene.content.append(self, self.priority)
 
     def remove(self) :
         """remove from scene"""
@@ -109,7 +113,7 @@ class Fragile(Mobile) :
         #reward shooter
         self.killer.score += 1
         #explode
-        self.end.ignited = True
+        self.end.add()
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
@@ -134,6 +138,13 @@ class Fighter(Fragile) :
                 self.new_weapon(weapon)
         self.score = 0
 
+    def add(self) :
+        Fragile.add(self)
+        for arm in self.arms :
+            p_map = self.arms[arm]
+            #add projectile map to scene container
+            p_map.add()
+
     def new_weapon(self, parameters) :
         #load and avoid duplicate in scene
         projectile_map = self.scene.cont.proj(parameters)
@@ -149,13 +160,11 @@ class Fighter(Fragile) :
             #limit fire rate
             if time > self.last_shoot + w.cooldown :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-                #~ print x, y, self.center
                 w.positions.append((x, y, [self]))
                 self.last_shoot = time
 
     def update(self, interval, time) :
         Fragile.update(self, interval, time)
-        
         #autofire
         self.shoot(time, 'Bullet')
             
@@ -169,6 +178,10 @@ class ChargeFighter(Fighter) :
         #can have a charge display following fighter
         self.aura = Charge(self.scene, self,
         (0, -self.scene.theme['txt_inter']))
+
+    def add(self) :
+        Fighter.add(self)
+        self.aura.add()
 
     def shoot(self, time, weapon, power=None) :
         w = self.arms[weapon]
@@ -243,7 +256,7 @@ class Follower(Mobile) :
         self.offset = offset
         self.center_on(self.parent)
         #should be updated after parents
-        self.scene.content.prioritize(self, 1)
+        self.priority = 1
 
     def move(self, interval) :
         """move to be centered on parent"""
@@ -284,22 +297,20 @@ class Explosion(Mobile) :
         self.scene.cont.surf('OOOOO'),
         self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
-        self.ignited = False
         #explosions are in front
         self.layer = 3
 
     def update(self, interval, time) :
-        if self.ignited :
-            if time > self.parent.time_of_death + self.pulse*3 :
-                #disappear after dissipation
-                self.remove()
-            elif time > self.parent.time_of_death + self.pulse*2 :
-                self.surface = self.levels[2]
-            elif time > self.parent.time_of_death + self.pulse :
-                self.surface = self.levels[1]
-            elif time > self.parent.time_of_death :
-                self.surface = self.levels[0]
-            self.center_on(self.parent)
+        if time > self.parent.time_of_death + self.pulse*3 :
+            #disappear after dissipation
+            self.remove()
+        elif time > self.parent.time_of_death + self.pulse*2 :
+            self.surface = self.levels[2]
+        elif time > self.parent.time_of_death + self.pulse :
+            self.surface = self.levels[1]
+        elif time > self.parent.time_of_death :
+            self.surface = self.levels[0]
+        self.center_on(self.parent)
 
 class Widget(Mobile):
     def __init__(self, scene, path, parameters) :
@@ -372,6 +383,12 @@ class Projectile(Actor) :
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
         self.to_remove = []
+
+    def add(self) :
+        """add projectile map to scene if it is the only one with such
+        parameters"""
+        if self not in self.scene.content :
+            Actor.add(self)
 
     def collided(self, index) :
         #mark_bullet for removal (if not already)
