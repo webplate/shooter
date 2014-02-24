@@ -4,12 +4,14 @@ improve widget value access (direct through scene)
 add shadow below widget text in monospace
 
 update collision map for orientation
+mean fps
 
 user can set keys and buttons/axis
 
-use Clock.tick(fps) to limit runtime speed)
-
 sound in stereo !!
+
+check correct pygame.init()
+init only necessary modules
 
 weapon object
 link player keys , projectile maps, and ships weapons...

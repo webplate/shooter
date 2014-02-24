@@ -27,6 +27,11 @@ def load_level(level) :
     for key in ref :
         if key not in level :
             level.update({key : ref[key]})
+        elif key in ['theme', 'gameplay'] :
+            ref2 = ref[key]
+            for key2 in ref2 :
+                if key2 not in level[key] :
+                    level[key].update({key2 : ref2[key2]})
     return level
 
 class Shooter() :
@@ -57,7 +62,12 @@ class Shooter() :
         self.level = load_level(parameters.LEVEL)
         self.theme = self.level['theme']
         #load fonts
-        self.font = pygame.font.Font(self.theme['font'], self.theme['txt_size'])
+        self.font = pygame.font.Font(self.theme['font'],
+        self.theme['txt_size'])
+        self.mfont = pygame.font.Font(self.theme['monospace_font'],
+        self.theme['txt_size'])
+        self.sfont = pygame.font.Font(self.theme['small_font'],
+        self.theme['small_size'])
         #joysticks
         joysticks = [pygame.joystick.Joystick(x)
         for x in range(pygame.joystick.get_count())]
@@ -94,9 +104,6 @@ class Shooter() :
                             self.scene.pause(pygame.time.get_ticks())
                         else :
                             self.scene.unpause(pygame.time.get_ticks())
-                            
-
-                        
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
                 if event.key in keymap :

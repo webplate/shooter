@@ -86,3 +86,8 @@ def font_skin(scene, name) :
     surface = scene.font.render(name, False, scene.theme['txt_color'])
     return surface
 
+def blit_clip(src, dest, margins=None) :
+    """blit a portion of src"""
+    surf = dest.copy()
+    surf.blit(src, (0, 0), margins)
+    return surf

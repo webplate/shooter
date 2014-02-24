@@ -20,6 +20,7 @@ class Player() :
         self.alive = False
         self.score = 0
         self.life = 0
+        self.max_life = 1
 
     def load_ship(self, parameters) :
         #instantiate according to specified type
@@ -27,7 +28,7 @@ class Player() :
         ship = targetClass(self.scene, self, parameters)
         #init position
         coord = (self.scene.limits[0]/2,
-        self.scene.limits[1]-4*self.scene.theme['txt_inter'])
+        self.scene.limits[1]-self.scene.limits[1]/8)
         ship.pos = coord
         #link to ship attributes
         self.life = ship.life
@@ -96,6 +97,7 @@ class Player() :
         #update info from ship if it exists
         if self.ship != None :
             self.life = self.ship.life
+            self.max_life = self.ship.max_life
             self.score = self.ship.score
 
 class Container():
@@ -141,7 +143,6 @@ class Container():
             surface = self.background[name]
         else :
             surface = surftools.load_background(name, self.theme, self.scene)
-            #generate variants of image
             self.background.update({name : surface})
         return surface
 
@@ -182,6 +183,8 @@ class Scene() :
         self.game = game
         self.limits = game.limits
         self.font = game.font
+        self.mfont = game.mfont
+        self.sfont = game.sfont
         self.level = self.game.level
         self.theme = self.level['theme']
         self.gameplay = self.level['gameplay']
@@ -196,9 +199,18 @@ class Scene() :
 
     def load_interface(self) :
         #interface
-        self.interface = [entity.Widget(self, 'player1.score', ['top', 'left']),
-        entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip']),
-        entity.Widget(self, 'player1.life', ['top', 'right']) ]
+        self.interface = [
+        entity.Life(self, 0, ['bottom', 'left']),
+        entity.Score(self, 0, ['bottom', 'left'], (0, -10)),
+        entity.Life(self, 1, ['bottom', 'right']),
+        entity.Score(self, 1, ['bottom', 'right'], (0, -10)),
+        entity.Life(self, 2, ['top', 'left']),
+        entity.Score(self, 2, ['top', 'left'], (0, 10)),
+        entity.Life(self, 3, ['top', 'right']),
+        entity.Score(self, 3, ['top', 'right'], (0, 10)),
+        entity.Widget(self, 'game.fps', ['top', 'right', 'low_flip'], (0, 30))
+        ]
+        
         #add in scene
         for item in self.interface :
             item.add()

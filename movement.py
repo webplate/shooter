@@ -35,6 +35,7 @@ class AlignV(Trajectory) :
         for item in self.scene.content :
             if item.ally and hasattr(item, 'life') :
                 if item.life > max_life :
+                    max_life = item.life
                     self.target = item
                     found = True
         if not found :

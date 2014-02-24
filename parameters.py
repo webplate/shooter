@@ -21,7 +21,7 @@ KEYMAP2 = {p_l.K_d : 'right',
 p_l.K_q : 'left',
 p_l.K_z : 'up',
 p_l.K_s : 'down',
-p_l.K_RSHIFT : 'shoot'
+p_l.K_LSHIFT : 'shoot'
 }
 
 KEYMAPS = [KEYMAP1, KEYMAP2]
@@ -31,7 +31,7 @@ DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
 'hit_pulse' : 100,
 'speed' : 0.2,     #px/ms
-'bullet_speed': 0.4
+'bullet_speed': 0.25
 }
 
 SLOWMO = {'name':'slow',
@@ -44,31 +44,26 @@ SLOWMO = {'name':'slow',
 GAMEPLAY = DEFAULTPLAY
 
 #Theme packs
-TXTTHEME = {'name' : None,
+DEFAULTTHEME = {'name' : None,
 'explosion_pulse' : 100,
 'bg_color' : (50, 50, 50),
 'txt_color' : (200, 200, 200),
-'font' : "./fonts/Fipps-Regular.otf",
+'font' : "./fonts/FIXED_BO.TTF",
+'monospace_font' : "./fonts/FIXED_BO.TTF",
+'small_font' : "./fonts/MiniPower.ttf",
 'txt_size' : 8,
-'txt_inter' : 8
+'txt_inter' : 8,
+'small_size' : 16
 }
 
-DERVAL = {'name':'derval',
-'explosion_pulse' : 100,
-'bg_color' : (50, 50, 100),
-'txt_color' : (200, 200, 200),
-'font' : "./fonts/Fipps-Regular.otf",
-'txt_size' : 8,
-'txt_inter' : 8
+DERVAL = {'name':'derval'
 }
 
 IRONBRAIN = {'name':'ironbrain',
-'explosion_pulse' : 100,
-'bg_color' : (100, 150, 100),
-'txt_color' : (200, 200, 200),
-'font' : "./fonts/Fipps-Regular.otf",
-'txt_size' : 8,
-'txt_inter' : 8
+'bg_color' : (100, 110, 100),
+'font' : "./fonts/AtariSmall.ttf",
+'txt_size' : 16,
+'txt_inter' : 16
 }
 
 #projectiles
@@ -133,8 +128,8 @@ TARGETOLD = {'name':'target',
 
 #The reference playable level used to complete others
 DEFAULTLEVEL = {'name':'default',
-'theme' : TXTTHEME,
-'gameplay' : GAMEPLAY,
+'theme' : DEFAULTTHEME,
+'gameplay' : DEFAULTPLAY,
 'nb_enemies' : 3
 }
 
@@ -143,4 +138,4 @@ STRESSLEVEL = {'name':'stress',
 'nb_enemies' : 20
 }
 
-LEVEL = STRESSLEVEL
+LEVEL = DEFAULTLEVEL

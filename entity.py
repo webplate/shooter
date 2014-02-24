@@ -176,8 +176,7 @@ class ChargeFighter(Fighter) :
         Fighter.__init__(self, scene, parameters)
         self.charge = 0.
         #can have a charge display following fighter
-        self.aura = Charge(self.scene, self,
-        (0, -self.scene.theme['txt_inter']))
+        self.aura = Charge(self.scene, self)
 
     def add(self) :
         Fighter.add(self)
@@ -209,6 +208,8 @@ class Ship(ChargeFighter) :
     def __init__(self, scene, player, parameters) :
         ChargeFighter.__init__(self, scene, parameters)
         self.player = player
+        #keep ref of maximum life
+        self.max_life = self.life
         #a base name to derive alternate states
         self.base_name = self.name
         #preload oriented sprites
@@ -266,9 +267,9 @@ class Follower(Mobile) :
 
 class Charge(Follower) :
     """showing the charge of ship"""
-    def __init__(self, scene, parent, offset) :
+    def __init__(self, scene, parent, offset=(0, 0)) :
         #offset to show over ship
-        Follower.__init__(self, scene, parent, (0, 0))
+        Follower.__init__(self, scene, parent, offset)
         self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('B'),
         self.scene.cont.surf('BB'),
@@ -313,13 +314,13 @@ class Explosion(Mobile) :
         self.center_on(self.parent)
 
 class Widget(Mobile):
-    def __init__(self, scene, path, parameters) :
+    def __init__(self, scene, path, parameters, offset=(0, 0)) :
         Mobile.__init__(self, scene)
         self.path = path
         self.parameters = parameters
-        self.value = getattr_deep(self.scene, path)
-        self.surface = self.scene.font.render(self.skin(self.value),
-        False, self.scene.theme['txt_color'])
+        self.offset = offset
+        self.value = self.new_value()
+        self.surface = self.skin(self.value)
         self.shape = self.surface.get_width(), self.surface.get_height()
         self.pos = (0, 0)
         self.align()
@@ -329,32 +330,41 @@ class Widget(Mobile):
             self.last_flip = 0
         else :
             self.low = False
+        #draw interface over rest of scene
+        self.layer = 3
 
+    def new_value(self) :
+        """gets a value deep in scene"""
+        return getattr_deep(self.scene, self.path)
+        
     def align(self) :
         #recompute coordinates
         if 'center' in self.parameters :
-            self.pos = (self.scene.limits[0]/2-self.shape[0]/2,
-            self.scene.limits[1]/2-self.shape[1]/2)
+            self.pos = (self.scene.limits[0]/2-self.shape[0]/2+self.offset[0],
+            self.scene.limits[1]/2-self.shape[1]/2+self.offset[1])
         if 'left' in self.parameters :
-            self.pos = (0, self.pos[1])
+            self.pos = (self.offset[0], self.pos[1]+self.offset[1])
         if 'right' in self.parameters :
-            self.pos = (self.scene.limits[0]-self.shape[0], self.pos[1])
+            self.pos = (self.scene.limits[0]-self.shape[0]+self.offset[0],
+            self.pos[1]+self.offset[1])
         if 'top' in self.parameters :
-            self.pos = (self.pos[0], 0)
+            self.pos = (self.pos[0]+self.offset[0], self.offset[1])
         if 'bottom' in self.parameters :
-            self.pos = (self.pos[0], self.scene.limits[1]-self.shape[1])
+            self.pos = (self.pos[0]+self.offset[0],
+            self.scene.limits[1]-self.shape[1]+self.offset[1])
 
     def skin(self, value) :
-        return str(int(value))
+        surface = self.scene.sfont.render(str(int(value)), False,
+        self.scene.theme['txt_color'])
+        return surface
         
     def update(self, interval, time) :
         #recompute surface
-        new_value = getattr_deep(self.scene, self.path)  
+        new_value = self.new_value()
         if not self.low :
             if self.value != new_value :
                 self.value = new_value
-                self.surface = self.scene.font.render(self.skin(new_value),
-                False, self.scene.theme['txt_color'])
+                self.surface = self.skin(new_value)
                 new_shape = self.surface.get_width(), self.surface.get_height()
                 if self.shape != new_shape :
                     self.shape = new_shape
@@ -363,12 +373,43 @@ class Widget(Mobile):
             if time > self.last_flip + 500 and self.value != new_value :
                 self.value = new_value
                 self.last_flip = time
-                self.surface = self.scene.font.render(self.skin(new_value),
-                False, self.scene.theme['txt_color'])
+                self.surface = self.skin(new_value)
                 new_shape = self.surface.get_width(), self.surface.get_height()
                 if self.shape != new_shape :
                     self.shape = new_shape
                     self.align()
+
+class Score(Widget) :
+    """shows score of player (id given by path)"""
+    def new_value(self) :
+        player = self.scene.players[self.path]
+        #complete with leading zeros
+        score = int(player.score)
+        return score
+
+    def skin(self, value) :
+        value = str(value).rjust(5, '0')
+        surface = self.scene.sfont.render(value, False,
+        self.scene.theme['txt_color'])
+        return surface
+
+class Life(Widget) :
+    """shows life bar of player (id given by path)"""
+    def new_value(self) :
+        player = self.scene.players[self.path]
+        return float(player.life) / player.max_life
+
+    def skin(self, value) :
+        #load back sprite of life bar
+        back = self.scene.cont.surf('_____')
+        front = self.scene.cont.surf('+++++')
+        w = front.get_width()
+        h = front.get_height()
+        size = int(w * value)
+        #blit only a portion of life bar
+        surf = surftools.blit_clip(front, back, (0, 0, size, h))
+        return surf
+
 
 # PROJECTILE MAPS ###############
 #################################
