@@ -4,8 +4,9 @@ import entity, surftools, parameters
 
 class Player() :
     """class for player settings, controls, ships"""
-    def __init__(self, scene):
+    def __init__(self, scene, index) :
         self.scene = scene
+        self.index = index
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
         self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
@@ -15,8 +16,21 @@ class Player() :
         self.go_down = False
         self.stop = True
         self.ship = None
-        self.alive = True
+        self.alive = False
         self.score = 0
+        self.life = 0
+
+    def load_ship(self, parameters) :
+        #instantiate according to specified type
+        targetClass = getattr(entity, parameters['type'])
+        self.ship = targetClass(self.scene, self, parameters)
+        #init position
+        coord = (self.scene.limits[0]/2,
+        self.scene.limits[1]-4*self.scene.theme['txt_inter'])
+        self.ship.pos = coord
+        #link to ship attributes
+        self.life = self.ship.life
+        self.score = self.ship.score
 
     def command(self, interval, time) :
         """command ship !!"""
@@ -69,8 +83,16 @@ class Player() :
         and not self.keys['right'] and not self.keys['left'] ) :
             self.stop = True
 
-        if self.ship != None :
+        #player 1 should autoload ship
+        if (self.ship == None and self.keys['shoot']) :
+            self.alive = True
+            self.load_ship(parameters.SHIP)
+        if self.alive :
             self.command(interval, time)
+        #update info from ship if it exists
+        if self.ship != None :
+            self.life = self.ship.life
+            self.score = self.ship.score
 
 class Container():
     """stock surfaces and projectiles maps to prevent duplicates
@@ -149,32 +171,7 @@ class Ordered():
         #insert with new priority
         self.append(item, priority)
 
-class Bestiary() :
-    """loading and tuning every game objects"""
-    def __init__(self, scene) :
-        self.scene = scene
-
-    def load_fighter(self, name) :
-        fighter = entity.Fighter(self.scene, parameters.TARGET)
-
-    def load_content(self) :
-        to_load = self.scene.level['content']
-        for parameters in to_load :
-            #instantiate according to specified type
-            targetClass = getattr(entity, parameters['type'])
-            item = targetClass(self.scene, self.scene.player, parameters)
-            #init position
-            coord = (self.scene.limits[0]/2,
-            self.scene.limits[1]-4*self.scene.theme['txt_inter'])
-            item.pos = coord
-
-    def load_interface(self) :
-        #interface
-        score = entity.Widget(self.scene, 'ship.score', ['top', 'left'])
-        fps = entity.Widget(self.scene, 'game.fps', ['bottom', 'right', 'low_flip'])
-        life = entity.Widget(self.scene, 'ship.life', ['top', 'right'])
-
-class Scene():
+class Scene() :
     def __init__(self, game) :
         self.game = game
         self.limits = game.limits
@@ -182,23 +179,22 @@ class Scene():
         self.level = self.game.level
         self.theme = self.level['theme']
         self.gameplay = self.level['gameplay']
-        self.player = Player(self)
+        self.players = [Player(self, i) for i in range(4)]
+        self.player1 = self.players[0]
         #an object for efficient loading
         self.cont = Container(self)
         #content in priority update order
         self.content = Ordered()
         #layers for drawing
         self.lst_sprites = Ordered()
-        self.bestiary = Bestiary(self)
-        self.bestiary.load_content()
-        for item in self.content :
-            if isinstance(item, entity.Ship) :
-                self.ship = item
-                break
-        self.bestiary.load_interface()
+        self.load_interface()
         self.update()
-        #reference new ship to player
-        self.player.ship = self.ship
+
+    def load_interface(self) :
+        #interface
+        score = entity.Widget(self, 'player1.score', ['top', 'left'])
+        fps = entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'])
+        life = entity.Widget(self, 'player1.life', ['top', 'right'])
 
     def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites"""
@@ -269,14 +265,14 @@ class Scene():
                     else :
                         target_proj_map.append(identifier)
         #update player status
-        if self.player.alive :
-            self.player.update(interval, time)
+        for player in self.players :
+            player.update(interval, time)
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map, time)
         self.collide(target_proj_map, ship_map, time)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
-            self.bestiary.load_fighter('target')
+            fighter = entity.Fighter(self, parameters.TARGET)
         #update individuals
         for item in self.content :
             #shoot and stuff

@@ -7,7 +7,7 @@ COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
 #control settings
-KEYMAP = {p_l.K_f : 'fullscreen',
+KEYMAP1 = {p_l.K_f : 'fullscreen',
 p_l.K_RIGHT : 'right',
 p_l.K_LEFT : 'left',
 p_l.K_UP : 'up',
@@ -15,13 +15,7 @@ p_l.K_DOWN : 'down',
 p_l.K_SPACE : 'shoot'
 }
 
-JOYMAP = {p_l.K_f : 'fullscreen',
-p_l.K_RIGHT : 'right',
-p_l.K_LEFT : 'left',
-p_l.K_UP : 'up',
-p_l.K_DOWN : 'down',
-p_l.K_SPACE : 'shoot'
-}
+KEYMAPS = [KEYMAP1]
 
 DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
@@ -144,7 +138,7 @@ LEVELSLOW = {'name':'slowmo',
 
 LEVELSTRESS = {'name':'stress',
 'theme' : DERVAL,
-'nb_enemies' : 20,
+'nb_enemies' : 1,
 'content' : [INVINCIBLE]
 }
 

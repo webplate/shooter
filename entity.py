@@ -222,7 +222,7 @@ class Ship(ChargeFighter) :
     def die(self) :
         ChargeFighter.die(self)
         #player is dead
-        self.scene.player.alive = False
+        self.player.alive = False
 
     def update(self, interval, time) :
         #show orientation of ship

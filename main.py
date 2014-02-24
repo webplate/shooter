@@ -66,7 +66,7 @@ class Shooter() :
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
-        self.player = self.scene.player
+        self.players = self.scene.players
 
     def on_event(self, event) :
         """propagate and interpret events"""
@@ -74,53 +74,56 @@ class Shooter() :
         (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)) :
             self.running = False
         elif event.type == p_l.KEYDOWN :
-            if event.key in parameters.KEYMAP :
-                #update player key status
-                key = parameters.KEYMAP[event.key]
-                self.player.keys[key] = True
-                #switch to fullscreen
-                if key == 'fullscreen' :
-                    if self.fullscreen :
-                        self.display = pygame.display.set_mode(self.winsize)
-                    else :
-                        self.display = pygame.display.set_mode(self.winsize,
-                        p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
-                        pygame.mouse.set_visible(False)     #hide cursor
+            for i, keymap in enumerate(parameters.KEYMAPS) :
+                if event.key in keymap :
+                    #update player key status
+                    key = keymap[event.key]
+                    if key in self.players[i].keys :
+                        self.players[i].keys[key] = True
+                    #switch to fullscreen
+                    if key == 'fullscreen' :
+                        if self.fullscreen :
+                            self.display = pygame.display.set_mode(self.winsize)
+                        else :
+                            self.display = pygame.display.set_mode(self.winsize,
+                            p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
+                            pygame.mouse.set_visible(False)     #hide cursor
         elif event.type == p_l.KEYUP :
-            if event.key in parameters.KEYMAP :
-                #update player key status
-                key = parameters.KEYMAP[event.key]
-                self.player.keys[key] = False
+            for i, keymap in enumerate(parameters.KEYMAPS) :
+                if event.key in keymap :
+                    #update player key status
+                    key = keymap[event.key]
+                    if key in self.players[i].keys :
+                        self.players[i].keys[key] = False
         #Joystick events
         elif event.type == p_l.JOYAXISMOTION :
             tol = 0.8
-            if event.joy == 0 and event.axis == 0 :
+            if event.axis == 0 :
                 if event.value < tol and event.value > -tol :
-                    self.player.keys['right'] = False
-                    self.player.keys['left'] = False
+                    self.players[event.joy].keys['right'] = False
+                    self.players[event.joy].keys['left'] = False
                 elif event.value < tol :
-                    self.player.keys['right'] = False
-                    self.player.keys['left'] = True
+                    self.players[event.joy].keys['right'] = False
+                    self.players[event.joy].keys['left'] = True
                 elif event.value > -tol :
-                    self.player.keys['right'] = True
-                    self.player.keys['left'] = False
-            elif event.joy == 0 and event.axis == 1 :
+                    self.players[event.joy].keys['right'] = True
+                    self.players[event.joy].keys['left'] = False
+            elif event.axis == 1 :
                 if event.value < tol and event.value > -tol :
-                    self.player.keys['up'] = False
-                    self.player.keys['down'] = False
+                    self.players[event.joy].keys['up'] = False
+                    self.players[event.joy].keys['down'] = False
                 elif event.value < tol :
-                    self.player.keys['up'] = True
-                    self.player.keys['down'] = False
+                    self.players[event.joy].keys['up'] = True
+                    self.players[event.joy].keys['down'] = False
                 elif event.value > -tol :
-                    self.player.keys['up'] = False
-                    self.player.keys['down'] = True
+                    self.players[event.joy].keys['up'] = False
+                    self.players[event.joy].keys['down'] = True
         elif event.type == p_l.JOYBUTTONDOWN :
-            if event.joy == 0 and event.button == 2 :
-                self.player.keys['shoot'] = True
+            if event.button == 2 :
+                self.players[event.joy].keys['shoot'] = True
         elif event.type == p_l.JOYBUTTONUP :
-            if event.joy == 0 and event.button == 2 :
-                self.player.keys['shoot'] = False
-            
+            if event.button == 2 :
+                self.players[event.joy].keys['shoot'] = False
 
     def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
