@@ -34,13 +34,12 @@ def load_background(file, theme, scene):
         try:
             surface = pygame.image.load(path)
         except pygame.error:
-            #if no corresponding png generate from label
+            #if no corresponding png : empty background
             surface = font_skin(scene, ' ')
         else :
-            #strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(parameters.COLORDEPTH)
     else :
-        #no themepack : use labels as sprites 
+        #no themepack : empty background
         surface = font_skin(scene, ' ')
     return surface
 
@@ -64,12 +63,21 @@ def make_white(surface) :
     surface.set_palette([black, white])
     pix_array = pygame.PixelArray(surface)
     w, h = covered.shape
-    for i in range(w) :
-        for j in range(h) :
-            if covered[i,j] :
-                pix_array[i,j] = white
-            else :
-                pix_array[i,j] = black
+    #bypass unfitted one dimensional pixel array if w = 1
+    if w != 1 :
+        for i in range(w) :
+            for j in range(h) :
+                if covered[i,j] :
+                    pix_array[i,j] = white
+                else :
+                    pix_array[i,j] = black
+    else :
+        for i in range(w) :
+            for j in range(h) :
+                if covered[i,j] :
+                    surface.set_at((i, j), white)
+                else :
+                    surface.set_at((i, j), black)
     surface.set_colorkey(black)
     return surface
 

@@ -1,4 +1,13 @@
-joystick support
+use minifont to show score at destruction
+
+improve widget value access (direct through scene)
+add shadow below widget text in monospace
+
+update collision map for orientation
+
+user can set keys and buttons/axis
+
+use Clock.tick(fps) to limit runtime speed)
 
 sound in stereo !!
 

@@ -155,7 +155,7 @@ class Shooter() :
             pygame.transform.scale(self.screen, self.winsize, self.display)
         else :
             self.display.blit(self.screen, (0, 0))
-        #flip every 16ms only (for smooth animation, particularly on linux)
+        #limit flipping rate
         if pygame.time.get_ticks() > self.last_flip + 8 :
             self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
             pygame.display.flip()
