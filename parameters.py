@@ -8,6 +8,7 @@ RESCALE = '2x' #set to 2x or mame
 
 #control settings
 KEYMAP1 = {p_l.K_f : 'fullscreen',
+p_l.K_p : 'pause',
 p_l.K_RIGHT : 'right',
 p_l.K_LEFT : 'left',
 p_l.K_UP : 'up',
@@ -53,7 +54,6 @@ TXTTHEME = {'name' : None,
 
 DERVAL = {'name':'derval',
 'explosion_pulse' : 100,
-'background' : 'background',
 'bg_color' : (50, 50, 100),
 'txt_color' : (200, 200, 200),
 'font' : "./fonts/Fipps-Regular.otf",
@@ -134,20 +134,12 @@ TARGETOLD = {'name':'target',
 DEFAULTLEVEL = {'name':'default',
 'theme' : TXTTHEME,
 'gameplay' : GAMEPLAY,
-'content' : [SHIP],
 'nb_enemies' : 3
 }
 
-LEVELSLOW = {'name':'slowmo',
-'theme' : TXTTHEME,
-'gameplay' : SLOWMO,
-'nb_enemies' : 3
-}
-
-LEVELSTRESS = {'name':'stress',
+STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
-'nb_enemies' : 10,
-'content' : [INVINCIBLE]
+'nb_enemies' : 12
 }
 
-LEVEL = LEVELSTRESS
+LEVEL = STRESSLEVEL

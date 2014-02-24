@@ -85,7 +85,7 @@ class Player() :
         and not self.keys['right'] and not self.keys['left'] ) :
             self.stop = True
 
-        #player 1 should autoload ship
+        #shoot to join game !!
         if (self.ship == None and self.keys['shoot']) :
             self.alive = True
             self.ship = self.latent
@@ -236,7 +236,7 @@ class Scene() :
         target_proj_map = []
         #sprite list for drawing
         self.lst_sprites = Ordered()
-        self.lst_sprites.append(((0,0),self.cont.bg(self.theme['background'])),0)
+        self.lst_sprites.append(((0,0),self.cont.bg('background')),0)
         self.nb_fighters = 0
         #explore scene
         for item in self.content :

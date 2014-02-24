@@ -35,13 +35,13 @@ def load_background(file, theme, scene):
             surface = pygame.image.load(path)
         except pygame.error:
             #if no corresponding png generate from label
-            surface = font_skin(scene, file)
+            surface = font_skin(scene, ' ')
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(parameters.COLORDEPTH)
     else :
         #no themepack : use labels as sprites 
-        surface = font_skin(scene, file)
+        surface = font_skin(scene, ' ')
     return surface
 
 def make_array(surface) :

@@ -88,6 +88,15 @@ class Shooter() :
                             self.display = pygame.display.set_mode(self.winsize,
                             p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                             pygame.mouse.set_visible(False)     #hide cursor
+
+                    elif key == 'pause' :
+                        if self.scene.running :
+                            self.scene.pause(pygame.time.get_ticks())
+                        else :
+                            self.scene.unpause(pygame.time.get_ticks())
+                            
+
+                        
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
                 if event.key in keymap :
@@ -136,7 +145,7 @@ class Shooter() :
     def on_render(self) :
         """create screen frames"""
         #compute low res game screen
-        #self.screen.fill(self.theme['bg_color'])
+        self.screen.fill(self.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites :
             self.screen.blit(surf, pos)
         #rescale for display on hd hardware

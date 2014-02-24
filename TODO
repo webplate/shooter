@@ -1,6 +1,6 @@
 joystick support
 
-actors should be inited but not added by default to scene content (add() method)
+sound in stereo !!
 
 weapon object
 link player keys , projectile maps, and ships weapons...
@@ -8,8 +8,6 @@ link player keys , projectile maps, and ships weapons...
 
 ??use pygame rect object for collisions
 collisions between entities
-
-special sprites for going right left up down
 
 test makewhite on 1px (H&v) image
 
