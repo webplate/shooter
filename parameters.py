@@ -15,7 +15,15 @@ p_l.K_DOWN : 'down',
 p_l.K_SPACE : 'shoot'
 }
 
-KEYMAPS = [KEYMAP1]
+KEYMAP2 = {p_l.K_d : 'right',
+p_l.K_q : 'left',
+p_l.K_z : 'up',
+p_l.K_s : 'down',
+p_l.K_RSHIFT : 'shoot'
+}
+
+KEYMAPS = [KEYMAP1, KEYMAP2]
+
 
 DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
@@ -93,7 +101,7 @@ SHIP = {'name' : 'ship',
 'ally' : True,
 'speed' : GAMEPLAY['speed'],
 'charge_rate' : 0.001,
-'life' : 10,
+'life' : 100,
 'weapons' : [BULLET, BLAST]
 }
 
@@ -138,7 +146,7 @@ LEVELSLOW = {'name':'slowmo',
 
 LEVELSTRESS = {'name':'stress',
 'theme' : DERVAL,
-'nb_enemies' : 1,
+'nb_enemies' : 10,
 'content' : [INVINCIBLE]
 }
 

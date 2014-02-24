@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import random, math
-import entity
 
 def random_up(limits) :
     """a position in upper screen"""
@@ -34,7 +33,7 @@ class AlignV(Trajectory) :
         found = False
         max_life = 0
         for item in self.scene.content :
-            if isinstance(item, entity.Ship) :
+            if item.ally and hasattr(item, 'life') :
                 if item.life > max_life :
                     self.target = item
                     found = True
