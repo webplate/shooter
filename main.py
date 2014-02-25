@@ -16,7 +16,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
+
 import platform, os, pygame
 import pygame.locals as p_l
 import scene, parameters
@@ -47,7 +47,13 @@ class Shooter() :
         elif system == 'Darwin':   # tested with MacOS 10.5 and 10.6
             os.environ['SDL_VIDEODRIVER'] = 'Quartz'
         #Initialize pygame
-        pygame.init()
+        #only necessary modules
+        pygame.font.init()
+        pygame.joystick.init()
+        #an object to keep track of time
+        #necessary to launch pygame passing time
+        self.clock = pygame.time.Clock()
+        self.interval = 0
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x'] :
@@ -101,9 +107,9 @@ class Shooter() :
 
                     elif key == 'pause' :
                         if self.scene.running :
-                            self.scene.pause(pygame.time.get_ticks())
+                            self.scene.pause(self.now)
                         else :
-                            self.scene.unpause(pygame.time.get_ticks())
+                            self.scene.unpause(self.now)
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
                 if event.key in keymap :
@@ -143,11 +149,9 @@ class Shooter() :
 
     def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
-        new_time = pygame.time.get_ticks()
-        interval = new_time - self.last_iter
-        self.last_iter = new_time
+        self.now = pygame.time.get_ticks()
         #recompute scene status
-        self.scene.update(interval, new_time)
+        self.scene.update(self.interval, self.now)
 
     def on_render(self) :
         """create screen frames"""
@@ -163,11 +167,10 @@ class Shooter() :
         else :
             self.display.blit(self.screen, (0, 0))
         #limit flipping rate
-        if pygame.time.get_ticks() > self.last_flip + 8 :
-            self.fps = 1 / ((pygame.time.get_ticks() - self.last_flip) / 1000.)
-            pygame.display.flip()
-            self.last_flip = pygame.time.get_ticks()
-            self.frame += 1
+        self.interval = self.clock.tick(100)
+        self.fps = self.clock.get_fps()
+        pygame.display.flip()
+        self.frame += 1
 
     def on_cleanup(self) :
         pygame.quit()

@@ -138,4 +138,4 @@ STRESSLEVEL = {'name':'stress',
 'nb_enemies' : 20
 }
 
-LEVEL = DEFAULTLEVEL
+LEVEL = STRESSLEVEL

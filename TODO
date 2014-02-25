@@ -1,8 +1,5 @@
 use minifont to show score at destruction
 
-improve widget value access (direct through scene)
-add shadow below widget text in monospace
-
 update collision map for orientation
 mean fps
 

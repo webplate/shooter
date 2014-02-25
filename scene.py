@@ -198,17 +198,18 @@ class Scene() :
         self.update()
 
     def load_interface(self) :
+        
         #interface
         self.interface = [
         entity.Life(self, 0, ['bottom', 'left']),
         entity.Score(self, 0, ['bottom', 'left'], (0, -10)),
         entity.Life(self, 1, ['bottom', 'right']),
         entity.Score(self, 1, ['bottom', 'right'], (0, -10)),
-        entity.Life(self, 2, ['top', 'left']),
-        entity.Score(self, 2, ['top', 'left'], (0, 10)),
-        entity.Life(self, 3, ['top', 'right']),
-        entity.Score(self, 3, ['top', 'right'], (0, 10)),
-        entity.Widget(self, 'game.fps', ['top', 'right', 'low_flip'], (0, 30))
+        entity.Life(self, 2, ['bottom', 'left'], (30, 0)),
+        entity.Score(self, 2, ['bottom', 'left'], (30, -10)),
+        entity.Life(self, 3, ['bottom', 'right'], (-30, 0)),
+        entity.Score(self, 3, ['bottom', 'right'], (-30, -10)),
+        entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'], (0, -30))
         ]
         
         #add in scene
