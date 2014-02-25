@@ -50,6 +50,12 @@ class Shooter() :
         #only necessary modules
         pygame.font.init()
         pygame.joystick.init()
+        #small buffer for low latency sound (speedy gameplay)
+        pygame.mixer.init(buffer=8)
+        #large number of channels for many sounds
+        pygame.mixer.set_num_channels(256)
+        self.sound = pygame.mixer.Sound('sounds/mc/shoot.wav')
+        self.soundex = pygame.mixer.Sound('sounds/mc/explosion.wav')
         #an object to keep track of time
         #necessary to launch pygame passing time
         self.clock = pygame.time.Clock()

@@ -114,6 +114,7 @@ class Fragile(Mobile) :
         self.killer.score += 1
         #explode
         self.end.add()
+        self.scene.game.soundex.play()
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
@@ -191,11 +192,13 @@ class ChargeFighter(Fighter) :
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
+                self.scene.game.sound.play()
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
             w.positions.append((x, y, [self, power]))
+            
 
     def die(self) :
         Fighter.die(self)
