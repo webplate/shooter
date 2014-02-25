@@ -51,7 +51,7 @@ class Shooter() :
         pygame.font.init()
         pygame.joystick.init()
         #small buffer for low latency sound (speedy gameplay)
-        pygame.mixer.init(buffer=8)
+        pygame.mixer.init(buffer=32)
         #large number of channels for many sounds
         pygame.mixer.set_num_channels(256)
         self.sound = pygame.mixer.Sound('sounds/mc/shoot.wav')
