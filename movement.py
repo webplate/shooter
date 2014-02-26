@@ -17,30 +17,41 @@ class Trajectory() :
         self.scene = scene
         self.mobile = mobile
 
-class Center() :
-    """is center of screen"""
-    def __init__(self, scene) :
-        self.scene = scene
-        self.center = self.scene.limits[0]/2, self.scene.limits[0]/2
 
-class AlignV(Trajectory) :
-    """align vertically with ship"""
+class Align(Trajectory) :
+    """can focus on a target"""
     def __init__(self, scene, mobile) :
         Trajectory.__init__(self, scene, mobile)
+        #variables to intermitently check for target
+        self.last_check = 0
+        self.target = None
+        
+    def search(self, time) :
+        #update targets every seconds
+        if time > self.last_check + 1000 :
+            self.last_check = time
+            #target healthier player !
+            max_life = 0
+            for item in self.scene.content :
+                if item.ally and hasattr(item, 'life') :
+                    if item.life > max_life :
+                        max_life = item.life
+                        self.target = item
+
+    def next_pos(self, pos, interval, time) :
+        """move only if has a target"""
+        self.search(time)
+        if self.target != None :
+            return self.new_pos(pos, interval)
+        else :
+            return pos
+
+class AlignV(Align) :
+    """align vertically with ship"""
+    def __init__(self, scene, mobile) :
+        Align.__init__(self, scene, mobile)
         #set init position of mobile
         self.mobile.pos = random_up(self.scene.limits)
-        #target healthier player !
-        found = False
-        max_life = 0
-        for item in self.scene.content :
-            if item.ally and hasattr(item, 'life') :
-                if item.life > max_life :
-                    max_life = item.life
-                    self.target = item
-                    found = True
-        if not found :
-            #go to center of screen
-            self.target = Center(self.scene)
 
     def new_pos(self, pos, interval) :
         """compute new position from floats"""
@@ -54,10 +65,10 @@ class AlignV(Trajectory) :
                 pos = pos[0] - offset, pos[1]
         return pos
 
-class AlignH(Trajectory) :
+class AlignH(Align) :
     """align horizontally with ship"""
     def __init__(self, scene, mobile) :
-        Trajectory.__init__(self, scene, mobile)
+        Align.__init__(self, scene, mobile)
         #set init position of mobile
         self.mobile.pos = random_up(self.scene.limits)
 
@@ -103,19 +114,20 @@ class Circular(GoFront) :
         #one turn each second
         self.angular_speed = 2*math.pi / 1000
         
-    def abs_pos(self) :
+    def abs_pos(self, interval, time) :
         #rotate around reference
-        angle = self.scene.now * self.angular_speed + self.init_angle
+        angle = time * self.angular_speed + self.init_angle
         #oscillating radius
-        radius = self.radius * math.sin(self.omega * self.scene.now)
+        radius = self.radius * math.sin(self.omega * time)
         return pol2cart(radius, angle)
 
-    def rel_pos(self, interval) :
-        self.ref_pos = GoFront.new_pos(self, self.ref_pos, interval)
+    def rel_pos(self, interval, time) :
+        self.ref_pos = GoFront.next_pos(self, self.ref_pos, interval, time)
         return self.ref_pos
 
-    def new_pos(self, pos, interval) :
-        xrel, yrel = self.rel_pos(interval)
-        xabs, yabs = self.abs_pos()
+    def next_pos(self, pos, interval, time) :
+        """add dynamic (relative to others) and passive trajectories"""
+        xrel, yrel = self.rel_pos(interval, time)
+        xabs, yabs = self.abs_pos(interval, time)
         return xrel+xabs, yrel+yabs
         

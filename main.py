@@ -48,18 +48,24 @@ class Shooter() :
             os.environ['SDL_VIDEODRIVER'] = 'Quartz'
         #Initialize pygame
         #only necessary modules
-        pygame.font.init()
-        pygame.joystick.init()
-        #small buffer for low latency sound (speedy gameplay)
-        pygame.mixer.init(buffer=32)
-        #large number of channels for many sounds
-        pygame.mixer.set_num_channels(256)
-        self.sound = pygame.mixer.Sound('sounds/mc/shoot.wav')
-        self.soundex = pygame.mixer.Sound('sounds/mc/explosion.wav')
+        #try to init sound mixer
+        try :
+            #small buffer for low latency sound (speedy gameplay)
+            pygame.mixer.init(buffer=32)
+        #support systems with no sound card
+        except pygame.error :
+            self.no_sound = True
+        else :
+            #large number of channels for many sounds
+            pygame.mixer.set_num_channels(256)
+            self.sound = pygame.mixer.Sound('sounds/mc/shoot.wav')
+            self.soundex = pygame.mixer.Sound('sounds/mc/explosion.wav')
+            self.no_sound = False
         #an object to keep track of time
         #necessary to launch pygame passing time
         self.clock = pygame.time.Clock()
         self.interval = 0
+        self.speed = parameters.DEFAULTPLAY['game_speed']
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x'] :
@@ -74,6 +80,7 @@ class Shooter() :
         self.level = load_level(parameters.LEVEL)
         self.theme = self.level['theme']
         #load fonts
+        pygame.font.init()
         self.font = pygame.font.Font(self.theme['font'],
         self.theme['txt_size'])
         self.mfont = pygame.font.Font(self.theme['monospace_font'],
@@ -81,6 +88,7 @@ class Shooter() :
         self.sfont = pygame.font.Font(self.theme['small_font'],
         self.theme['small_size'])
         #joysticks
+        pygame.joystick.init()
         joysticks = [pygame.joystick.Joystick(x)
         for x in range(pygame.joystick.get_count())]
         for joy in joysticks :
@@ -97,9 +105,9 @@ class Shooter() :
             self.running = False
         elif event.type == p_l.KEYDOWN :
             for i, keymap in enumerate(parameters.KEYMAPS) :
-                if event.key in keymap :
+                if event.scancode in keymap :
                     #update player key status
-                    key = keymap[event.key]
+                    key = keymap[event.scancode]
                     if key in self.players[i].keys :
                         self.players[i].keys[key] = True
                     #switch to fullscreen
@@ -110,17 +118,16 @@ class Shooter() :
                             self.display = pygame.display.set_mode(self.winsize,
                             p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                             pygame.mouse.set_visible(False)     #hide cursor
-
                     elif key == 'pause' :
-                        if self.scene.running :
-                            self.scene.pause(self.now)
+                        if not self.scene.paused :
+                            self.scene.pause(self.now*self.speed)
                         else :
-                            self.scene.unpause(self.now)
+                            self.scene.paused = False
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
-                if event.key in keymap :
+                if event.scancode in keymap :
                     #update player key status
-                    key = keymap[event.key]
+                    key = keymap[event.scancode]
                     if key in self.players[i].keys :
                         self.players[i].keys[key] = False
         #Joystick events
@@ -157,7 +164,7 @@ class Shooter() :
         """alter and move objects according to altitude, movement..."""
         self.now = pygame.time.get_ticks()
         #recompute scene status
-        self.scene.update(self.interval, self.now)
+        self.scene.update(self.interval*self.speed, self.now*self.speed)
 
     def on_render(self) :
         """create screen frames"""

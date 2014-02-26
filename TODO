@@ -1,14 +1,10 @@
 use minifont to show score at destruction
 
 update collision map for orientation
-mean fps
 
 user can set keys and buttons/axis
 
 sound in stereo !!
-
-check correct pygame.init()
-init only necessary modules
 
 weapon object
 link player keys , projectile maps, and ships weapons...
@@ -17,8 +13,6 @@ link player keys , projectile maps, and ships weapons...
 ??use pygame rect object for collisions
 collisions between entities
 
-test makewhite on 1px (H&v) image
+bug of keyboard layout (use event.unicode / scancode ??
 
-add score, life for each player --> a widget object !!
-support four players
-idea: one thread for positions, one thread for drawing
+idea: one thread for positions, instanciations, one thread for drawing

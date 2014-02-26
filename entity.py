@@ -54,10 +54,10 @@ class Mobile(Actor) :
             self.trajectory = None
         else :
             #a trajectory object to control position
-            targetClass = getattr(movement, self.trajectory)
-            self.movement = targetClass(self.scene, self)
-        self.array = self.scene.cont.array[self.name]
+            trajClass = getattr(movement, self.trajectory)
+            self.movement = trajClass(self.scene, self)
         self.base_surface = self.surface
+        self.center = surftools.get_center(self.pos, self.surface)
         
     def _get_pos(self) :
         """world wants exact position"""
@@ -67,9 +67,9 @@ class Mobile(Actor) :
         self._pos = new_position[0], new_position[1]
     pos = property(_get_pos, _set_pos)
     
-    def move(self, interval) :
+    def move(self, interval, time) :
         if self.trajectory != None :
-            self._pos = self.movement.new_pos(self._pos, interval)
+            self._pos = self.movement.next_pos(self._pos, interval, time)
         
     def center_on(self, mobile) :
         x, y = mobile.pos
@@ -79,7 +79,7 @@ class Mobile(Actor) :
 
     def update(self, interval, time) :
         self.center = surftools.get_center(self.pos, self.surface)
-        self.move(interval)
+        self.move(interval, time)
 
 
 class Fragile(Mobile) :
@@ -114,7 +114,7 @@ class Fragile(Mobile) :
         self.killer.score += 1
         #explode
         self.end.add()
-        self.scene.game.soundex.play()
+        #~ self.scene.game.soundex.play()
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
@@ -192,7 +192,7 @@ class ChargeFighter(Fighter) :
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
-                self.scene.game.sound.play()
+                #~ self.scene.game.sound.play()
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :
@@ -262,7 +262,7 @@ class Follower(Mobile) :
         #should be updated after parents
         self.priority = 1
 
-    def move(self, interval) :
+    def move(self, interval, time) :
         """move to be centered on parent"""
         self.center_on(self.parent)
         new_pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]

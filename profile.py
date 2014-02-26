@@ -5,5 +5,5 @@ import cProfile
 
 if __name__ == "__main__" :
     app = main.Shooter()
-    cProfile.run('app.on_execute()')
+    cProfile.run('app.on_execute()', sort='cumulative')
 

@@ -195,10 +195,12 @@ class Scene() :
         self.players = [Player(self, i) for i in range(4)]
         self.player1 = self.players[0]
         self.load_interface()
+        #delay between scene and game (scene can be paused)
+        self.paused = False
+        self.delay = 0
         self.update()
 
     def load_interface(self) :
-        
         #interface
         self.interface = [
         entity.Life(self, 0, ['bottom', 'left']),
@@ -225,7 +227,7 @@ class Scene() :
                     #is in range ?
                     if xP < xTe and xP > xT and yP < yTe and yP > yT :
                         #per pixel collision
-                        if itemT.array[xP - xT, yP - yT] :
+                        if self.cont.array[itemT.name][xP - xT, yP - yT] :
                             #hurt or not, entity
                             itemT.collided(itemP, index, time)
                             #remove or not, colliding projectile
@@ -236,12 +238,25 @@ class Scene() :
                     if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
-                        if True in itemT.array[minx:maxx, miny:maxy] :
+                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
                             itemT.collided(itemP, index, time)
                             itemP.collided(index)
 
+    def update_paused(self, interval=0, time=0) :
+        #check for resuming
+        if not self.paused :
+            self.delay += time - self.pause_time
+            self.update = self.orig_update
+
+    def pause(self, time) :
+        self.pause_time = time
+        self.paused = True
+        #if paused bypass classic update
+        self.orig_update = self.update
+        self.update = self.update_paused
+
     def update(self, interval = 0, time = 0) :
-        self.now = time
+        self.now = time - self.delay
         #collision maps
         ship_map = []
         target_map = []
@@ -261,7 +276,7 @@ class Scene() :
                 if isinstance(item, entity.Fragile) :
                     #populate collision maps
                     #precompute for faster detection
-                    width, height = item.array.shape
+                    width, height = self.cont.array[item.name].shape
                     identifier = (x, y, x+width, y+height, item)
                     if item.ally :
                         ship_map.append(identifier)
@@ -286,10 +301,10 @@ class Scene() :
                         target_proj_map.append(identifier)
         #update player status
         for player in self.players :
-            player.update(interval, time)
+            player.update(interval, self.now)
         #detect collisions and update accordingly
-        self.collide(ship_proj_map, target_map, time)
-        self.collide(target_proj_map, ship_map, time)
+        self.collide(ship_proj_map, target_map, self.now)
+        self.collide(target_proj_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.TARGET)
@@ -298,4 +313,4 @@ class Scene() :
         #update individuals
         for item in self.content :
             #shoot and stuff
-            item.update(interval, time)
+            item.update(interval, self.now)

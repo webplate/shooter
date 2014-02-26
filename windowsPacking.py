@@ -29,10 +29,11 @@ extra_data.append(os.path.join(pygamedir, 'libogg-0.dll'))
 
 origIsSystemDLL = py2exe.build_exe.isSystemDLL
 def isSystemDLL(pathname):
-    if os.path.basename(pathname).lower() in ["sdl_ttf.dll"]:
-        return 0
-    return origIsSystemDLL(pathname)
+        if os.path.basename(pathname).lower() in ("msvcp71.dll", "dwmapi.dll"):
+                return 0
+        return origIsSystemDLL(pathname)
 py2exe.build_exe.isSystemDLL = isSystemDLL
+
 
 
 #Libraries to exclude from the EXE (use to cut down the final EXE filesize.)
