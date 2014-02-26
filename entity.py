@@ -243,12 +243,13 @@ class Ship(ChargeFighter) :
 
     def update(self, interval, time) :
         #show orientation of ship
-        if self.player.stop :
+        if not self.player.go_right and not self.player.go_left :
             self.name = self.base_name
         elif self.player.go_right :
             self.name = '-' + self.base_name
         elif self.player.go_left :
             self.name = self.base_name + '-'
+            
         self.surface = self.scene.cont.surf(self.name)
         ChargeFighter.update(self, interval, time)
 

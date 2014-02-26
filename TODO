@@ -1,6 +1,6 @@
-use minifont to show score at destruction
+ship shouldn't remain tilted
 
-update collision map for orientation
+use minifont to show score at destruction
 
 user can set keys and buttons/axis
 
