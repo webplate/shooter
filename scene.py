@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import entity, surftools, parameters
+import entity, tools, parameters
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -102,6 +102,7 @@ class Player() :
 
 class Container():
     """stock surfaces and projectiles maps to prevent duplicates
+    stock sounds also
     """
     def __init__(self, scene) :
         self.scene = scene
@@ -112,16 +113,17 @@ class Container():
         self.maps = {}
         self.background = {}
         self.pmap = {}
+        self.snds = {}
 
     def surf(self, name) :
         """avoid duplicate loading"""
         if name in self.surfaces :
             surface = self.surfaces[name]
         else :
-            surface = surftools.load_image(name, self.theme, self.scene)
+            surface = tools.load_image(name, self.theme, self.scene)
             #generate variants of image
-            hit = surftools.make_white(surface)
-            array = surftools.make_array(surface)
+            hit = tools.make_white(surface)
+            array = tools.make_array(surface)
             self.surfaces.update({name : surface})
             self.hit.update({name : hit})
             self.array.update({name : array})
@@ -142,9 +144,25 @@ class Container():
         if name in self.background :
             surface = self.background[name]
         else :
-            surface = surftools.load_background(name, self.theme, self.scene)
+            surface = tools.load_background(name, self.theme, self.scene)
             self.background.update({name : surface})
         return surface
+
+    def snd(self, name) :
+        """load sounds"""
+        if name in self.snds :
+            sound = self.snds[name]
+        else :
+            sound = tools.load_sound(name, self.scene)
+            self.snds.update({name : sound})
+        return sound
+
+    def play(self, sound, volume) :
+        if not self.scene.mute :
+            sound = self.snd(sound)
+            if sound != None :
+                sound.set_volume(volume)
+                sound.play()
 
 class Ordered():
     """stock objects of scene in layered priority
@@ -187,6 +205,8 @@ class Scene() :
         self.sfont = game.sfont
         self.level = self.game.level
         self.theme = self.level['theme']
+        self.snd_pack = self.level['sound_pack']
+        self.mute = False
         self.gameplay = self.level['gameplay']
         #an object for efficient loading
         self.cont = Container(self)

@@ -1,5 +1,3 @@
-ship shouldn't remain tilted
-
 use minifont to show score at destruction
 
 user can set keys and buttons/axis
@@ -9,6 +7,7 @@ sound in stereo !!
 weapon object
 link player keys , projectile maps, and ships weapons...
 
+use pySonic for spatial sound !
 
 ??use pygame rect object for collisions
 collisions between entities

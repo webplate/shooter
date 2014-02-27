@@ -51,15 +51,13 @@ class Shooter() :
         #try to init sound mixer
         try :
             #small buffer for low latency sound (speedy gameplay)
-            pygame.mixer.init(buffer=32)
+            pygame.mixer.init(buffer=512)
         #support systems with no sound card
         except pygame.error :
             self.no_sound = True
         else :
             #large number of channels for many sounds
             pygame.mixer.set_num_channels(256)
-            self.sound = pygame.mixer.Sound('sounds/mc/shoot.wav')
-            self.soundex = pygame.mixer.Sound('sounds/mc/explosion.wav')
             self.no_sound = False
         #an object to keep track of time
         #necessary to launch pygame passing time
@@ -123,6 +121,11 @@ class Shooter() :
                             self.scene.pause(self.now*self.speed)
                         else :
                             self.scene.paused = False
+                    elif key == 'mute' :
+                        if not self.scene.mute :
+                            self.scene.mute = True
+                        else :
+                            self.scene.mute = False
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
                 if event.scancode in keymap :

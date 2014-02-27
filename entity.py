@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import movement, surftools
+import movement, tools
 
 def getattr_deep(start, attr):
     """useful function for accessing attributes of attributes..."""
@@ -57,7 +57,7 @@ class Mobile(Actor) :
             trajClass = getattr(movement, self.trajectory)
             self.movement = trajClass(self.scene, self)
         self.base_surface = self.surface
-        self.center = surftools.get_center(self.pos, self.surface)
+        self.center = tools.get_center(self.pos, self.surface)
         
     def _get_pos(self) :
         """world wants exact position"""
@@ -78,7 +78,7 @@ class Mobile(Actor) :
         self._pos = x + w - sw, y + h - sh 
 
     def update(self, interval, time) :
-        self.center = surftools.get_center(self.pos, self.surface)
+        self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
 
 
@@ -92,8 +92,11 @@ class Fragile(Mobile) :
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
+        #reward for killing
+        self.reward = 1
         #fragile can explode
         self.end = Explosion(self.scene, self)
+        self.rew = Desc(self.scene, self)
 
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
@@ -111,10 +114,14 @@ class Fragile(Mobile) :
         #remove of scene
         self.remove()
         #reward shooter
-        self.killer.score += 1
+        self.killer.score += self.reward
         #explode
         self.end.add()
-        #~ self.scene.game.soundex.play()
+        #show reward
+        self.rew.add()
+        #play explosion sound
+        self.scene.cont.play('explosion', 0.2)
+        
         
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
@@ -192,7 +199,7 @@ class ChargeFighter(Fighter) :
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
-                #~ self.scene.game.sound.play()
+                self.scene.cont.play('shoot', 0.1)
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :
@@ -230,7 +237,7 @@ class Ship(ChargeFighter) :
             new_pos = self._pos[0], self._pos[1]-offset
         elif direction == 'down' :
             new_pos = self._pos[0], self._pos[1]+offset
-        new_center = surftools.get_center(new_pos, self.surface)
+        new_center = tools.get_center(new_pos, self.surface)
         #do not step outside screen
         if (new_center[0] < self.scene.limits[0] and new_center[0] > 0
         and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
@@ -295,7 +302,7 @@ class Charge(Follower) :
 
 class Explosion(Mobile) :
     """showing explosion of ship at last standing point"""
-    def __init__(self, scene, parent, offset=(0, 0)) :
+    def __init__(self, scene, parent) :
         Mobile.__init__(self, scene)
         self.parent = parent
         self.levels = [self.scene.cont.surf('OOOOOOO'),
@@ -317,6 +324,20 @@ class Explosion(Mobile) :
             self.surface = self.levels[0]
         self.center_on(self.parent)
 
+class Desc(Mobile) :
+    """showing descriptor on item"""
+    def __init__(self, scene, parent, text='100', duration=500) :
+        Mobile.__init__(self, scene)
+        self.parent = parent
+        self.surface = self.scene.cont.surf(text)
+        self.duration = duration
+        self.layer = 4
+
+    def update(self, interval, time) :
+        if time > self.parent.time_of_death + self.duration :
+            self.remove()
+        self.center_on(self.parent)
+
 class Widget(Mobile):
     def __init__(self, scene, path, parameters, offset=(0, 0)) :
         Mobile.__init__(self, scene)
@@ -335,7 +356,7 @@ class Widget(Mobile):
         else :
             self.low = False
         #draw interface over rest of scene
-        self.layer = 3
+        self.layer = 5
 
     def new_value(self) :
         """gets a value deep in scene"""
@@ -411,7 +432,7 @@ class Life(Widget) :
         h = front.get_height()
         size = int(w * value)
         #blit only a portion of life bar
-        surf = surftools.blit_clip(front, back, (0, 0, size, h))
+        surf = tools.blit_clip(front, back, (0, 0, size, h))
         return surf
 
 

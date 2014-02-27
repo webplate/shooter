@@ -9,6 +9,7 @@ RESCALE = '2x' #set to 2x or mame
 
 #control settings keyed by scancode of pressed key
 KEYMAP1 = {41 : 'fullscreen',
+47 : 'mute',
 33 : 'pause',
 114 : 'right',
 113 : 'left',
@@ -31,7 +32,7 @@ DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
 'hit_pulse' : 50,
 'blast_hit_pulse' : 100,
-'game_speed' : 0.5,
+'game_speed' : 1,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
 }
@@ -124,12 +125,14 @@ TARGETOLD = {'name':'target',
 #The reference playable level used to complete others
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
+'sound_pack' : None,
 'gameplay' : DEFAULTPLAY,
 'nb_enemies' : 3
 }
 
 STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
+'sound_pack' : 'mc',
 'nb_enemies' : 10
 }
 
