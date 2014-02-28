@@ -51,7 +51,7 @@ class Shooter() :
         #try to init sound mixer
         try :
             #small buffer for low latency sound (speedy gameplay)
-            pygame.mixer.init(buffer=512)
+            pygame.mixer.init(buffer=64)
         #support systems with no sound card
         except pygame.error :
             self.no_sound = True
