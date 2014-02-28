@@ -119,8 +119,8 @@ class Fragile(Mobile) :
         self.end.add()
         #show reward
         self.rew.add()
-        #play explosion sound
-        self.scene.cont.play('explosion', 0.2)
+        #play explosion sound at correct stereo position
+        self.scene.cont.play('explosion', self.pos[0])
         
         
     def update(self, interval, time) :
@@ -199,7 +199,7 @@ class ChargeFighter(Fighter) :
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
                 w.positions.append((x, y, [self]))
-                self.scene.cont.play('shoot', 0.1)
+                self.scene.cont.play('shoot', self.pos[0])
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :

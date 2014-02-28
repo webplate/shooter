@@ -157,12 +157,14 @@ class Container():
             self.snds.update({name : sound})
         return sound
 
-    def play(self, sound, volume) :
+    def play(self, sound, xpos) :
+        """play sound at correct left/right position"""
+        p = (self.scene.limits[0] - abs(xpos)) / float(self.scene.limits[0])
         if not self.scene.mute :
             sound = self.snd(sound)
             if sound != None :
-                sound.set_volume(volume)
-                sound.play()
+                channel = sound.play()
+                channel.set_volume(p, 1-p)
 
 class Ordered():
     """stock objects of scene in layered priority
