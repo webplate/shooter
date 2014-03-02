@@ -10,9 +10,21 @@ def get_center(pos, surface) :
 def load_sound(file, scene) :
     """load sound or not"""
     if scene.snd_pack != None :
-        path = os.path.join('sounds', scene.snd_pack, file + '.ogg')
+        path = os.path.join('sounds', scene.snd_pack['name'], file + '.ogg')
         try :
             sound = pygame.mixer.Sound(path)
+        except pygame.error :
+            sound = None
+    else :
+        sound = None
+    return sound
+
+def load_stream(file, scene) :
+    """load music track or not"""
+    if scene.snd_pack != None :
+        path = os.path.join('sounds', scene.snd_pack['name'], file + '.ogg')
+        try :
+            sound = pygame.mixer.music.load(path)
         except pygame.error :
             sound = None
     else :

@@ -7,22 +7,22 @@ GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
-#control settings keyed by scancode of pressed key
-KEYMAP1 = {41 : 'fullscreen',
-47 : 'mute',
-33 : 'pause',
-114 : 'right',
-113 : 'left',
-111 : 'up',
-116 : 'down',
-65 : 'shoot'
+#control settings
+KEYMAP1 = {p_l.K_f : 'fullscreen',
+p_l.K_m : 'mute',
+p_l.K_p : 'pause',
+p_l.K_RIGHT : 'right',
+p_l.K_LEFT : 'left',
+p_l.K_UP : 'up',
+p_l.K_DOWN : 'down',
+p_l.K_SPACE : 'shoot'
 }
 
-KEYMAP2 = {40 : 'right',
-38 : 'left',
-25 : 'up',
-39 : 'down',
-50 : 'shoot'
+KEYMAP2 = {p_l.K_d : 'right',
+p_l.K_q : 'left',
+p_l.K_z : 'up',
+p_l.K_s : 'down',
+p_l.K_LSHIFT : 'shoot'
 }
 
 KEYMAPS = [KEYMAP1, KEYMAP2]
@@ -50,6 +50,14 @@ DEFAULTTHEME = {'name' : None,
 'txt_size' : 8,
 'txt_inter' : 8,
 'small_size' : 16
+}
+
+DEFAULTSNDPACK = {'name' : None,
+'music_volume' : 0.3,
+'effect_volume' : 0.2
+}
+
+MCPACK = {'name' : 'mc'
 }
 
 DERVAL = {'name':'derval'
@@ -125,14 +133,14 @@ TARGETOLD = {'name':'target',
 #The reference playable level used to complete others
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
-'sound_pack' : None,
+'sound_pack' : DEFAULTSNDPACK,
 'gameplay' : DEFAULTPLAY,
 'nb_enemies' : 3
 }
 
 STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
-'sound_pack' : 'mc',
+'sound_pack' : MCPACK,
 'nb_enemies' : 10
 }
 

@@ -96,7 +96,9 @@ class Fragile(Mobile) :
         self.reward = 1
         #fragile can explode
         self.end = Explosion(self.scene, self)
-        self.rew = Desc(self.scene, self)
+        #prepare score show if significant
+        if self.reward > 99 :
+            self.rew = Desc(self.scene, self)
 
     def collided(self, projectile, index, time) :
         #persistent projectiles have damage pulse
@@ -117,8 +119,9 @@ class Fragile(Mobile) :
         self.killer.score += self.reward
         #explode
         self.end.add()
-        #show reward
-        self.rew.add()
+        if self.reward > 99 :
+            #show reward
+            self.rew.add()
         #play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
         

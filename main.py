@@ -27,7 +27,7 @@ def load_level(level) :
     for key in ref :
         if key not in level :
             level.update({key : ref[key]})
-        elif key in ['theme', 'gameplay'] :
+        elif key in ['theme', 'gameplay', 'sound_pack'] :
             ref2 = ref[key]
             for key2 in ref2 :
                 if key2 not in level[key] :
@@ -58,6 +58,8 @@ class Shooter() :
         else :
             #large number of channels for many sounds
             pygame.mixer.set_num_channels(256)
+            #a music mixer for background music
+            self.music = pygame.mixer.music
             self.no_sound = False
         #an object to keep track of time
         #necessary to launch pygame passing time
@@ -103,9 +105,9 @@ class Shooter() :
             self.running = False
         elif event.type == p_l.KEYDOWN :
             for i, keymap in enumerate(parameters.KEYMAPS) :
-                if event.scancode in keymap :
+                if event.key in keymap :
                     #update player key status
-                    key = keymap[event.scancode]
+                    key = keymap[event.key]
                     if key in self.players[i].keys :
                         self.players[i].keys[key] = True
                     #switch to fullscreen
@@ -128,9 +130,9 @@ class Shooter() :
                             self.scene.mute = False
         elif event.type == p_l.KEYUP :
             for i, keymap in enumerate(parameters.KEYMAPS) :
-                if event.scancode in keymap :
+                if event.key in keymap :
                     #update player key status
-                    key = keymap[event.scancode]
+                    key = keymap[event.key]
                     if key in self.players[i].keys :
                         self.players[i].keys[key] = False
         #Joystick events

@@ -158,13 +158,26 @@ class Container():
         return sound
 
     def play(self, sound, xpos) :
-        """play sound at correct left/right position"""
         p = (self.scene.limits[0] - abs(xpos)) / float(self.scene.limits[0])
+        #adjust volume
+        p = p * self.scene.snd_pack['effect_volume']
         if not self.scene.mute :
             sound = self.snd(sound)
             if sound != None :
                 channel = sound.play()
                 channel.set_volume(p, 1-p)
+
+    def music(self, track=None, loops=-1) :
+        """control game mixer for streaming large music files"""
+        if not self.scene.mute and not self.scene.paused :
+            if track != None :
+                tools.load_stream(track, self.scene)
+                self.scene.game.music.play(loops)
+                self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
+            else :
+                self.scene.game.music.unpause()
+        else :
+            self.scene.game.music.pause()
 
 class Ordered():
     """stock objects of scene in layered priority
@@ -220,6 +233,8 @@ class Scene() :
         #delay between scene and game (scene can be paused)
         self.paused = False
         self.delay = 0
+        #launch background music
+        self.cont.music('background')
         self.update()
 
     def load_interface(self) :
@@ -265,6 +280,8 @@ class Scene() :
                             itemP.collided(index)
 
     def update_paused(self, interval=0, time=0) :
+        #stop background music
+        self.cont.music()
         #check for resuming
         if not self.paused :
             self.delay += time - self.pause_time
@@ -336,3 +353,5 @@ class Scene() :
         for item in self.content :
             #shoot and stuff
             item.update(interval, self.now)
+        #update music playback
+        self.cont.music()
