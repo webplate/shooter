@@ -169,7 +169,8 @@ class Container():
 
     def music(self, track=None, loops=-1) :
         """control game mixer for streaming large music files"""
-        if not self.scene.mute and not self.scene.paused :
+        if (not self.scene.mute and not self.scene.paused
+        and not self.scene.game.no_sound) :
             if track != None :
                 tools.load_stream(track, self.scene)
                 self.scene.game.music.play(loops)
