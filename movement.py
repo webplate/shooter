@@ -55,7 +55,7 @@ class AlignV(Align) :
 
     def new_pos(self, pos, interval) :
         """compute new position from floats"""
-        offset =  self.mobile.speed * interval
+        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
         #move only if far enough
         distance = abs(self.mobile.center[0] - self.target.center[0])
         if distance > offset :
@@ -74,7 +74,7 @@ class AlignH(Align) :
 
     def new_pos(self, pos, interval) :
         """compute new position from floats"""
-        offset =  self.mobile.speed * interval
+        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
         #move only if far enough
         distance = abs(self.mobile.center[1] - self.target.center[1])
         if distance > offset :
@@ -88,7 +88,7 @@ class GoFront(AlignV) :
     """try to be in front of ship"""
     def new_pos(self, pos, interval) :
         pos = AlignV.new_pos(self, pos, interval)
-        offset =  self.mobile.speed * interval
+        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
         #y coord to reach
         y = self.target.center[1] - self.scene.limits[1]/2
         #move only if far enough

@@ -1,15 +1,19 @@
-use minifont to show score at destruction
+front must appear when changing direction
+
+bug : not able to up when on side of screen...
 
 user can set keys and buttons/axis
 
 weapon object
 link player keys , projectile maps, and ships weapons...
 
-use pySonic for spatial sound !
 
 ??use pygame rect object for collisions
 collisions between entities
 
-bug of keyboard layout (use event.unicode / scancode ??
+bug of keyboard layout (use event.unicode  ??
 
 idea: one thread for positions, instanciations, one thread for drawing
+
+windows packing fails :
+éloi XP

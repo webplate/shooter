@@ -29,6 +29,7 @@ KEYMAPS = [KEYMAP1, KEYMAP2]
 
 
 DEFAULTPLAY = {'name':'default',
+'flip_rate' : 60,
 'flash_pulse': 16,     #ms
 'hit_pulse' : 50,
 'blast_hit_pulse' : 100,
@@ -37,7 +38,6 @@ DEFAULTPLAY = {'name':'default',
 'bullet_speed': 0.25
 }
 
-GAMEPLAY = DEFAULTPLAY
 
 #Theme packs
 DEFAULTTHEME = {'name' : None,
@@ -63,6 +63,8 @@ MCPACK = {'name' : 'mc'
 DERVAL = {'name':'derval'
 }
 
+CLEBARD = {'name':'clebard'}
+
 IRONBRAIN = {'name':'ironbrain',
 'bg_color' : (100, 110, 100),
 'font' : "./fonts/AtariSmall.ttf",
@@ -74,7 +76,7 @@ IRONBRAIN = {'name':'ironbrain',
 BULLET = {'name':'A',
 'type' : 'Bullet',
 'direction' : 'up',
-'speed' : GAMEPLAY['bullet_speed'],
+'speed' : 1,
 'cooldown' : 100,
 'damage' : 1
 }
@@ -82,7 +84,7 @@ BULLET = {'name':'A',
 BULLET2 = {'name':'o',
 'type' : 'Bullet',
 'direction' : 'down',
-'speed' : GAMEPLAY['bullet_speed'],
+'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
 }
@@ -90,7 +92,7 @@ BULLET2 = {'name':'o',
 BLAST = {'name' : 'oOOo',
 'type' : 'Blast',
 'direction' : 'up',
-'speed' : GAMEPLAY['bullet_speed'],
+'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
 }
@@ -99,16 +101,16 @@ BLAST = {'name' : 'oOOo',
 SHIP = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
-'speed' : GAMEPLAY['speed'],
+'speed' : 1,
 'charge_rate' : 0.001,
-'life' : 100,
+'life' : 10,
 'weapons' : [BULLET, BLAST]
 }
 
 INVINCIBLE = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
-'speed' : GAMEPLAY['speed'],
+'speed' : 1,
 'charge_rate' : 0.001,
 'life' : 100,
 'weapons' : [BULLET, BLAST]
@@ -116,7 +118,7 @@ INVINCIBLE = {'name' : 'ship',
 
 TARGET = {'name':'target',
 'type' : 'Fighter',
-'speed':GAMEPLAY['speed'] / 4,
+'speed': 0.25,
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular'
@@ -124,7 +126,7 @@ TARGET = {'name':'target',
 
 TARGETOLD = {'name':'target',
 'type' : 'Fighter',
-'speed':GAMEPLAY['speed'] / 2,
+'speed' : 0.5,
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'AlignV'
@@ -135,13 +137,19 @@ DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
 'sound_pack' : DEFAULTSNDPACK,
 'gameplay' : DEFAULTPLAY,
-'nb_enemies' : 3
+'nb_enemies' : 6
 }
 
 STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
-'sound_pack' : MCPACK,
-'nb_enemies' : 10
+'sound_pack' : DEFAULTSNDPACK,
+'nb_enemies' : 15
 }
 
-LEVEL = STRESSLEVEL
+CLEBLEVEL = {'name':'clebard',
+'theme' : CLEBARD,
+'sound_pack' : DEFAULTSNDPACK,
+'nb_enemies' : 4
+}
+
+LEVEL = CLEBLEVEL

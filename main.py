@@ -66,6 +66,7 @@ class Shooter() :
         self.clock = pygame.time.Clock()
         self.interval = 0
         self.speed = parameters.DEFAULTPLAY['game_speed']
+        self.flip_rate = parameters.DEFAULTPLAY['flip_rate']
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x'] :
@@ -185,7 +186,7 @@ class Shooter() :
         else :
             self.display.blit(self.screen, (0, 0))
         #limit flipping rate
-        self.interval = self.clock.tick(100)
+        self.interval = self.clock.tick(self.flip_rate)
         self.fps = self.clock.get_fps()
         pygame.display.flip()
         self.frame += 1
@@ -200,7 +201,7 @@ class Shooter() :
         now = pygame.time.get_ticks()
         self.last_flip = now
         self.last_iter = now
-        while self.running:
+        while self.running :
             #EVENTS
             evts = pygame.event.get()
             for event in evts:

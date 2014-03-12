@@ -228,10 +228,14 @@ class Ship(ChargeFighter) :
         #preload oriented sprites
         self.scene.cont.surf('-' + self.base_name)
         self.scene.cont.surf(self.base_name + '-')
+        #ref for animation of ship movements
+        self.last_bend = 0
+        self.righto = False
+        self.lefto = False
         
     def fly(self, direction, interval) :
         #should consider time passed
-        offset = self.speed * interval
+        offset = self.speed * self.scene.gameplay['speed'] * interval
         if direction == 'right' :
             new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :
@@ -252,14 +256,22 @@ class Ship(ChargeFighter) :
         self.player.alive = False
 
     def update(self, interval, time) :
+        #detect change of direction
+        if self.player.go_right and not self.righto :
+            self.righto = True
+            self.lefto = False
+            self.last_bend = time
+        elif self.player.go_left and not self.lefto :
+            self.lefto = True
+            self.righto = False
+            self.last_bend = time
         #show orientation of ship
-        if not self.player.go_right and not self.player.go_left :
-            self.name = self.base_name
-        elif self.player.go_right :
+        if self.player.go_right and time > self.last_bend + 200 :
             self.name = '-' + self.base_name
-        elif self.player.go_left :
+        elif self.player.go_left  and time > self.last_bend + 200 :
             self.name = self.base_name + '-'
-            
+        else :
+            self.name = self.base_name
         self.surface = self.scene.cont.surf(self.name)
         ChargeFighter.update(self, interval, time)
 
@@ -506,7 +518,7 @@ class Bullet(Projectile) :
 
     def update(self, interval, time) :
         #should consider time passed
-        offset = self.speed * interval
+        offset = self.speed * self.scene.gameplay['bullet_speed'] * interval
         #move every projectile in one direction
         for index, projectile in enumerate(self.positions) :
             if self.direction == 'up' :
