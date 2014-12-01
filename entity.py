@@ -81,6 +81,12 @@ class Mobile(Actor) :
         self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
 
+class Landscape(Mobile) :
+    """a scrolling background
+    """
+    def update(self, interval, time) :
+        self.center = tools.get_center(self.pos, self.surface)
+        self.move(interval, time)
 
 class Fragile(Mobile) :
     """this one can be hurt

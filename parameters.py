@@ -7,6 +7,16 @@ GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
+DEFAULTPLAY = {'name':'default',
+'flip_rate' : 70,
+'flash_pulse': 16,     #ms
+'hit_pulse' : 50,
+'blast_hit_pulse' : 100,
+'game_speed' : 0.8,
+'speed' : 0.2,     #px/ms
+'bullet_speed': 0.25
+}
+
 #control settings
 KEYMAP1 = {p_l.K_f : 'fullscreen',
 p_l.K_m : 'mute',
@@ -26,17 +36,6 @@ p_l.K_LSHIFT : 'shoot'
 }
 
 KEYMAPS = [KEYMAP1, KEYMAP2]
-
-
-DEFAULTPLAY = {'name':'default',
-'flip_rate' : 60,
-'flash_pulse': 16,     #ms
-'hit_pulse' : 50,
-'blast_hit_pulse' : 100,
-'game_speed' : 1,
-'speed' : 0.2,     #px/ms
-'bullet_speed': 0.25
-}
 
 
 #Theme packs
@@ -132,6 +131,12 @@ TARGETOLD = {'name':'target',
 'trajectory' : 'AlignV'
 }
 
+BACKROUND = {'name':'desert',
+'type' : 'back',
+'speed': 0.25,
+'trajectory' : 'Down'
+}
+
 #The reference playable level used to complete others
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
@@ -149,7 +154,8 @@ STRESSLEVEL = {'name':'stress',
 CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : DEFAULTSNDPACK,
-'nb_enemies' : 4
+'nb_enemies' : 4,
+'background' : 'back0'
 }
 
 LEVEL = CLEBLEVEL

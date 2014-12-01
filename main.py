@@ -22,6 +22,7 @@ import pygame.locals as p_l
 import scene, parameters
 
 def load_level(level) :
+    
     """make sure the loaded level is playable"""
     ref = parameters.DEFAULTLEVEL
     for key in ref :
