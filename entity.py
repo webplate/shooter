@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import movement, tools
+import movement, tools, random
+import parameters as param
 
 def getattr_deep(start, attr):
     """useful function for accessing attributes of attributes..."""
@@ -139,6 +140,12 @@ class Fragile(Mobile) :
         self.reward = 1
         #fragile can explode
         self.end = Explosion(self.scene, self)
+        #fragile not ally can give bonuses
+        if not self.ally and random.random() > 0.8 :
+            self.has_bonus = True
+            self.bonus = Mobile(self.scene, param.BONUS)
+        else :
+            self.has_bonus = False
         #prepare score show if significant
         if self.reward > 99 :
             self.rew = Desc(self.scene, self)
@@ -162,6 +169,11 @@ class Fragile(Mobile) :
         self.killer.score += self.reward
         #explode
         self.end.add()
+        if self.has_bonus :
+            #the bonus will appear where the non ally died
+            self.bonus.pos = self.pos
+            #add a bonus in scene
+            self.bonus.add()
         if self.reward > 99 :
             #show reward
             self.rew.add()

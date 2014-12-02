@@ -166,7 +166,7 @@ class Container():
             if sound != None :
                 channel = sound.play()
                 channel.set_volume(p, 1-p)
-    
+
     def load_music(self, track=None, loops=-1):
         if not self.scene.game.no_sound :
             if track != None :

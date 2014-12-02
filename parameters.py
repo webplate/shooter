@@ -139,6 +139,12 @@ BACKGROUND = {'name':'desert',
 'layer' : 0
 }
 
+BONUS = {'name':'bonus',
+'type' : 'Mobile',
+'speed' : 0.5,
+'trajectory' : 'OscillationDown'
+}
+
 #The reference playable level used to complete others
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
@@ -156,7 +162,7 @@ STRESSLEVEL = {'name':'stress',
 CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
-'nb_enemies' : 4
+'nb_enemies' : 4,
 }
 
 LEVEL = CLEBLEVEL
