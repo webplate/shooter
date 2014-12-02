@@ -92,17 +92,28 @@ class Mobile(Visible) :
         self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
 
-class Landscape(Mobile) :
+class Landscape(Visible) :
     """a scrolling background
+    (not moving but looping)
     """
     def __init__(self, scene, parameters={}) :
-        Mobile.__init__(self, scene, parameters)
-        #load image
-        self.surface = self.scene.cont.bg(self.name)
+        Visible.__init__(self, scene, parameters)
+        self.full = self.surface
+        self.width, self.height = self.full.get_size()
+        self.offset = 0
     
     def update(self, interval, time) :
-        self.center = tools.get_center(self.pos, self.surface)
-        self.move(interval, time)
+        #move down the displayed area of landscape
+        self.offset += self.speed * self.scene.gameplay['speed'] * interval
+        print self.offset , self.height
+        
+        if self.offset > self.height :
+            self.offset = 0
+        if self.offset + 240 > self.height :
+            h = self.height - self.offset
+        else:
+            h = 240
+        self.surface = self.full.subsurface(0, self.offset,self.width,h)
 
 class Fragile(Mobile) :
     """this one can be hurt

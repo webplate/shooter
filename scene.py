@@ -341,6 +341,10 @@ class Scene() :
                         ship_proj_map.append(identifier)
                     else :
                         target_proj_map.append(identifier)
+            if isinstance(item, entity.Landscape) :
+                #prepare sprite list for drawing
+                identifier = ((0, 0), item.surface)
+                self.lst_sprites.append(identifier, item.layer)
         #update player status
         for player in self.players :
             player.update(interval, self.now)

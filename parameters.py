@@ -135,8 +135,7 @@ TARGETOLD = {'name':'target',
 
 BACKROUND = {'name':'desert',
 'type' : 'Landscape',
-'speed': 0.1,
-'trajectory' : 'Down',
+'speed': 1,
 'layer' : 0
 }
 
