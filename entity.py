@@ -67,7 +67,12 @@ class Mobile(Visible) :
         else :
             #a trajectory object to control position
             trajClass = getattr(movement, self.trajectory)
-            self.movement = trajClass(self.scene, self)
+            #does it have special parameters ?
+            if 'trajectory_params' in params :
+                self.movement = trajClass(self.scene, self,
+                params['trajectory_params'])
+            else :
+                self.movement = trajClass(self.scene, self)
         self.base_surface = self.surface
         self.center = tools.get_center(self.pos, self.surface)
         

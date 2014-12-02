@@ -142,14 +142,18 @@ class Circular(GoFront) :
         
 class OscillationDown(Trajectory) :
     """go down while oscillating"""
-    def __init__(self, scene, mobile) :
+    def __init__(self, scene, mobile, params={}) :
         Trajectory.__init__(self, scene, mobile)
         self.randomV = (random.random() - 0.5)
         self.randomH = random.random() * 100
+        if 'amplitude' not in params :
+            self.amplitude = 26
+        else :
+            self.amplitude = params['amplitude']
         
     def next_pos(self, pos, interval, time) :
         offsetV = self.mobile.speed * self.scene.gameplay['speed'] * interval + self.randomV
-        offsetH = self.mobile.speed * self.scene.gameplay['speed'] * math.sin(self.randomH + time/200.) * 26
+        offsetH = self.mobile.speed * self.scene.gameplay['speed'] * math.sin(self.randomH + time/200.) * self.amplitude
         pos = pos[0] + offsetH , pos[1] + offsetV
         return pos
 

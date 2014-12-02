@@ -142,7 +142,8 @@ BACKGROUND = {'name':'desert',
 BONUS = {'name':'bonus',
 'type' : 'Mobile',
 'speed' : 0.5,
-'trajectory' : 'OscillationDown'
+'trajectory' : 'OscillationDown',
+'trajectory_params' : {'amplitude' : 20}
 }
 
 #The reference playable level used to complete others
