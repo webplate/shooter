@@ -12,7 +12,7 @@ DEFAULTPLAY = {'name':'default',
 'flash_pulse': 16,     #ms
 'hit_pulse' : 50,
 'blast_hit_pulse' : 100,
-'game_speed' : 0.8,
+'game_speed' : 1,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
 }
@@ -62,7 +62,9 @@ MCPACK = {'name' : 'mc'
 DERVAL = {'name':'derval'
 }
 
-CLEBARD = {'name':'clebard'}
+CLEBARD = {'name':'clebard',
+'txt_color' : (255, 200, 150)
+}
 
 IRONBRAIN = {'name':'ironbrain',
 'bg_color' : (100, 110, 100),
@@ -132,9 +134,10 @@ TARGETOLD = {'name':'target',
 }
 
 BACKROUND = {'name':'desert',
-'type' : 'back',
-'speed': 0.25,
-'trajectory' : 'Down'
+'type' : 'Landscape',
+'speed': 0.1,
+'trajectory' : 'Down',
+'layer' : 0
 }
 
 #The reference playable level used to complete others

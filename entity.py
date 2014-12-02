@@ -22,10 +22,10 @@ class Actor(object) :
         #default is not ally
         if 'ally' not in parameters :
             self.ally = False
-        #load image
-        self.surface = self.scene.cont.surf(self.name)
         #layer for drawing on screen
-        self.layer = 2
+        if 'layer' not in parameters :
+            self.layer = 10
+
         #priority of update
         self.priority = 0
 
@@ -42,11 +42,22 @@ class Actor(object) :
         """remove from scene"""
         self.scene.content.remove(self)
 
-class Mobile(Actor) :
+class Visible(Actor) :
+    """actor with a surface"""
+    def __init__(self, scene, parameters={}) :
+        Actor.__init__(self, scene, parameters)
+        #load image
+        if hasattr(self, 'type') and self.type == 'Landscape':
+            self.surface = self.scene.cont.bg(self.name)
+        else:
+            #with alpha channel and collision array
+            self.surface = self.scene.cont.surf(self.name)
+
+class Mobile(Visible) :
     """a mobile sprite
     """
     def __init__(self, scene, parameters={}) :
-        Actor.__init__(self, scene, parameters)
+        Visible.__init__(self, scene, parameters)
         self._pos = (0, 0)
         if 'speed' not in parameters :
             self.speed = 0
@@ -84,6 +95,11 @@ class Mobile(Actor) :
 class Landscape(Mobile) :
     """a scrolling background
     """
+    def __init__(self, scene, parameters={}) :
+        Mobile.__init__(self, scene, parameters)
+        #load image
+        self.surface = self.scene.cont.bg(self.name)
+    
     def update(self, interval, time) :
         self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
@@ -459,12 +475,12 @@ class Life(Widget) :
 
 # PROJECTILE MAPS ###############
 #################################
-class Projectile(Actor) :
+class Projectile(Visible) :
     """projectile positions should be accessed with position(index)
     damage
     """
     def __init__(self, scene, parameters) :
-        Actor.__init__(self, scene, parameters)
+        Visible.__init__(self, scene, parameters)
         self.positions = [] #floats for exact positions
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
@@ -475,7 +491,7 @@ class Projectile(Actor) :
         """add projectile map to scene if it is the only one with such
         parameters"""
         if self not in self.scene.content :
-            Actor.add(self)
+            Visible.add(self)
 
     def collided(self, index) :
         #mark_bullet for removal (if not already)

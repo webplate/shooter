@@ -237,6 +237,8 @@ class Scene() :
         self.delay = 0
         #launch background music
         self.cont.music('background')
+        #launch landscape
+        entity.Landscape(self, parameters.BACKROUND).add()
         self.update()
 
     def load_interface(self) :

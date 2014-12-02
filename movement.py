@@ -16,7 +16,16 @@ class Trajectory() :
     def __init__(self, scene, mobile) :
         self.scene = scene
         self.mobile = mobile
+        #set init position of mobile
+        self.mobile.pos = (0, 0)
 
+class Down(Trajectory) :
+    """go downward"""
+    def next_pos(self, pos, interval, time) :
+        """compute new position from floats"""
+        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
+        pos = pos[0] , pos[1] + offset
+        return pos
 
 class Align(Trajectory) :
     """can focus on a target"""
