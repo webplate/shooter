@@ -105,6 +105,15 @@ def make_white(surface) :
     surface.set_colorkey(black)
     return surface
 
+def compose_surfaces(s1, s2, w, h):
+    """gets two surfaces and blit them on a new one
+    of size w,h
+    """
+    s = pygame.Surface((w, h))
+    s.blit(s1, (0, 0))
+    s.blit(s2, (0, s1.get_height()))
+    return s
+
 def font_skin(scene, name) :
     """if no pics create from font"""
     surface = scene.font.render(name, False, scene.theme['txt_color'])

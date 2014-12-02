@@ -133,9 +133,9 @@ TARGETOLD = {'name':'target',
 'trajectory' : 'AlignV'
 }
 
-BACKROUND = {'name':'desert',
+BACKGROUND = {'name':'desert',
 'type' : 'Landscape',
-'speed': 1,
+'speed': 0.2,
 'layer' : 0
 }
 
