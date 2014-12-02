@@ -23,7 +23,7 @@ class Down(Trajectory) :
     """go downward"""
     def next_pos(self, pos, interval, time) :
         """compute new position from floats"""
-        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
         pos = pos[0] , pos[1] + offset
         return pos
 
@@ -140,3 +140,16 @@ class Circular(GoFront) :
         xabs, yabs = self.abs_pos(interval, time)
         return xrel+xabs, yrel+yabs
         
+class OscillationDown(Trajectory) :
+    """go down while oscillating"""
+    def __init__(self, scene, mobile) :
+        Trajectory.__init__(self, scene, mobile)
+        self.randomV = (random.random() - 0.5)
+        self.randomH = random.random() * 100
+        
+    def next_pos(self, pos, interval, time) :
+        offsetV = self.mobile.speed * self.scene.gameplay['speed'] * interval + self.randomV
+        offsetH = self.mobile.speed * self.scene.gameplay['speed'] * math.sin(self.randomH + time/200.) * 26
+        pos = pos[0] + offsetH , pos[1] + offsetV
+        return pos
+

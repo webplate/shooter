@@ -24,9 +24,12 @@ def load_stream(file, scene) :
     if scene.snd_pack['name'] != None :
         path = os.path.join('sounds', scene.snd_pack['name'], file + '.ogg')
         try :
-            pygame.mixer.music.load(path)
+            sound = pygame.mixer.music.load(path)
         except pygame.error :
-            print 'error while loading ', path
+            sound = None
+    else :
+        sound = None
+    return sound
 
 def load_image(file, theme, scene):
     """loads an image, prepares it for play
