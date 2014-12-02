@@ -273,7 +273,10 @@ class Scene() :
                             #hurt or not, entity
                             itemT.collided(itemP, index, time)
                             #remove or not, colliding projectile
-                            itemP.collided(index)
+                            if isinstance(itemP, entity.Projectile) :
+                                itemP.collided(index)
+                            else :
+                                itemP.collided()
             #rectangular projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
@@ -306,6 +309,7 @@ class Scene() :
         target_map = []
         ship_proj_map = []
         target_proj_map = []
+        bonus_map = []
         #sprite list for drawing
         self.lst_sprites = Ordered()
         self.nb_fighters = 0
@@ -327,6 +331,10 @@ class Scene() :
                         if isinstance(item, entity.Fighter) :
                             self.nb_fighters += 1
                         target_map.append(identifier)
+                elif isinstance(item, entity.Catchable) :
+                    x, y = item.pos
+                    identifier = (x, y, 1, 1, True, item, i)
+                    bonus_map.append(identifier)
             elif isinstance(item, entity.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
@@ -342,7 +350,7 @@ class Scene() :
                         ship_proj_map.append(identifier)
                     else :
                         target_proj_map.append(identifier)
-            if isinstance(item, entity.Landscape) :
+            elif isinstance(item, entity.Landscape) :
                 #prepare sprite list for drawing
                 identifier = ((0, 0), item.surface)
                 self.lst_sprites.append(identifier, item.layer)
@@ -352,6 +360,8 @@ class Scene() :
         #detect collisions and update accordingly
         self.collide(ship_proj_map, target_map, self.now)
         self.collide(target_proj_map, ship_map, self.now)
+        #catch bonuses, hurray !! \o/
+        self.collide(bonus_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.TARGET)

@@ -122,7 +122,8 @@ TARGET = {'name':'target',
 'speed': 0.25,
 'life': 5,
 'weapons' : [BULLET2],
-'trajectory' : 'Circular'
+'trajectory' : 'Circular',
+'bonus_rate' : 0.2
 }
 
 TARGETOLD = {'name':'target',
