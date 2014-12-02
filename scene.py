@@ -273,7 +273,10 @@ class Scene() :
                             #hurt or not, entity
                             itemT.collided(itemP, index, time)
                             #remove or not, colliding projectile
-                            itemP.collided(index)
+                            if isinstance(itemP, entity.Projectile) :
+                                itemP.collided(index)
+                            else :
+                                itemP.collided()
             #rectangular projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :

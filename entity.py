@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import movement, tools, random
+import movement, tools
+import random
 import parameters as param
 
 def getattr_deep(start, attr):
@@ -128,9 +129,9 @@ class Landscape(Visible) :
 
 class Catchable(Mobile) :
     """this one you can catch"""
-    def collided(self, index) :
+    def collided(self) :
         self.remove()
-    def get_damage(self, index) :
+    def get_damage(self) :
         return -1
 
 class Fragile(Mobile) :
@@ -143,12 +144,14 @@ class Fragile(Mobile) :
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
+        if 'bonus_rate' not in parameters :
+            self.bonus_rate = 0
         #reward for killing
         self.reward = 1
         #fragile can explode
         self.end = Explosion(self.scene, self)
-        #fragile not ally can give bonuses
-        if not self.ally and random.random() > 0.8 :
+        #fragiles can give bonuses depending on their bonus rate
+        if random.random() < self.bonus_rate :
             self.has_bonus = True
             self.bonus = Catchable(self.scene, param.BONUS)
         else :
@@ -162,7 +165,10 @@ class Fragile(Mobile) :
         if time - self.last_hit > self.scene.gameplay['hit_pulse'] :
             self.last_hit = time
             #take damage
-            self.life -= projectile.get_damage(index)
+            if isinstance(projectile, Projectile) :
+                self.life -= projectile.get_damage(index)
+            else :
+                self.life -= projectile.get_damage()
             if self.life <= 0 :
                 self.time_of_death = time
                 #recognize killer in the distance
