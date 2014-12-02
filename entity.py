@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import movement, tools, random
-import parameters as param
+import random
+import movement, tools, parameters
 
 def getattr_deep(start, attr):
     """useful function for accessing attributes of attributes..."""
@@ -13,27 +13,27 @@ def getattr_deep(start, attr):
 class Actor(object) :
     """a parametrable actor of scene
     """
-    def __init__(self, scene, parameters={}) :
+    def __init__(self, scene, params={}) :
         self.scene = scene
-        #set attributes from parameters
-        self.set_param(parameters)
+        #set attributes from params
+        self.set_param(params)
         #must have a name
-        if 'name' not in parameters :
+        if 'name' not in params :
             self.name = ' '
         #default is not ally
-        if 'ally' not in parameters :
+        if 'ally' not in params :
             self.ally = False
         #layer for drawing on screen
-        if 'layer' not in parameters :
+        if 'layer' not in params :
             self.layer = 10
 
         #priority of update
         self.priority = 0
 
-    def set_param(self, parameters) :
-        self.parameters = parameters
-        for p in self.parameters :
-            setattr(self, p, self.parameters[p])
+    def set_param(self, params) :
+        self.params = params
+        for p in self.params :
+            setattr(self, p, self.params[p])
 
     def add(self) :
         """load in scene"""
@@ -45,8 +45,8 @@ class Actor(object) :
 
 class Visible(Actor) :
     """actor with a surface"""
-    def __init__(self, scene, parameters={}) :
-        Actor.__init__(self, scene, parameters)
+    def __init__(self, scene, params={}) :
+        Actor.__init__(self, scene, params)
         #load image
         if hasattr(self, 'type') and self.type == 'Landscape':
             self.surface = self.scene.cont.bg(self.name)
@@ -57,12 +57,12 @@ class Visible(Actor) :
 class Mobile(Visible) :
     """a mobile sprite
     """
-    def __init__(self, scene, parameters={}) :
-        Visible.__init__(self, scene, parameters)
+    def __init__(self, scene, params={}) :
+        Visible.__init__(self, scene, params)
         self._pos = (0, 0)
-        if 'speed' not in parameters :
+        if 'speed' not in params :
             self.speed = 0
-        if 'trajectory' not in parameters :
+        if 'trajectory' not in params :
             self.trajectory = None
         else :
             #a trajectory object to control position
@@ -97,8 +97,8 @@ class Landscape(Visible) :
     """a scrolling background
     (not moving but looping)
     """
-    def __init__(self, scene, parameters={}) :
-        Visible.__init__(self, scene, parameters)
+    def __init__(self, scene, params={}) :
+        Visible.__init__(self, scene, params)
         self.full = self.surface
         self.width, self.height = self.full.get_size()
         self.offset = self.height
@@ -131,8 +131,8 @@ class Fragile(Mobile) :
     parameters should contain :
     -life
     """
-    def __init__(self, scene, parameters) :
-        Mobile.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Mobile.__init__(self, scene, params)
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
@@ -143,7 +143,7 @@ class Fragile(Mobile) :
         #fragile not ally can give bonuses
         if not self.ally and random.random() > 0.8 :
             self.has_bonus = True
-            self.bonus = Mobile(self.scene, param.BONUS)
+            self.bonus = Mobile(self.scene, parameters.BONUS)
         else :
             self.has_bonus = False
         #prepare score show if significant
@@ -194,13 +194,13 @@ class Fragile(Mobile) :
 class Fighter(Fragile) :
     """a shooting mobile sprite
     """
-    def __init__(self, scene, parameters) :
-        Fragile.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Fragile.__init__(self, scene, params)
         self.last_shoot = 0
         self.arms = {}
         #instantiate projectile maps for weapons
-        if 'weapons' in parameters :
-            for weapon in parameters['weapons'] :
+        if 'weapons' in params :
+            for weapon in params['weapons'] :
                 self.new_weapon(weapon)
         self.score = 0
 
@@ -211,9 +211,9 @@ class Fighter(Fragile) :
             #add projectile map to scene container
             p_map.add()
 
-    def new_weapon(self, parameters) :
+    def new_weapon(self, params) :
         #load and avoid duplicate in scene
-        projectile_map = self.scene.cont.proj(parameters)
+        projectile_map = self.scene.cont.proj(params)
         #set map allied status
         projectile_map.ally = self.ally
         #keep trace of weapon
@@ -238,8 +238,8 @@ class Fighter(Fragile) :
 class ChargeFighter(Fighter) :
     """a charging mobile sprite
     charge_rate"""
-    def __init__(self, scene, parameters) :
-        Fighter.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Fighter.__init__(self, scene, params)
         self.charge = 0.
         #can have a charge display following fighter
         self.aura = Charge(self.scene, self)
@@ -273,8 +273,8 @@ class ChargeFighter(Fighter) :
 class Ship(ChargeFighter) :
     """A ship controlled by player and shooting
     """
-    def __init__(self, scene, player, parameters) :
-        ChargeFighter.__init__(self, scene, parameters)
+    def __init__(self, scene, player, params) :
+        ChargeFighter.__init__(self, scene, params)
         self.player = player
         #keep ref of maximum life
         self.max_life = self.life
@@ -409,10 +409,10 @@ class Desc(Mobile) :
         self.center_on(self.parent)
 
 class Widget(Mobile):
-    def __init__(self, scene, path, parameters, offset=(0, 0)) :
+    def __init__(self, scene, path, params, offset=(0, 0)) :
         Mobile.__init__(self, scene)
         self.path = path
-        self.parameters = parameters
+        self.params = params
         self.offset = offset
         self.value = self.new_value()
         self.surface = self.skin(self.value)
@@ -420,7 +420,7 @@ class Widget(Mobile):
         self.pos = (0, 0)
         self.align()
         #support delayed updates
-        if 'low_flip' in self.parameters :
+        if 'low_flip' in self.params :
             self.low = True
             self.last_flip = 0
         else :
@@ -434,17 +434,17 @@ class Widget(Mobile):
         
     def align(self) :
         #recompute coordinates
-        if 'center' in self.parameters :
+        if 'center' in self.params :
             self.pos = (self.scene.limits[0]/2-self.shape[0]/2+self.offset[0],
             self.scene.limits[1]/2-self.shape[1]/2+self.offset[1])
-        if 'left' in self.parameters :
+        if 'left' in self.params :
             self.pos = (self.offset[0], self.pos[1]+self.offset[1])
-        if 'right' in self.parameters :
+        if 'right' in self.params :
             self.pos = (self.scene.limits[0]-self.shape[0]+self.offset[0],
             self.pos[1]+self.offset[1])
-        if 'top' in self.parameters :
+        if 'top' in self.params :
             self.pos = (self.pos[0]+self.offset[0], self.offset[1])
-        if 'bottom' in self.parameters :
+        if 'bottom' in self.params :
             self.pos = (self.pos[0]+self.offset[0],
             self.scene.limits[1]-self.shape[1]+self.offset[1])
 
@@ -512,8 +512,8 @@ class Projectile(Visible) :
     """projectile positions should be accessed with position(index)
     damage
     """
-    def __init__(self, scene, parameters) :
-        Visible.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Visible.__init__(self, scene, params)
         self.positions = [] #floats for exact positions
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
@@ -568,8 +568,8 @@ class Bullet(Projectile) :
     direction
     speed
     """
-    def __init__(self, scene, parameters) :
-        Projectile.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Projectile.__init__(self, scene, params)
 
     def update(self, interval, time) :
         #should consider time passed
@@ -589,8 +589,8 @@ class Blast(Bullet) :
     """charged shots
     power
     """
-    def __init__(self, scene, parameters) :
-        Bullet.__init__(self, scene, parameters)
+    def __init__(self, scene, params) :
+        Bullet.__init__(self, scene, params)
 
     def collided(self, index) :
         pass
