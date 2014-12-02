@@ -416,6 +416,7 @@ class Desc(Mobile) :
 class Widget(Mobile):
     def __init__(self, scene, path, params, offset=(0, 0)) :
         Mobile.__init__(self, scene)
+        #the widget shows content of object defined by path
         self.path = path
         self.params = params
         self.offset = offset
