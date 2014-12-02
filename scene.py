@@ -166,18 +166,19 @@ class Container():
             if sound != None :
                 channel = sound.play()
                 channel.set_volume(p, 1-p)
+    
+    def load_music(self, track=None, loops=-1):
+        if not self.scene.game.no_sound :
+            if track != None :
+                tools.load_stream(track, self.scene)
+                self.scene.game.music.play(loops)
+                self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
 
-    def music(self, track=None, loops=-1) :
+    def music(self) :
         """control game mixer for streaming large music files"""
         if (not self.scene.mute and not self.scene.paused
         and not self.scene.game.no_sound) :
-            if track != None :
-                sound = tools.load_stream(track, self.scene)
-                if sound != None :
-                    self.scene.game.music.play(loops)
-                    self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
-            else :
-                self.scene.game.music.unpause()
+            self.scene.game.music.unpause()
         else :
             self.scene.game.music.pause()
 
@@ -223,7 +224,7 @@ class Scene() :
         self.level = self.game.level
         self.theme = self.level['theme']
         self.snd_pack = self.level['sound_pack']
-        self.mute = False
+        self.mute = True
         self.gameplay = self.level['gameplay']
         #an object for efficient loading
         self.cont = Container(self)
@@ -236,7 +237,7 @@ class Scene() :
         self.paused = False
         self.delay = 0
         #launch background music
-        self.cont.music('background')
+        self.cont.load_music('background')
         #launch landscape
         entity.Landscape(self, parameters.BACKGROUND).add()
         self.update()
