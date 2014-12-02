@@ -165,7 +165,8 @@ class Fragile(Mobile) :
         if time - self.last_hit > self.scene.gameplay['hit_pulse'] :
             self.last_hit = time
             #take damage
-            if isinstance(projectile, Projectile) :
+            #trick to check if collision is from projectile map or entity
+            if index != None : 
                 self.life -= projectile.get_damage(index)
             else :
                 self.life -= projectile.get_damage()
