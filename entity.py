@@ -126,6 +126,13 @@ class Landscape(Visible) :
         
         self.surface = s
 
+class Catchable(Mobile) :
+    """this one you can catch"""
+    def collided(self, index) :
+        self.remove()
+    def get_damage(self, index) :
+        return -1
+
 class Fragile(Mobile) :
     """this one can be hurt
     parameters should contain :
@@ -143,7 +150,7 @@ class Fragile(Mobile) :
         #fragile not ally can give bonuses
         if not self.ally and random.random() > 0.8 :
             self.has_bonus = True
-            self.bonus = Mobile(self.scene, param.BONUS)
+            self.bonus = Catchable(self.scene, param.BONUS)
         else :
             self.has_bonus = False
         #prepare score show if significant
