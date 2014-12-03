@@ -28,7 +28,7 @@ class Player() :
         ship = targetClass(self.scene, self, parameters)
         #init position
         coord = (self.scene.limits[0]/2,
-        self.scene.limits[1]-self.scene.limits[1]/8)
+        self.scene.limits[1]-self.scene.limits[1]/6)
         ship.pos = coord
         #link to ship attributes
         self.life = ship.life
@@ -260,8 +260,9 @@ class Scene() :
         for item in self.interface :
             item.add()
 
-    def collide(self, proj_map, target_map, time) :
-        """repercute collisions projectiles and alpha maps of sprites"""
+    def collide_map(self, proj_map, target_map, time) :
+        """repercute collisions projectiles and alpha maps of sprites
+        dealing with projectile maps (entity.Projectile)"""
         for xP, yP, xPe, yPe, pixel, itemP, index in proj_map :
             #one pixel projectile
             if pixel :
@@ -273,10 +274,32 @@ class Scene() :
                             #hurt or not, entity
                             itemT.collided(itemP, index, time)
                             #remove or not, colliding projectile
-                            if isinstance(itemP, entity.Projectile) :
-                                itemP.collided(index)
-                            else :
-                                itemP.collided()
+                            itemP.collided(index)
+            #rectangular projectile
+            else :
+                for xT, yT, xTe, yTe, itemT in target_map :
+                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+                        minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
+                        miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
+                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
+                            itemT.collided(itemP, index, time)
+                            itemP.collided(index)
+                            
+    def collide_mobile(self, proj_map, target_map, time) :
+        """repercute collisions projectiles and alpha maps of sprites
+        dealing with projectiles as entities (entity.Mobile)"""
+        for xP, yP, xPe, yPe, pixel, itemP in proj_map :
+            #one pixel projectile
+            if pixel :
+                for xT, yT, xTe, yTe, itemT in target_map :
+                    #is in range ?
+                    if xP < xTe and xP > xT and yP < yTe and yP > yT :
+                        #per pixel collision
+                        if self.cont.array[itemT.name][xP - xT, yP - yT] :
+                            #hurt or not, entity
+                            itemT.collided(itemP, None, time)
+                            #remove or not, colliding projectile
+                            itemP.collided()
             #rectangular projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
@@ -333,7 +356,7 @@ class Scene() :
                         target_map.append(identifier)
                 elif isinstance(item, entity.Catchable) :
                     x, y = item.pos
-                    identifier = (x, y, 1, 1, True, item, i)
+                    identifier = (x, y, 1, 1, True, item)
                     bonus_map.append(identifier)
             elif isinstance(item, projectiles.Projectile) :
                 for i in range(len(item.positions)) :
@@ -358,10 +381,10 @@ class Scene() :
         for player in self.players :
             player.update(interval, self.now)
         #detect collisions and update accordingly
-        self.collide(ship_proj_map, target_map, self.now)
-        self.collide(target_proj_map, ship_map, self.now)
+        self.collide_map(ship_proj_map, target_map, self.now)
+        self.collide_map(target_proj_map, ship_map, self.now)
         #catch bonuses, hurray !! \o/
-        self.collide(bonus_map, ship_map, self.now)
+        self.collide_mobile(bonus_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.TARGET)
