@@ -324,6 +324,13 @@ class Scene() :
         #if paused bypass classic update
         self.orig_update = self.update
         self.update = self.update_paused
+    
+    def add_sprite(self, x, y, item):
+        """update sprite container only for visible objects"""
+        if item.visible :
+            identifier = ((x, y), item.surface)
+            self.lst_sprites.append(identifier, item.layer)
+        
 
     def update(self, interval = 0, time = 0) :
         self.now = time - self.delay
@@ -333,7 +340,7 @@ class Scene() :
         ship_proj_map = []
         target_proj_map = []
         bonus_map = []
-        #sprite list for drawing
+        #reset sprite list for drawing
         self.lst_sprites = Ordered()
         self.nb_fighters = 0
         #explore scene
@@ -341,8 +348,7 @@ class Scene() :
             if isinstance(item, entity.Mobile) :
                 x, y = item.pos
                 #prepare sprite list for drawing
-                identifier = ((x, y), item.surface)
-                self.lst_sprites.append(identifier, item.layer)
+                self.add_sprite(x, y, item)
                 if isinstance(item, entity.Fragile) :
                     #populate collision maps
                     #precompute for faster detection
@@ -361,8 +367,7 @@ class Scene() :
             elif isinstance(item, projectiles.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
-                    identifier = ((x, y), item.surface)
-                    self.lst_sprites.append(identifier, item.layer)
+                    self.add_sprite(x, y, item)
                     #blasts have wide damage zone other are on a pixel only
                     if isinstance(item, projectiles.Blast) :
                         identifier = (x, y, x+item.width, y+item.height, False, item, i)
@@ -375,8 +380,7 @@ class Scene() :
                         target_proj_map.append(identifier)
             elif isinstance(item, entity.Landscape) :
                 #prepare sprite list for drawing
-                identifier = ((0, 0), item.surface)
-                self.lst_sprites.append(identifier, item.layer)
+                self.add_sprite(0, 0, item)
         #update player status
         for player in self.players :
             player.update(interval, self.now)

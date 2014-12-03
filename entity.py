@@ -48,12 +48,19 @@ class Visible(Actor) :
     """actor with a surface"""
     def __init__(self, scene, params={}) :
         Actor.__init__(self, scene, params)
+        self.visible = True
         #load image
         if hasattr(self, 'type') and self.type == 'Landscape':
             self.surface = self.scene.cont.bg(self.name)
         else:
             #with alpha channel and collision array
             self.surface = self.scene.cont.surf(self.name)
+    
+    def hide(self):
+        self.visible = False
+    
+    def show(self):
+        self.visible = True
 
 class Mobile(Visible) :
     """a mobile sprite
