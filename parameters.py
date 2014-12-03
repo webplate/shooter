@@ -123,6 +123,7 @@ TARGET = {'name':'target',
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular',
+'reward' : 1,
 'bonus_rate' : 0.2
 }
 

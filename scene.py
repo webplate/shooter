@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import entity, tools, parameters
+import entity, projectiles, tools, parameters
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -134,7 +134,7 @@ class Container():
             projectile = self.maps[parameters['name']]
         else :
             #instantiate according to specified type
-            targetClass = getattr(entity, parameters['type'])
+            targetClass = getattr(projectiles, parameters['type'])
             projectile = targetClass(self.scene, parameters)
             self.maps.update({parameters['name'] : projectile})
         return projectile
@@ -335,13 +335,13 @@ class Scene() :
                     x, y = item.pos
                     identifier = (x, y, 1, 1, True, item, i)
                     bonus_map.append(identifier)
-            elif isinstance(item, entity.Projectile) :
+            elif isinstance(item, projectiles.Projectile) :
                 for i in range(len(item.positions)) :
                     x, y = item.draw_position(i)
                     identifier = ((x, y), item.surface)
                     self.lst_sprites.append(identifier, item.layer)
                     #blasts have wide damage zone other are on a pixel only
-                    if isinstance(item, entity.Blast) :
+                    if isinstance(item, projectiles.Blast) :
                         identifier = (x, y, x+item.width, y+item.height, False, item, i)
                     else :
                         x, y = item.position(i)
