@@ -26,7 +26,8 @@ def load_stream(file, scene) :
         try :
             sound = pygame.mixer.music.load(path)
         except pygame.error :
-            print 'error loading', path
+            sound = None
+        return sound
 
 def load_image(file, theme, scene):
     """loads an image, prepares it for play

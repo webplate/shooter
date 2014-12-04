@@ -129,7 +129,13 @@ TARGET = {'name':'target',
 'bonus_rate' : 0.2
 }
 
-BACKGROUND = {'name':'desert',
+DESERT = {'name':'desert',
+'type' : 'Landscape',
+'speed': 0.2,
+'layer' : 0
+}
+
+BACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'speed': 0.2,
 'layer' : 0
@@ -143,10 +149,13 @@ BONUS = {'name':'bonus',
 }
 
 #The reference playable level used to complete others
+##############################################
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
 'sound_pack' : DEFAULTSNDPACK,
 'gameplay' : DEFAULTPLAY,
+'background' : {},
+'music' : 'background',
 'nb_enemies' : 6
 }
 
@@ -159,7 +168,9 @@ STRESSLEVEL = {'name':'stress',
 CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
+'music' : 'desert',
+'background' : DESERT,
 'nb_enemies' : 4,
 }
 
-LEVEL = CLEBLEVEL
+LEVEL = STRESSLEVEL

@@ -187,6 +187,8 @@ class Landscape(Visible) :
     """
     def __init__(self, scene, params={}) :
         Visible.__init__(self, scene, params)
+        if 'speed' not in params :
+            self.speed = 0
         self.full = self.surface
         self.width, self.height = self.full.get_size()
         self.offset = self.height
@@ -194,24 +196,27 @@ class Landscape(Visible) :
     def update(self, interval, time) :
         #move down the displayed area of landscape
         self.offset -= self.speed * self.scene.gameplay['speed'] * interval
-        if self.offset < 0 :
-            self.offset = self.height
         
-        w, h = self.width, 240
-        #loop background
-        if self.offset + h > self.height :
-            t1 = self.offset
-            h1 = self.height - self.offset
-            
-            h2 = h - (self.height - self.offset)
-            
-            s1 = self.full.subsurface(0, t1,w,h1)
-            s2 = self.full.subsurface(0, 0,w,h2)
-            
-            s = tools.compose_surfaces(s1, s2, w, h)
-        else:
-            s = self.full.subsurface(0, self.offset,w,h)
-        
+        w, h = self.width, parameters.GAMESIZE[1]
+        #do not loop if smaller than screen background
+        if self.height >= h :
+            #loop background
+            if self.offset < 0 :
+                self.offset = self.height
+            if self.offset + h > self.height :
+                t1 = self.offset
+                h1 = self.height - self.offset
+                
+                h2 = h - (self.height - self.offset)
+                
+                s1 = self.full.subsurface(0, t1,w,h1)
+                s2 = self.full.subsurface(0, 0,w,h2)
+                
+                s = tools.compose_surfaces(s1, s2, w, h)
+            else:
+                s = self.full.subsurface(0, self.offset,w,h)
+        else :
+            s = self.full
         self.surface = s
 
 class Catchable(Mobile) :

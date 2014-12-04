@@ -129,16 +129,6 @@ class Container():
             self.array.update({name : array})
         return surface
 
-    #~ def proj(self, parameters) :
-        #~ if parameters['name'] in self.maps :
-            #~ projectile = self.maps[parameters['name']]
-        #~ else :
-            #~ #instantiate according to specified type
-            #~ targetClass = getattr(projectiles, parameters['type'])
-            #~ projectile = targetClass(self.scene, parameters)
-            #~ self.maps.update({parameters['name'] : projectile})
-        #~ return projectile
-
     def bg(self, name) :
         """load background images"""
         if name in self.background :
@@ -170,9 +160,11 @@ class Container():
     def load_music(self, track=None, loops=-1):
         if not self.scene.game.no_sound :
             if track != None :
-                tools.load_stream(track, self.scene)
-                self.scene.game.music.play(loops)
-                self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
+                music = tools.load_stream(track, self.scene)
+                #check if file is nicely loaded
+                if music != None :
+                    self.scene.game.music.play(loops)
+                    self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
 
     def music(self) :
         """control game mixer for streaming large music files"""
@@ -237,9 +229,9 @@ class Scene() :
         self.paused = False
         self.delay = 0
         #launch background music
-        self.cont.load_music('background')
+        self.cont.load_music(self.level['music'])
         #launch landscape
-        entity.Landscape(self, parameters.BACKGROUND).add()
+        entity.Landscape(self, self.level['background']).add()
         self.update()
 
     def load_interface(self) :
