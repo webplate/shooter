@@ -11,6 +11,7 @@ def getattr_deep(start, attr):
         obj = getattr(obj, part)
     return obj
 
+
 class Actor(object) :
     """a parametrable actor of scene
     """
@@ -43,6 +44,26 @@ class Actor(object) :
     def remove(self) :
         """remove from scene"""
         self.scene.content.remove(self)
+
+class Weapon(Actor):
+    """generic weapon"""
+    pass
+
+class Directed(Weapon):
+    """a bullet in one direction"""
+    def __init__(self, scene, parent, params):
+        Actor.__init__(self, scene, params)
+        self.parent = parent
+        self.proj = globals()[self.type]
+        p = self.proj(self.scene, self.parent, self.params)
+        self.width = p.width
+        self.height = p.height
+
+    def shoot(self, x, y):
+        p = self.proj(self.scene, self.parent, self.params)
+        p.pos = x, y
+        p.add()
+
 
 class Visible(Actor) :
     """actor with a surface"""
@@ -105,6 +126,64 @@ class Mobile(Visible) :
     def update(self, interval, time) :
         self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
+
+class Projectile(Mobile) :
+    """projectile positions should be accessed with position(index)
+    damage
+    """
+    def __init__(self, scene, parent, params={}) :
+        Mobile.__init__(self, scene, params)
+        self.parent = parent
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        self.center_offset = self.width/2, self.height/2
+
+    def collided(self) :
+        self.remove()
+
+    def get_damage(self) :
+        return self.damage
+
+    def in_screen(self, pos) :
+        #bad if outside screen
+        if (pos[0] > self.scene.limits[0] or pos[1] > self.scene.limits[1]
+        or pos[0] + self.width < 0 or pos[1] + self.height < 0) :
+            return False
+        else :
+            return True
+
+    def update(self, interval, time) :
+        Mobile.update(self, interval, time)
+        #delete if outside screen
+        if not self.in_screen(self.pos) :
+            self.remove()
+            del self
+
+class Bullet(Projectile) :
+    """a map of bullets
+    direction
+    speed
+    """
+    pass
+
+class Blast(Projectile) :
+    """charged shots
+    power
+    """
+    def __init__(self, scene, parent, params={}) :
+        Projectile.__init__(self, scene, parent, params)
+        self.charge = 0
+
+    def collided(self) :
+        pass
+
+    def get_damage(self) :
+        #get power of charged shot
+        amount = self.charge * self.power
+        return amount
+
+
+
 
 class Landscape(Visible) :
     """a scrolling background
@@ -173,21 +252,16 @@ class Fragile(Mobile) :
         if self.reward > 0 and not self.ally:
             self.rew = Desc(self.scene, self, str(self.reward))
 
-    def collided(self, projectile, index, time) :
+    def collided(self, projectile, time) :
         #persistent projectiles have damage pulse
         if time - self.last_hit > self.scene.gameplay['hit_pulse'] :
             self.last_hit = time
             #take damage
-            #trick to check if collision is from projectile map or entity
-            if index != None : 
-                self.life -= projectile.get_damage(index)
-            else :
-                self.life -= projectile.get_damage()
+            self.life -= projectile.get_damage()
             if self.life <= 0 :
                 self.time_of_death = time
                 #recognize killer in the distance
-                proj = projectile.positions[index]
-                self.killer = proj[2][0]
+                self.killer = projectile.parent
 
     def die(self) :
         #remove of scene
@@ -231,20 +305,13 @@ class Fighter(Fragile) :
                 self.new_weapon(weapon)
         self.score = 0
 
-    def add(self) :
-        Fragile.add(self)
-        for arm in self.arms :
-            p_map = self.arms[arm]
-            #add projectile map to scene container
-            p_map.add()
-
     def new_weapon(self, params) :
-        #load and avoid duplicate in scene
-        projectile_map = self.scene.cont.proj(params)
+        #instanciate weapon
+        w = Directed(self.scene, self, params)
         #set map allied status
-        projectile_map.ally = self.ally
+        w.ally = self.ally
         #keep trace of weapon
-        self.arms.update({projectile_map.type : projectile_map})
+        self.arms.update({params['type'] : w})
 
     def shoot(self, time, weapon, power=None) :
         w = self.arms[weapon]
@@ -253,7 +320,7 @@ class Fighter(Fragile) :
             #limit fire rate
             if time > self.last_shoot + w.cooldown :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-                w.positions.append((x, y, [self]))
+                w.shoot(x, y)
                 self.last_shoot = time
 
     def update(self, interval, time) :
@@ -283,13 +350,14 @@ class ChargeFighter(Fighter) :
             if (time > self.last_shoot + w.cooldown
             and self.charge == 0 ) :
                 x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-                w.positions.append((x, y, [self]))
+                w.shoot(x, y)
                 self.scene.cont.play('shoot', self.pos[0])
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-            w.positions.append((x, y, [self, power]))
+            w.charge = power
+            w.shoot(x, y)
             
 
     def die(self) :
