@@ -47,21 +47,20 @@ class Actor(object) :
 
 class Weapon(Actor):
     """generic weapon"""
-    pass
-
-class Directed(Weapon):
-    """a bullet in one direction"""
     def __init__(self, scene, parent, params):
         Actor.__init__(self, scene, params)
         self.parent = parent
+        self.ally = parent.ally
+        #the projectile used by weapon
         self.proj = globals()[self.type]
         p = self.proj(self.scene, self.parent, self.params)
         self.width = p.width
         self.height = p.height
 
-    def shoot(self, x, y):
+    def shoot(self, x, y, power=0):
         p = self.proj(self.scene, self.parent, self.params)
         p.pos = x, y
+        p.charge = power
         p.add()
 
 
@@ -134,6 +133,7 @@ class Projectile(Mobile) :
     def __init__(self, scene, parent, params={}) :
         Mobile.__init__(self, scene, params)
         self.parent = parent
+        self.ally = parent.ally
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
@@ -159,11 +159,7 @@ class Projectile(Mobile) :
             self.remove()
             del self
 
-class Bullet(Projectile) :
-    """a map of bullets
-    direction
-    speed
-    """
+class Bullet(Projectile):
     pass
 
 class Blast(Projectile) :
@@ -281,7 +277,6 @@ class Fragile(Mobile) :
         #play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
         
-        
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #change color for some time if hit recently
@@ -307,7 +302,7 @@ class Fighter(Fragile) :
 
     def new_weapon(self, params) :
         #instanciate weapon
-        w = Directed(self.scene, self, params)
+        w = Weapon(self.scene, self, params)
         #set map allied status
         w.ally = self.ally
         #keep trace of weapon
@@ -356,8 +351,7 @@ class ChargeFighter(Fighter) :
         #blast shot
         elif weapon == 'Blast' :
             x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
-            w.charge = power
-            w.shoot(x, y)
+            w.shoot(x, y, power)
             
 
     def die(self) :

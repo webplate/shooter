@@ -8,10 +8,10 @@ COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
 DEFAULTPLAY = {'name':'default',
-'flip_rate' : 70,
-'flash_pulse': 16,     #ms
-'hit_pulse' : 50,
-'blast_hit_pulse' : 100,
+'flip_rate' : 70, #fps cap
+'flash_pulse': 16,     #ms for white flash when collision
+'hit_pulse' : 50, #ms between two hits on ship
+'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
@@ -74,9 +74,9 @@ IRONBRAIN = {'name':'ironbrain',
 }
 
 #projectiles
+########################################
 BULLET = {'name':'A',
 'type' : 'Bullet',
-'ally' : True,
 'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : 100,
@@ -100,6 +100,7 @@ BLAST = {'name' : 'oOOo',
 }
 
 #entities
+#################################
 SHIP = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
@@ -126,14 +127,6 @@ TARGET = {'name':'target',
 'trajectory' : 'Circular',
 'reward' : 1,
 'bonus_rate' : 0.2
-}
-
-TARGETOLD = {'name':'target',
-'type' : 'Fighter',
-'speed' : 0.5,
-'life': 5,
-'weapons' : [BULLET2],
-'trajectory' : 'AlignV'
 }
 
 BACKGROUND = {'name':'desert',

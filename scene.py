@@ -336,17 +336,13 @@ class Scene() :
                             self.nb_fighters += 1
                         target_map.append(identifier)
                 elif isinstance(item, entity.Catchable) :
-                    x, y = item.pos
                     identifier = (x, y, 1, 1, True, item)
                     bonus_map.append(identifier)
                 elif isinstance(item, entity.Projectile) :
-                        x, y = item.pos
-                        self.add_sprite(x, y, item)
                         #blasts have wide damage zone other are on a pixel only
                         if isinstance(item, entity.Blast) :
                             identifier = (x, y, x+item.width, y+item.height, False, item)
                         else :
-                            x, y = item.pos
                             identifier = (x, y, 1, 1, True, item)
                         if item.ally :
                             ship_proj_map.append(identifier)
