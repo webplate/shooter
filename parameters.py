@@ -178,7 +178,6 @@ STRESSLEVEL = {'name':'stress',
 CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
-'music' : 'desert',
 'background' : DESERT,
 'nb_enemies' : 4
 }

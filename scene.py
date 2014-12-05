@@ -163,7 +163,7 @@ class Container():
             if track != None :
                 music = tools.load_stream(track, self.scene)
                 #check if file is nicely loaded
-                if music != None :
+                if music :
                     self.scene.game.music.play(loops)
                     self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
 
