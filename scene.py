@@ -7,6 +7,7 @@ class Player() :
     def __init__(self, scene, index) :
         self.scene = scene
         self.index = index
+        self.settings = self.scene.level['player']
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
         self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
@@ -16,7 +17,7 @@ class Player() :
         self.go_down = False
         self.stop = True
         self.ship = None
-        self.latent = self.load_ship(parameters.SHIP)
+        self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
         self.score = 0
         self.life = 0

@@ -115,7 +115,7 @@ INVINCIBLE = {'name' : 'ship',
 'ally' : True,
 'speed' : 1,
 'charge_rate' : 0.001,
-'life' : 100,
+'life' : 10000,
 'weapons' : [BULLET, BLAST]
 }
 
@@ -135,7 +135,7 @@ DESERT = {'name':'desert',
 'layer' : 0
 }
 
-BACKGROUND = {'name':'background',
+DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'speed': 0.2,
 'layer' : 0
@@ -147,6 +147,14 @@ BONUS = {'name':'bonus',
 'trajectory' : 'OscillationDown',
 'trajectory_params' : {'amplitude' : 20}
 }
+#Player settins
+PLAYER = {'name' : 'player1',
+'ship' : SHIP
+}
+
+ALTPLAYER = {'name' : 'Bloody Barron',
+'ship' : INVINCIBLE
+}
 
 #The reference playable level used to complete others
 ##############################################
@@ -154,15 +162,17 @@ DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
 'sound_pack' : DEFAULTSNDPACK,
 'gameplay' : DEFAULTPLAY,
-'background' : {},
+'background' : DEFAULTBACKGROUND,
 'music' : 'background',
-'nb_enemies' : 6
+'nb_enemies' : 6,
+'player' : PLAYER
 }
 
 STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
 'sound_pack' : DEFAULTSNDPACK,
-'nb_enemies' : 15
+'nb_enemies' : 300,
+'player' : ALTPLAYER
 }
 
 CLEBLEVEL = {'name':'clebard',
@@ -170,7 +180,7 @@ CLEBLEVEL = {'name':'clebard',
 'sound_pack' : MCPACK,
 'music' : 'desert',
 'background' : DESERT,
-'nb_enemies' : 4,
+'nb_enemies' : 4
 }
 
-LEVEL = STRESSLEVEL
+LEVEL = CLEBLEVEL
