@@ -8,10 +8,10 @@ COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame
 
 DEFAULTPLAY = {'name':'default',
-'flip_rate' : 70,
-'flash_pulse': 16,     #ms
-'hit_pulse' : 50,
-'blast_hit_pulse' : 100,
+'flip_rate' : 70, #fps cap
+'flash_pulse': 16,     #ms for white flash when collision
+'hit_pulse' : 50, #ms between two hits on ship
+'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
@@ -43,9 +43,9 @@ DEFAULTTHEME = {'name' : None,
 'explosion_pulse' : 100,
 'bg_color' : (50, 50, 50),
 'txt_color' : (100, 100, 100),
-'font' : "./fonts/FIXED_BO.TTF",
-'monospace_font' : "./fonts/FIXED_BO.TTF",
-'small_font' : "./fonts/MiniPower.ttf",
+'font' : "FIXED_BO.TTF",
+'monospace_font' : "FIXED_BO.TTF",
+'small_font' : "MiniPower.ttf",
 'txt_size' : 8,
 'txt_inter' : 8,
 'small_size' : 16
@@ -68,15 +68,16 @@ CLEBARD = {'name':'clebard',
 
 IRONBRAIN = {'name':'ironbrain',
 'bg_color' : (100, 110, 100),
-'font' : "./fonts/AtariSmall.ttf",
+'font' : "AtariSmall.ttf",
 'txt_size' : 16,
 'txt_inter' : 16
 }
 
 #projectiles
+########################################
 BULLET = {'name':'A',
 'type' : 'Bullet',
-'direction' : 'up',
+'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : 100,
 'damage' : 1
@@ -84,7 +85,7 @@ BULLET = {'name':'A',
 
 BULLET2 = {'name':'o',
 'type' : 'Bullet',
-'direction' : 'down',
+'trajectory' : 'Down',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
@@ -92,13 +93,14 @@ BULLET2 = {'name':'o',
 
 BLAST = {'name' : 'oOOo',
 'type' : 'Blast',
-'direction' : 'up',
+'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
 }
 
 #entities
+#################################
 SHIP = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
@@ -113,7 +115,7 @@ INVINCIBLE = {'name' : 'ship',
 'ally' : True,
 'speed' : 1,
 'charge_rate' : 0.001,
-'life' : 100,
+'life' : 10000,
 'weapons' : [BULLET, BLAST]
 }
 
@@ -123,18 +125,17 @@ TARGET = {'name':'target',
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular',
+'reward' : 1,
 'bonus_rate' : 0.2
 }
 
-TARGETOLD = {'name':'target',
-'type' : 'Fighter',
-'speed' : 0.5,
-'life': 5,
-'weapons' : [BULLET2],
-'trajectory' : 'AlignV'
+DESERT = {'name':'desert',
+'type' : 'Landscape',
+'speed': 0.2,
+'layer' : 0
 }
 
-BACKGROUND = {'name':'desert',
+DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'speed': 0.2,
 'layer' : 0
@@ -146,25 +147,39 @@ BONUS = {'name':'bonus',
 'trajectory' : 'OscillationDown',
 'trajectory_params' : {'amplitude' : 20}
 }
+#Player settins
+PLAYER = {'name' : 'player1',
+'ship' : SHIP
+}
+
+ALTPLAYER = {'name' : 'Bloody Barron',
+'ship' : INVINCIBLE
+}
 
 #The reference playable level used to complete others
+##############################################
 DEFAULTLEVEL = {'name':'default',
 'theme' : DEFAULTTHEME,
 'sound_pack' : DEFAULTSNDPACK,
 'gameplay' : DEFAULTPLAY,
-'nb_enemies' : 6
+'background' : DEFAULTBACKGROUND,
+'music' : 'background',
+'nb_enemies' : 6,
+'player' : PLAYER
 }
 
 STRESSLEVEL = {'name':'stress',
 'theme' : DERVAL,
 'sound_pack' : DEFAULTSNDPACK,
-'nb_enemies' : 15
+'nb_enemies' : 300,
+'player' : ALTPLAYER
 }
 
 CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
-'nb_enemies' : 4,
+'background' : DESERT,
+'nb_enemies' : 4
 }
 
 LEVEL = CLEBLEVEL

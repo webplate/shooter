@@ -26,6 +26,14 @@ class Down(Trajectory) :
         offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
         pos = pos[0] , pos[1] + offset
         return pos
+        
+class Up(Trajectory) :
+    """go downward"""
+    def next_pos(self, pos, interval, time) :
+        """compute new position from floats"""
+        offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
+        pos = pos[0] , pos[1] - offset
+        return pos
 
 class Align(Trajectory) :
     """can focus on a target"""

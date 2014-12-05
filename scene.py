@@ -7,6 +7,7 @@ class Player() :
     def __init__(self, scene, index) :
         self.scene = scene
         self.index = index
+        self.settings = self.scene.level['player']
         self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
         'shoot':False}
         self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
@@ -16,7 +17,7 @@ class Player() :
         self.go_down = False
         self.stop = True
         self.ship = None
-        self.latent = self.load_ship(parameters.SHIP)
+        self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
         self.score = 0
         self.life = 0
@@ -129,16 +130,6 @@ class Container():
             self.array.update({name : array})
         return surface
 
-    def proj(self, parameters) :
-        if parameters['name'] in self.maps :
-            projectile = self.maps[parameters['name']]
-        else :
-            #instantiate according to specified type
-            targetClass = getattr(entity, parameters['type'])
-            projectile = targetClass(self.scene, parameters)
-            self.maps.update({parameters['name'] : projectile})
-        return projectile
-
     def bg(self, name) :
         """load background images"""
         if name in self.background :
@@ -170,9 +161,11 @@ class Container():
     def load_music(self, track=None, loops=-1):
         if not self.scene.game.no_sound :
             if track != None :
-                tools.load_stream(track, self.scene)
-                self.scene.game.music.play(loops)
-                self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
+                music = tools.load_stream(track, self.scene)
+                #check if file is nicely loaded
+                if music :
+                    self.scene.game.music.play(loops)
+                    self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
 
     def music(self) :
         """control game mixer for streaming large music files"""
@@ -237,9 +230,9 @@ class Scene() :
         self.paused = False
         self.delay = 0
         #launch background music
-        self.cont.load_music('background')
+        self.cont.load_music(self.level['music'])
         #launch landscape
-        entity.Landscape(self, parameters.BACKGROUND).add()
+        entity.Landscape(self, self.level['background']).add()
         self.update()
 
     def load_interface(self) :
@@ -260,32 +253,7 @@ class Scene() :
         for item in self.interface :
             item.add()
 
-    def collide_map(self, proj_map, target_map, time) :
-        """repercute collisions projectiles and alpha maps of sprites
-        dealing with projectile maps (entity.Projectile)"""
-        for xP, yP, xPe, yPe, pixel, itemP, index in proj_map :
-            #one pixel projectile
-            if pixel :
-                for xT, yT, xTe, yTe, itemT in target_map :
-                    #is in range ?
-                    if xP < xTe and xP > xT and yP < yTe and yP > yT :
-                        #per pixel collision
-                        if self.cont.array[itemT.name][xP - xT, yP - yT] :
-                            #hurt or not, entity
-                            itemT.collided(itemP, index, time)
-                            #remove or not, colliding projectile
-                            itemP.collided(index)
-            #rectangular projectile
-            else :
-                for xT, yT, xTe, yTe, itemT in target_map :
-                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
-                        minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
-                        miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
-                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
-                            itemT.collided(itemP, index, time)
-                            itemP.collided(index)
-                            
-    def collide_mobile(self, proj_map, target_map, time) :
+    def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites
         dealing with projectiles as entities (entity.Mobile)"""
         for xP, yP, xPe, yPe, pixel, itemP in proj_map :
@@ -297,7 +265,7 @@ class Scene() :
                         #per pixel collision
                         if self.cont.array[itemT.name][xP - xT, yP - yT] :
                             #hurt or not, entity
-                            itemT.collided(itemP, None, time)
+                            itemT.collided(itemP, time)
                             #remove or not, colliding projectile
                             itemP.collided()
             #rectangular projectile
@@ -307,8 +275,8 @@ class Scene() :
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
-                            itemT.collided(itemP, index, time)
-                            itemP.collided(index)
+                            itemT.collided(itemP, time)
+                            itemP.collided()
 
     def update_paused(self, interval=0, time=0) :
         #stop background music
@@ -324,6 +292,13 @@ class Scene() :
         #if paused bypass classic update
         self.orig_update = self.update
         self.update = self.update_paused
+    
+    def add_sprite(self, x, y, item):
+        """update sprite container only for visible objects"""
+        if item.visible :
+            identifier = ((x, y), item.surface)
+            self.lst_sprites.append(identifier, item.layer)
+        
 
     def update(self, interval = 0, time = 0) :
         self.now = time - self.delay
@@ -333,7 +308,7 @@ class Scene() :
         ship_proj_map = []
         target_proj_map = []
         bonus_map = []
-        #sprite list for drawing
+        #reset sprite list for drawing
         self.lst_sprites = Ordered()
         self.nb_fighters = 0
         #explore scene
@@ -341,8 +316,7 @@ class Scene() :
             if isinstance(item, entity.Mobile) :
                 x, y = item.pos
                 #prepare sprite list for drawing
-                identifier = ((x, y), item.surface)
-                self.lst_sprites.append(identifier, item.layer)
+                self.add_sprite(x, y, item)
                 if isinstance(item, entity.Fragile) :
                     #populate collision maps
                     #precompute for faster detection
@@ -355,36 +329,29 @@ class Scene() :
                             self.nb_fighters += 1
                         target_map.append(identifier)
                 elif isinstance(item, entity.Catchable) :
-                    x, y = item.pos
                     identifier = (x, y, 1, 1, True, item)
                     bonus_map.append(identifier)
-            elif isinstance(item, entity.Projectile) :
-                for i in range(len(item.positions)) :
-                    x, y = item.draw_position(i)
-                    identifier = ((x, y), item.surface)
-                    self.lst_sprites.append(identifier, item.layer)
-                    #blasts have wide damage zone other are on a pixel only
-                    if isinstance(item, entity.Blast) :
-                        identifier = (x, y, x+item.width, y+item.height, False, item, i)
-                    else :
-                        x, y = item.position(i)
-                        identifier = (x, y, 1, 1, True, item, i)
-                    if item.ally :
-                        ship_proj_map.append(identifier)
-                    else :
-                        target_proj_map.append(identifier)
+                elif isinstance(item, entity.Projectile) :
+                        #blasts have wide damage zone other are on a pixel only
+                        if isinstance(item, entity.Blast) :
+                            identifier = (x, y, x+item.width, y+item.height, False, item)
+                        else :
+                            identifier = (x, y, 1, 1, True, item)
+                        if item.ally :
+                            ship_proj_map.append(identifier)
+                        else :
+                            target_proj_map.append(identifier)
             elif isinstance(item, entity.Landscape) :
                 #prepare sprite list for drawing
-                identifier = ((0, 0), item.surface)
-                self.lst_sprites.append(identifier, item.layer)
+                self.add_sprite(0, 0, item)
         #update player status
         for player in self.players :
             player.update(interval, self.now)
         #detect collisions and update accordingly
-        self.collide_map(ship_proj_map, target_map, self.now)
-        self.collide_map(target_proj_map, ship_map, self.now)
+        self.collide(ship_proj_map, target_map, self.now)
+        self.collide(target_proj_map, ship_map, self.now)
         #catch bonuses, hurray !! \o/
-        self.collide_mobile(bonus_map, ship_map, self.now)
+        self.collide(bonus_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.TARGET)

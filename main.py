@@ -19,7 +19,7 @@
 
 import platform, os, pygame
 import pygame.locals as p_l
-import scene, parameters
+import scene, parameters, tools
 
 def load_level(level) :
     
@@ -83,11 +83,11 @@ class Shooter() :
         self.theme = self.level['theme']
         #load fonts
         pygame.font.init()
-        self.font = pygame.font.Font(self.theme['font'],
+        self.font = tools.load_font(self.theme['font'],
         self.theme['txt_size'])
-        self.mfont = pygame.font.Font(self.theme['monospace_font'],
+        self.mfont = tools.load_font(self.theme['monospace_font'],
         self.theme['txt_size'])
-        self.sfont = pygame.font.Font(self.theme['small_font'],
+        self.sfont = tools.load_font(self.theme['small_font'],
         self.theme['small_size'])
         #joysticks
         pygame.joystick.init()
