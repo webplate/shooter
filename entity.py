@@ -399,7 +399,7 @@ class Explosion(Mobile) :
         self.scene.cont.surf('OOO')]
         self.pulse = self.scene.theme['explosion_pulse']
         #explosions are in front
-        self.layer = 3
+        self.layer = 15
 
     def update(self, interval, time) :
         if time > self.parent.time_of_death + self.pulse*3 :
