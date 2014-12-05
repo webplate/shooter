@@ -1,16 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os, pygame
+import os, sys, pygame
 import parameters
 
 def get_center(pos, surface) :
     center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
     return center
 
-def load_sound(file, scene) :
+def resource_path(relative):
+    """path translator for pyinstaller
+    """
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, relative)
+    return os.path.join(relative)
+
+def get_path(a1, a2, a3):
+    return resource_path(os.path.join(a1, a2, a3))
+
+def load_font(filename, size) :
+    myfontfile = resource_path(os.path.join('fonts', filename))
+    return pygame.font.Font(myfontfile, size)
+    
+
+def load_sound(filename, scene) :
     """load sound or not"""
     if scene.snd_pack['name'] != None :
-        path = os.path.join('sounds', scene.snd_pack['name'], file + '.ogg')
+        path = get_path('sounds', scene.snd_pack['name'], filename + '.ogg')
         try :
             sound = pygame.mixer.Sound(path)
         except pygame.error :
@@ -19,26 +34,26 @@ def load_sound(file, scene) :
         sound = None
     return sound
 
-def load_stream(file, scene) :
+def load_stream(filename, scene) :
     """load music track or not"""
     if scene.snd_pack['name'] != None :
-        path = os.path.join('sounds', scene.snd_pack['name'], file + '.ogg')
+        path = get_path('sounds', scene.snd_pack['name'], filename + '.ogg')
         try :
             sound = pygame.mixer.music.load(path)
         except pygame.error :
             sound = None
         return sound
 
-def load_image(file, theme, scene):
+def load_image(filename, theme, scene):
     """loads an image, prepares it for play
     or create a label if image absent"""
     if theme != None :
-        path = os.path.join('imgs', theme, file + '.png')
+        path = get_path('imgs', theme, filename + '.png')
         try:
             surface = pygame.image.load(path)
         except pygame.error :
             #if no corresponding png generate from label
-            surface = font_skin(scene, file)
+            surface = font_skin(scene, filename)
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(parameters.COLORDEPTH)
@@ -47,12 +62,12 @@ def load_image(file, theme, scene):
             surface.set_colorkey(color)
     else :
         #no themepack : use labels as sprites 
-        surface = font_skin(scene, file)
+        surface = font_skin(scene, filename)
     return surface
 
-def load_background(file, theme, scene):
+def load_background(filename, theme, scene):
     if theme != None :
-        path = os.path.join('imgs', theme, file + '.png')
+        path = get_path('imgs', theme, filename + '.png')
         try:
             surface = pygame.image.load(path)
         except pygame.error:

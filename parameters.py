@@ -43,9 +43,9 @@ DEFAULTTHEME = {'name' : None,
 'explosion_pulse' : 100,
 'bg_color' : (50, 50, 50),
 'txt_color' : (100, 100, 100),
-'font' : "./fonts/FIXED_BO.TTF",
-'monospace_font' : "./fonts/FIXED_BO.TTF",
-'small_font' : "./fonts/MiniPower.ttf",
+'font' : "FIXED_BO.TTF",
+'monospace_font' : "FIXED_BO.TTF",
+'small_font' : "MiniPower.ttf",
 'txt_size' : 8,
 'txt_inter' : 8,
 'small_size' : 16
@@ -68,7 +68,7 @@ CLEBARD = {'name':'clebard',
 
 IRONBRAIN = {'name':'ironbrain',
 'bg_color' : (100, 110, 100),
-'font' : "./fonts/AtariSmall.ttf",
+'font' : "AtariSmall.ttf",
 'txt_size' : 16,
 'txt_inter' : 16
 }
