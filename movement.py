@@ -28,7 +28,7 @@ class Down(Trajectory) :
         return pos
         
 class Up(Trajectory) :
-    """go downward"""
+    """go upward"""
     def next_pos(self, pos, interval, time) :
         """compute new position from floats"""
         offset = self.mobile.speed * self.scene.gameplay['speed'] * interval

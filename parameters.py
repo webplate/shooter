@@ -75,12 +75,13 @@ IRONBRAIN = {'name':'ironbrain',
 
 #projectiles
 ########################################
-BULLET = {'name':'A',
+BULLET = {'name':'spreader_0',
 'type' : 'Bullet',
 'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : 100,
-'damage' : 1
+'damage' : 1,
+'collision_type' : 'pixel_perfect'
 }
 
 BULLET2 = {'name':'o',
@@ -89,14 +90,16 @@ BULLET2 = {'name':'o',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
+'collision_type' : 'pixel'
 }
 
-BLAST = {'name' : 'oOOo',
+BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
+'collision_type' : 'rectangle'
 }
 
 #entities
@@ -119,7 +122,7 @@ INVINCIBLE = {'name' : 'ship',
 'weapons' : [BULLET, BLAST]
 }
 
-TARGET = {'name':'target',
+SAUCER = {'name':'target',
 'type' : 'Fighter',
 'speed': 0.25,
 'life': 5,
@@ -145,7 +148,8 @@ BONUS = {'name':'bonus',
 'type' : 'Mobile',
 'speed' : 0.5,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 20}
+'trajectory_params' : {'amplitude' : 20},
+'collision_type' : 'pixel_perfect'
 }
 #Player settins
 PLAYER = {'name' : 'player1',

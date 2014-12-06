@@ -299,7 +299,7 @@ class Fighter(Fragile) :
         Fragile.__init__(self, scene, params)
         self.last_shoot = 0
         self.arms = {}
-        #instantiate projectile maps for weapons
+        #instantiate weaponz
         if 'weapons' in params :
             for weapon in params['weapons'] :
                 self.new_weapon(weapon)

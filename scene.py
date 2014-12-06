@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import entity, tools, parameters
+import numpy
 
 class Player() :
     """class for player settings, controls, ships"""
@@ -256,9 +257,9 @@ class Scene() :
     def collide(self, proj_map, target_map, time) :
         """repercute collisions projectiles and alpha maps of sprites
         dealing with projectiles as entities (entity.Mobile)"""
-        for xP, yP, xPe, yPe, pixel, itemP in proj_map :
+        for xP, yP, xPe, yPe, itemP in proj_map :
             #one pixel projectile
-            if pixel :
+            if itemP.collision_type == 'pixel' :
                 for xT, yT, xTe, yTe, itemT in target_map :
                     #is in range ?
                     if xP < xTe and xP > xT and yP < yTe and yP > yT :
@@ -269,12 +270,34 @@ class Scene() :
                             #remove or not, colliding projectile
                             itemP.collided()
             #rectangular projectile
-            else :
+            elif itemP.collision_type == 'rectangle' :
                 for xT, yT, xTe, yTe, itemT in target_map :
                     if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+                        #(minx,miny), (maxx, maxy) are the intersection
+                        #coordinate between target map and proj map
+                        #coordinate are target map relative
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
+                            itemT.collided(itemP, time)
+                            itemP.collided()
+            #pixel perfect projectile
+            else :
+                for xT, yT, xTe, yTe, itemT in target_map :
+                    print "xP = ", xP,"<= ","xTe = ", xTe
+                    print "xPe = ", xPe,">= ", "xT = ", xT
+                    print "yP = ", yP,"<= ", "yTe = ", yTe
+                    print "yPe = ", yPe,">= ", "yT = ", yT
+                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+                        minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
+                        miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
+                        minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
+                        minyP, maxyP = max(yP, yT)-yP, min(yPe, yTe)-yP
+                        touch = numpy.logical_and(
+                        self.cont.array[itemT.name][minx:maxx, miny:maxy],
+                        self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
+                        print "yo"
+                        if True in touch :
                             itemT.collided(itemP, time)
                             itemP.collided()
 
@@ -329,14 +352,14 @@ class Scene() :
                             self.nb_fighters += 1
                         target_map.append(identifier)
                 elif isinstance(item, entity.Catchable) :
-                    identifier = (x, y, 1, 1, True, item)
+                    identifier = (x, y, x+item.width, y+item.height, item)
                     bonus_map.append(identifier)
                 elif isinstance(item, entity.Projectile) :
                         #blasts have wide damage zone other are on a pixel only
                         if isinstance(item, entity.Blast) :
-                            identifier = (x, y, x+item.width, y+item.height, False, item)
+                            identifier = (x, y, x+item.width, y+item.height, item)
                         else :
-                            identifier = (x, y, 1, 1, True, item)
+                            identifier = (x, y, 1, 1, item)
                         if item.ally :
                             ship_proj_map.append(identifier)
                         else :
@@ -354,7 +377,7 @@ class Scene() :
         self.collide(bonus_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
-            fighter = entity.Fighter(self, parameters.TARGET)
+            fighter = entity.Fighter(self, parameters.SAUCER)
             #add in scene
             fighter.add()
         #update individuals
