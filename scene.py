@@ -35,6 +35,7 @@ class Player() :
         #link to ship attributes
         self.life = ship.life
         self.score = ship.score
+        self.weapon_level = ship.weapon_level
         return ship
 
     def command(self, interval, time) :
@@ -284,10 +285,6 @@ class Scene() :
             #pixel perfect projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
-                    print "xP = ", xP,"<= ","xTe = ", xTe
-                    print "xPe = ", xPe,">= ", "xT = ", xT
-                    print "yP = ", yP,"<= ", "yTe = ", yTe
-                    print "yPe = ", yPe,">= ", "yT = ", yT
                     if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
@@ -296,7 +293,6 @@ class Scene() :
                         touch = numpy.logical_and(
                         self.cont.array[itemT.name][minx:maxx, miny:maxy],
                         self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
-                        print "yo"
                         if True in touch :
                             itemT.collided(itemP, time)
                             itemP.collided()
@@ -355,11 +351,7 @@ class Scene() :
                     identifier = (x, y, x+item.width, y+item.height, item)
                     bonus_map.append(identifier)
                 elif isinstance(item, entity.Projectile) :
-                        #blasts have wide damage zone other are on a pixel only
-                        if isinstance(item, entity.Blast) :
-                            identifier = (x, y, x+item.width, y+item.height, item)
-                        else :
-                            identifier = (x, y, 1, 1, item)
+                        identifier = (x, y, x+item.width, y+item.height, item)
                         if item.ally :
                             ship_proj_map.append(identifier)
                         else :

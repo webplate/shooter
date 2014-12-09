@@ -28,7 +28,7 @@ class Actor(object) :
         #layer for drawing on screen
         if 'layer' not in params :
             self.layer = 10
-
+            
         #priority of update
         self.priority = 0
 
@@ -44,6 +44,13 @@ class Actor(object) :
     def remove(self) :
         """remove from scene"""
         self.scene.content.remove(self)
+        
+    #~ def launch_effect(self) :
+        #~ if self.effect != None :
+            #~ if self.effect == 'add_life' :
+                #~ self.
+            #~ elif self.effect == 'upgrade_weapon' :
+                
 
 class Weapon(Actor):
     """generic weapon"""
@@ -137,12 +144,20 @@ class Projectile(Mobile) :
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
+        #how does it affect life
+        if 'effect' not in params :
+            self.add_life = -1
+        else :
+            if 'add_life' not in params['effect'] :
+                self.add_life = -1
+            else :
+                self.add_life = params['effect']['add_life']
 
     def collided(self) :
         self.remove()
 
     def get_damage(self) :
-        return self.damage
+        return self.add_life
 
     def in_screen(self, pos) :
         #bad if outside screen
@@ -220,11 +235,33 @@ class Landscape(Visible) :
         self.surface = s
 
 class Catchable(Mobile) :
-    """this one you can catch"""
+    """this one you can catch
+    parameters should contain :
+    -'effect'
+    """
+    def __init__(self, scene, params) :
+        Mobile.__init__(self, scene, params)
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        #how does it affect life
+        if 'add_life' not in params['effect'] :
+            self.add_life = 0
+        else :
+            self.add_life = params['effect']['add_life']
+        #how does it affect weapons
+        if 'upgrade_weapon' not in params['effect'] :
+            self.weapon_bonus = 0
+        else :
+            self.weapon_bonus = params['effect']['upgrade_weapon']
+    #what happens when it collides with another object
     def collided(self) :
         self.remove()
+    #return quantity of heal (or damage)
     def get_damage(self) :
-        return -1
+        return self.add_life
+    #return upgrade power
+    def upgrade_weapon(self) :
+        return self.weapon_bonus
 
 class Fragile(Mobile) :
     """this one can be hurt
@@ -246,7 +283,7 @@ class Fragile(Mobile) :
         #fragiles can give bonuses depending on their bonus rate
         if random.random() < self.bonus_rate :
             self.has_bonus = True
-            self.bonus = Catchable(self.scene, parameters.BONUS)
+            self.bonus = Catchable(self.scene, parameters.BONUSWEAPON)
         else :
             self.has_bonus = False
         #prepare score show if significant
@@ -257,8 +294,8 @@ class Fragile(Mobile) :
         #persistent projectiles have damage pulse
         if time - self.last_hit > self.scene.gameplay['hit_pulse'] :
             self.last_hit = time
-            #take damage
-            self.life -= projectile.get_damage()
+            #heal or take damage
+            self.life += projectile.get_damage()
             if self.life <= 0 :
                 self.time_of_death = time
                 #recognize killer in the distance
@@ -381,6 +418,8 @@ class Ship(ChargeFighter) :
         self.last_bend = 0
         self.righto = False
         self.lefto = False
+        #ref to upgrade_weapon
+        self.weapon_level = 0
         
     def fly(self, direction, interval) :
         #should consider time passed
@@ -398,6 +437,12 @@ class Ship(ChargeFighter) :
         if (new_center[0] < self.scene.limits[0] and new_center[0] > 0
         and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
             self._pos = new_pos
+
+    def collided(self, projectile, time) :
+        ChargeFighter.collided(self, projectile, time)
+        #can upgrade weapon when catching bonuses
+        if isinstance(projectile, Catchable) :
+            self.weapon_level += projectile.upgrade_weapon()
 
     def die(self) :
         ChargeFighter.die(self)

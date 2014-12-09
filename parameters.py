@@ -75,12 +75,48 @@ IRONBRAIN = {'name':'ironbrain',
 
 #projectiles
 ########################################
-BULLET = {'name':'spreader_0',
+SPREADER0 = {'name':'spreader_0',
 'type' : 'Bullet',
-'trajectory' : 'Up',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : 0},
 'speed' : 1,
 'cooldown' : 100,
-'damage' : 1,
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADER22_5 = {'name':'spreader_0_22.5',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : 22.5},
+'speed' : SPREADER0['speed'],
+'cooldown' : SPREADER0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADERMINUS22_5 = {'name':'spreader_0_-22.5',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : -22.5},
+'speed' : SPREADER0['speed'],
+'cooldown' : SPREADER0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADER45 = {'name':'spreader_0_45',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : 45},
+'speed' : SPREADER0['speed'],
+'cooldown' : SPREADER0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADERMINUS45 = {'name':'spreader_0_-45',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : -45},
+'speed' : SPREADER0['speed'],
+'cooldown' : SPREADER0['cooldown'],
 'collision_type' : 'pixel_perfect'
 }
 
@@ -88,8 +124,7 @@ BULLET2 = {'name':'o',
 'type' : 'Bullet',
 'trajectory' : 'Down',
 'speed' : 1,
-'cooldown' : BULLET['cooldown'] * 6,
-'damage' : 1,
+'cooldown' : SPREADER0['cooldown'] * 6,
 'collision_type' : 'pixel'
 }
 
@@ -97,8 +132,8 @@ BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
 'speed' : 1,
-'cooldown' : BULLET['cooldown'] * 6,
-'power': 1,
+'cooldown' : SPREADER0['cooldown'] * 6,
+'power': -1,
 'collision_type' : 'rectangle'
 }
 
@@ -110,7 +145,7 @@ SHIP = {'name' : 'ship',
 'speed' : 1,
 'charge_rate' : 0.001,
 'life' : 10,
-'weapons' : [BULLET, BLAST]
+'weapons' : [SPREADER0, SPREADER22_5, SPREADERMINUS22_5, SPREADER45, SPREADERMINUS45, BLAST]
 }
 
 INVINCIBLE = {'name' : 'ship',
@@ -119,7 +154,7 @@ INVINCIBLE = {'name' : 'ship',
 'speed' : 1,
 'charge_rate' : 0.001,
 'life' : 10000,
-'weapons' : [BULLET, BLAST]
+'weapons' : [SPREADER0, BLAST]
 }
 
 SAUCER = {'name':'target',
@@ -144,13 +179,24 @@ DEFAULTBACKGROUND = {'name':'background',
 'layer' : 0
 }
 
-BONUS = {'name':'bonus',
+BONUSLIFE = {'name' : 'bonusL',
 'type' : 'Mobile',
 'speed' : 0.5,
 'trajectory' : 'OscillationDown',
 'trajectory_params' : {'amplitude' : 20},
-'collision_type' : 'pixel_perfect'
+'collision_type' : 'pixel_perfect',
+'effect' : {'add_life' : 1}
 }
+
+BONUSWEAPON = {'name' : 'bonusW',
+'type' : 'Mobile',
+'speed' : 0.5,
+'trajectory' : 'OscillationDown',
+'trajectory_params' : {'amplitude' : 20},
+'collision_type' : 'pixel_perfect',
+'effect' : {'upgrade_weapon' : 1},
+}
+
 #Player settins
 PLAYER = {'name' : 'player1',
 'ship' : SHIP

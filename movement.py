@@ -13,7 +13,7 @@ def pol2cart(radius, angle) :
 
 class Trajectory() :
     """a general position modifier"""
-    def __init__(self, scene, mobile) :
+    def __init__(self, scene, mobile, params={}) :
         self.scene = scene
         self.mobile = mobile
         #set init position of mobile
@@ -33,6 +33,24 @@ class Up(Trajectory) :
         """compute new position from floats"""
         offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
         pos = pos[0] , pos[1] - offset
+        return pos
+        
+class Line(Trajectory) :
+    """advance in a line with the given angle"""
+    def __init__(self, scene, mobile, params={}) :
+        Trajectory.__init__(self, scene, mobile, params={})
+        #default trajectory is down
+        if 'angle' not in params :
+            self.angle = 180
+        else :
+            self.angle = params['angle']
+        #convert angle from degree to radians
+        self.angle = math.radians(self.angle) - math.pi/2
+            
+    def next_pos(self, pos, interval, time) :
+        """compute new position from floats"""
+        offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
+        pos = pos[0] + offset*math.cos(self.angle) , pos[1] + offset*math.sin(self.angle)
         return pos
 
 class Align(Trajectory) :
@@ -151,7 +169,7 @@ class Circular(GoFront) :
 class OscillationDown(Trajectory) :
     """go down while oscillating"""
     def __init__(self, scene, mobile, params={}) :
-        Trajectory.__init__(self, scene, mobile)
+        Trajectory.__init__(self, scene, mobile, params)
         self.randomV = (random.random() - 0.5)
         self.randomH = random.random() * 100
         if 'amplitude' not in params :
