@@ -11,7 +11,7 @@ DEFAULTPLAY = {'name':'default',
 'flip_rate' : 70, #fps cap
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
-'game_speed' : 0.1,
+'game_speed' : 1,
 'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
 }
@@ -72,8 +72,6 @@ IRONBRAIN = {'name':'ironbrain',
 'txt_inter' : 16
 }
 
-#display tuning
-ORIENTDELAY = 150
 #set layers of sprites
 BASELAYER = 10
 
@@ -95,6 +93,11 @@ BULLETBLINK = {'type':'SyncLoop',
 
 HITBLINK = {'type':'Blank',
 'duration' : 16     #ms for white flash when collision
+}
+
+SHIPORIENTATION = {'type':'Orient',
+'id_char':'-',
+'delay':100,
 }
 
 #projectiles

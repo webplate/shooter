@@ -250,8 +250,8 @@ class Orient(Anim):
         self.player = self.parent.player
         self.base_name = self.parent.name
         #preload oriented sprites
-        self.scene.cont.surf('-' + self.base_name)
-        self.scene.cont.surf(self.base_name + '-')
+        self.scene.cont.surf(self.id_char + self.base_name)
+        self.scene.cont.surf(self.base_name + self.id_char)
         #ref for animation of ship movements
         self.last_bend = 0
         self.righto = False
@@ -268,10 +268,10 @@ class Orient(Anim):
             self.righto = False
             self.last_bend = time
         #show orientation of ship
-        if self.player.go_right and time > self.last_bend + parameters.ORIENTDELAY :
-            self.parent.surface = '-' + self.base_name
-        elif self.player.go_left  and time > self.last_bend + parameters.ORIENTDELAY :
-            self.parent.surface = self.base_name + '-'
+        if self.player.go_right and time > self.last_bend + self.delay :
+            self.parent.surface = self.id_char + self.base_name
+        elif self.player.go_left  and time > self.last_bend + self.delay :
+            self.parent.surface = self.base_name + self.id_char
         else :
             self.parent.init_surface()
 
@@ -524,8 +524,7 @@ class Ship(ChargeFighter) :
         #keep ref of maximum life
         self.max_life = self.life
         #fragile has orientation_anim
-        self.anim_objects.append(Orient(self.scene, self))
-
+        self.anim_objects.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         
     def fly(self, direction, interval) :
         #should consider time passed
