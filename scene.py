@@ -118,6 +118,9 @@ class Container():
 
     def surf(self, name) :
         """avoid duplicate loading"""
+        #None is an empty surface
+        if name == None :
+            name = ''
         if name in self.surfaces :
             surface = self.surfaces[name]
         else :
@@ -129,6 +132,25 @@ class Container():
             self.hit.update({name : hit})
             self.array.update({name : array})
         return surface
+    
+    def surf_hit(self, name) :
+        """return alt maps too"""
+        #None is an empty surface
+        if name == None :
+            name = ''
+        if name in self.surfaces :
+            surface = self.surfaces[name]
+            array = self.array[name]
+            hit = self.hit[name]
+        else :
+            surface = tools.load_image(name, self.theme, self.scene)
+            #generate variants of image
+            hit = tools.make_white(surface)
+            array = tools.make_array(surface)
+            self.surfaces.update({name : surface})
+            self.hit.update({name : hit})
+            self.array.update({name : array})
+        return surface, array, hit
 
     def bg(self, name) :
         """load background images"""
@@ -210,6 +232,10 @@ class Ordered():
 class Scene() :
     def __init__(self, game) :
         self.game = game
+        #delay between scene and game (scene can be paused)
+        self.paused = False
+        self.delay = 0
+        self.now = 0
         self.limits = game.limits
         self.font = game.font
         self.mfont = game.mfont
@@ -226,9 +252,6 @@ class Scene() :
         self.players = [Player(self, i) for i in range(4)]
         self.player1 = self.players[0]
         self.load_interface()
-        #delay between scene and game (scene can be paused)
-        self.paused = False
-        self.delay = 0
         #launch background music
         self.cont.load_music(self.level['music'])
         #launch landscape
@@ -276,7 +299,7 @@ class Scene() :
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
                             itemT.collided(itemP, time)
-                            itemP.collided()
+                            itemP.collided() 
 
     def update_paused(self, interval=0, time=0) :
         #stop background music

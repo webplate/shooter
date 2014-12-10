@@ -95,10 +95,13 @@ class Shooter() :
         for x in range(pygame.joystick.get_count())]
         for joy in joysticks :
             joy.init()
+        #time 
+        self.now = pygame.time.get_ticks()
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
         self.players = self.scene.players
+
 
     def on_event(self, event) :
         """propagate and interpret events"""
@@ -199,9 +202,9 @@ class Shooter() :
         """launch mainloop"""
         #Main loop
         self.frame = 0
-        now = pygame.time.get_ticks()
-        self.last_flip = now
-        self.last_iter = now
+        self.now = pygame.time.get_ticks()
+        self.last_flip = self.now
+        self.last_iter = self.now
         while self.running :
             #EVENTS
             evts = pygame.event.get()

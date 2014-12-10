@@ -84,7 +84,7 @@ class BuildExe:
         self.zipfile_name = None
  
         #Dist directory
-        self.dist_dir ='dist'
+        self.dist_dir ='dist_py2exe'
  
     ## Code from DistUtils tutorial at http://wiki.python.org/moin/Distutils/Tutorial
     ## Originally borrowed from wxPython's setup and config files
@@ -169,4 +169,3 @@ if __name__ == '__main__':
     if operator.lt(len(sys.argv), 2):
         sys.argv.append('py2exe')
     BuildExe().run() #Run generation
-    raw_input("Press any key to continue") #Pause to let user see that things ends 

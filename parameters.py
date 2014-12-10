@@ -9,7 +9,6 @@ RESCALE = '2x' #set to 2x or mame
 
 DEFAULTPLAY = {'name':'default',
 'flip_rate' : 70, #fps cap
-'flash_pulse': 16,     #ms for white flash when collision
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
@@ -73,6 +72,28 @@ IRONBRAIN = {'name':'ironbrain',
 'txt_inter' : 16
 }
 
+#set layers of sprites
+BASELAYER = 10
+
+#
+#Animations
+########################
+
+
+TARGETBLINK = {'type':'Loop',
+'sprites' : ['target_red', 'target'],
+'durations' : [1000, 1000]
+}
+
+BULLETBLINK = {'type':'Loop',
+'sprites' : ['o', 'x'],
+'durations' : [400, 50]
+}
+
+HITBLINK = {'type':'Blank',
+'duration' : 16     #ms for white flash when collision
+}
+
 #projectiles
 ########################################
 BULLET = {'name':'A',
@@ -86,6 +107,7 @@ BULLET = {'name':'A',
 BULLET2 = {'name':'o',
 'type' : 'Bullet',
 'trajectory' : 'Down',
+'animations' : [BULLETBLINK],
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
@@ -98,6 +120,7 @@ BLAST = {'name' : 'oOOo',
 'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
 }
+
 
 #entities
 #################################
@@ -125,6 +148,7 @@ TARGET = {'name':'target',
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular',
+'animations' : [TARGETBLINK, HITBLINK],
 'reward' : 1,
 'bonus_rate' : 0.2
 }

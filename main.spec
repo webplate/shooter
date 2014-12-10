@@ -30,5 +30,5 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=True,
-          icon='shooter.ico' )
+          console=False,#no i/o dos console
+          icon='shooter.ico') 

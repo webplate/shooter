@@ -1,7 +1,19 @@
 animation classes !
+should only replace parent surf and array
+not spawn entities
 
+use
+class A:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-user can set keys and buttons/axis
+instantiator in scene to uniformize instanciation and split entity
+
+user can set keys and buttons/axis (as windows has different keys :/
+so make a menu
+and new scenes with levels as parameters...
+and describe waves of enemies in level (at time, or waiting for event)
+wave : enemy type, nb of enemies, trajectories, init positions
 
 weapon object
 link player keys , projectile maps, and ships weapons...

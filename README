@@ -13,3 +13,5 @@ https://91.121.141.56/owncloud/public.php?service=files&t=25d90cabd6611353bb8675
 
 Dependencies :
 python 2.7, pygame, numpy
+and to pack for windows :
+pyinstaller, pywin32

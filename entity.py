@@ -27,7 +27,7 @@ class Actor(object) :
             self.ally = False
         #layer for drawing on screen
         if 'layer' not in params :
-            self.layer = 10
+            self.layer = parameters.BASELAYER
 
         #priority of update
         self.priority = 0
@@ -40,6 +40,7 @@ class Actor(object) :
     def add(self) :
         """load in scene"""
         self.scene.content.append(self, self.priority)
+        self.init_time = self.scene.now
 
     def remove(self) :
         """remove from scene"""
@@ -69,13 +70,45 @@ class Visible(Actor) :
     def __init__(self, scene, params={}) :
         Actor.__init__(self, scene, params)
         self.visible = True
-        #load image
-        if hasattr(self, 'type') and self.type == 'Landscape':
-            self.surface = self.scene.cont.bg(self.name)
+        #load image of appropriate type (with collisions or looping back)
+        self.no_collide = hasattr(self, 'type') and self.type == 'Landscape'
+        self.init_surface()
+        #animation controler ?
+        self.anim_objects = []
+        if 'animations' not in params :
+            self.animations = []
         else:
-            #with alpha channel and collision array
-            self.surface = self.scene.cont.surf(self.name)
+            for ani in self.animations:
+                #a animation object to control surface
+                targClass = globals()[ani['type']]
+                self.anim_objects.append(targClass(self.scene, self, ani))
     
+    def add(self):
+        Actor.add(self)
+        for ani in self.anim_objects:
+            ani.add()
+        
+    def _get_surface(self) :
+        '''surface is exported as pygame surface
+        BUT set with an str in next function'''
+        return self._surface
+    def _set_surface(self, new_surface) :
+        '''set pygame surface, collision array and hitmap
+        according to newsurface (string of name or pygame surf)'''
+        if isinstance(new_surface, str) :
+            if self.no_collide:
+                self._surface = self.scene.cont.bg(new_surface)
+            else:
+                #with alpha channel and collision array
+                self._surface, self.array, self.hit = self.scene.cont.surf_hit(new_surface)
+        else :
+            #modify actual surface
+            self._surface = new_surface
+    surface = property(_get_surface, _set_surface)
+    
+    def init_surface(self):
+        self.surface = self.name
+
     def hide(self):
         self.visible = False
     
@@ -125,6 +158,63 @@ class Mobile(Visible) :
     def update(self, interval, time) :
         self.center = tools.get_center(self.pos, self.surface)
         self.move(interval, time)
+
+class Anim(Actor):
+    """basic animation actor
+    when added in scene it changes its parent surface"""
+    def __init__(self, scene, parent, params={}):
+        Actor.__init__(self, scene, params)
+        self.parent = parent
+
+class Film(Anim) :
+    """when added launches serie of sprites 
+    each with same given duration
+    then disappears
+    """
+    def __init__(self, scene, parent, params={}):
+        Anim.__init__(self, scene, parent, params)
+        self.parent = parent
+        self.nb_frames = len(self.durations)
+
+    def update(self, interval, time) :
+        #accordin to time select right sprite or remove
+        for i in range(len(self.sprites)) :
+            if (time >= self.init_time + i * self.pulse
+            and time < self.init_time + (i+1) * self.pulse) :
+                self.parent.surface = self.sprites[i]
+            else:
+                self.parent.init_surface()
+                self.remove()
+
+class Loop(Film):
+    def __init__(self, scene, parent, params):
+        Film.__init__(self, scene, parent, params)
+        self.state = 0
+        self.cumul = 0
+
+    def update(self, interval, time) :
+        #select next sprite ?
+        if self.cumul + interval > self.durations[self.state] :
+            #~ print self.sprites[self.state], self.parent.surface
+            self.cumul = 0
+            #change appearance of animated parent
+            self.parent.surface = self.sprites[self.state]
+            #if reaching last frame, restart
+            if self.state + 1 > self.nb_frames-1 :
+                self.state = 0
+            else:
+                self.state += 1
+        else :
+            self.cumul += interval
+
+class Blank(Anim):
+    def update(self, interval, time) :
+        #accordin to time select blank sprite
+        if time <= self.init_time + self.duration:
+            self.parent.surface = self.parent.hit
+        else:
+            self.parent.init_surface()
+            self.remove()
 
 class Projectile(Mobile) :
     """projectile positions should be accessed with position(index)
@@ -285,10 +375,10 @@ class Fragile(Mobile) :
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #change color for some time if hit recently
-        if time < self.last_hit + self.scene.gameplay['flash_pulse'] :
-            self.surface = self.scene.cont.hit[self.name]
-        else :
-            self.surface = self.scene.cont.surfaces[self.name]
+        #~ if time < self.last_hit + self.scene.gameplay['flash_pulse'] :
+            #~ self.surface = self.scene.cont.hit[self.name]
+        #~ else :
+            #~ self.surface = self.scene.cont.surfaces[self.name]
         if self.life <= 0 :
             self.die()
 
