@@ -85,9 +85,9 @@ TARGETBLINK = {'type':'Loop',
 'durations' : [1000, 1000]
 }
 
-BULLETBLINK = {'type':'Loop',
+BULLETBLINK = {'type':'SyncLoop',
 'sprites' : ['o', 'x'],
-'durations' : [400, 50]
+'durations' : [300, 200]
 }
 
 HITBLINK = {'type':'Blank',

@@ -88,6 +88,11 @@ class Visible(Actor) :
         for ani in self.anim_objects:
             ani.add()
         
+    def remove(self):
+        Actor.remove(self)
+        for ani in self.anim_objects:
+            ani.remove()
+        
     def _get_surface(self) :
         '''surface is exported as pygame surface
         BUT set with an str in next function'''
@@ -206,6 +211,27 @@ class Loop(Film):
                 self.state += 1
         else :
             self.cumul += interval
+
+class SyncLoop(Film):
+    '''This looping anim is relative to the time of the scene
+    so that anims with same durations are in sync'''
+    def __init__(self, scene, parent, params):
+        Film.__init__(self, scene, parent, params)
+        self.cumul_dur = [0]
+        for d in self.durations :
+            self.cumul_dur.append(d + self.cumul_dur[-1])
+        self.total_dur = self.cumul_dur[-1]
+        self.cumul_dur = self.cumul_dur[:-1]
+
+    def update(self, interval, time) :
+        #sync durations of anim and time
+        repeat = int(time / self.total_dur)
+        sync_time = time - repeat * self.total_dur
+        #select right sprite
+        for i in range(self.nb_frames-1, -1, -1) :
+            if sync_time > self.cumul_dur[i] :
+                self.parent.surface = self.sprites[i]
+                break
 
 class Blank(Anim):
     def update(self, interval, time) :
