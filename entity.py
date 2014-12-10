@@ -178,17 +178,29 @@ class Film(Anim) :
     """
     def __init__(self, scene, parent, params={}):
         Anim.__init__(self, scene, parent, params)
+        self.nb_frames = len(self.sprites)
         self.parent = parent
-        self.nb_frames = len(self.durations)
+        if 'to_nothing' not in params :
+            self.to_nothing = False
 
     def update(self, interval, time) :
+        print 'yo'
+        still_up = False
         #accordin to time select right sprite or remove
-        for i in range(len(self.sprites)) :
+        for i in range(self.nb_frames) :
+            #~ print i, self.init_time, time, self.pulse
             if (time >= self.init_time + i * self.pulse
             and time < self.init_time + (i+1) * self.pulse) :
+                print self.sprites[i]
                 self.parent.surface = self.sprites[i]
-            else:
-                self.parent.init_surface()
+                still_up = True
+                break
+        if not still_up :
+                print 'end'
+                if self.to_nothing:
+                    print 'clear'
+                    self.parent.init_surface()
+                    self.parent.remove()
                 self.remove()
 
 class Loop(Film):
@@ -200,7 +212,6 @@ class Loop(Film):
     def update(self, interval, time) :
         #select next sprite ?
         if self.cumul + interval > self.durations[self.state] :
-            #~ print self.sprites[self.state], self.parent.surface
             self.cumul = 0
             #change appearance of animated parent
             self.parent.surface = self.sprites[self.state]
@@ -394,7 +405,7 @@ class Fragile(Mobile) :
         #fragile has hit_anim
         self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
         #fragile can explode
-        self.end = Explosion(self.scene, self)
+        self.end = Mobile(self.scene, parameters.EXPLOSION)
         #fragiles can give bonuses depending on their bonus rate
         if random.random() < self.bonus_rate :
             self.has_bonus = True
@@ -421,16 +432,18 @@ class Fragile(Mobile) :
         self.remove()
         #reward shooter
         self.killer.score += self.reward
-        #explode
-        self.end.add()
+        
         if self.has_bonus :
             #the bonus will appear where the non ally died
-            self.bonus.pos = self.pos
+            self.bonus.center_on(self)
             #add a bonus in scene
             self.bonus.add()
         if self.reward > 0 :
             #show reward
             self.rew.add()
+        #explode
+        self.end.center_on(self)
+        self.end.add()
         #play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
         
@@ -523,7 +536,7 @@ class Ship(ChargeFighter) :
         self.player = player
         #keep ref of maximum life
         self.max_life = self.life
-        #fragile has orientation_anim
+        #ship has orientation_anim
         self.anim_objects.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         
     def fly(self, direction, interval) :
@@ -588,29 +601,6 @@ class Charge(Follower) :
         #center on parent at the end of update
         Follower.update(self, interval, time)
 
-class Explosion(Mobile) :
-    """showing explosion of ship at last standing point"""
-    def __init__(self, scene, parent) :
-        Mobile.__init__(self, scene)
-        self.parent = parent
-        self.levels = [self.scene.cont.surf('OOOOOOO'),
-        self.scene.cont.surf('OOOOO'),
-        self.scene.cont.surf('OOO')]
-        self.pulse = self.scene.theme['explosion_pulse']
-        #explosions are in front
-        self.layer = 3
-
-    def update(self, interval, time) :
-        if time > self.parent.time_of_death + self.pulse*3 :
-            #disappear after dissipation
-            self.remove()
-        elif time > self.parent.time_of_death + self.pulse*2 :
-            self.surface = self.levels[2]
-        elif time > self.parent.time_of_death + self.pulse :
-            self.surface = self.levels[1]
-        elif time > self.parent.time_of_death :
-            self.surface = self.levels[0]
-        self.center_on(self.parent)
 
 class Desc(Mobile) :
     """showing descriptor on item"""

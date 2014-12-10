@@ -1,7 +1,3 @@
-animation classes !
-should only replace parent surf and array
-not spawn entities
-
 use
 class A:
     def __init__(self, **kwargs):

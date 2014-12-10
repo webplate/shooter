@@ -39,7 +39,6 @@ KEYMAPS = [KEYMAP1, KEYMAP2]
 
 #Theme packs
 DEFAULTTHEME = {'name' : None,
-'explosion_pulse' : 100,
 'bg_color' : (50, 50, 50),
 'txt_color' : (100, 100, 100),
 'font' : "FIXED_BO.TTF",
@@ -80,7 +79,6 @@ BASELAYER = 10
 #Animations
 ########################
 
-
 TARGETBLINK = {'type':'Loop',
 'sprites' : ['target_red', 'target'],
 'durations' : [1000, 1000]
@@ -99,6 +97,23 @@ SHIPORIENTATION = {'type':'Orient',
 'id_char':'-',
 'delay':100,
 }
+
+EXPLOSIONANIM = {'type':'Film',
+'sprites' : ['OOO', 'OOOOO', 'OOOOOOO'],
+'pulse' : 100,
+'to_nothing' : True
+}
+
+#Special Effects
+#######################
+
+EXPLOSION = {'name':'OOO',
+'type':'Mobile',
+'animations':[EXPLOSIONANIM],
+'layer':3
+}
+
+
 
 #projectiles
 ########################################
@@ -153,7 +168,7 @@ TARGET = {'name':'target',
 'speed': 0.25,
 'life': 5,
 'weapons' : [BULLET2],
-'trajectory' : 'Circular',
+'trajectory' : 'GoFront',
 'animations' : [TARGETBLINK],
 'reward' : 1,
 'bonus_rate' : 0.2
@@ -209,7 +224,7 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 4
+'nb_enemies' : 1
 }
 
 LEVEL = CLEBLEVEL
