@@ -242,6 +242,39 @@ class Blank(Anim):
             self.parent.init_surface()
             self.remove()
 
+class Orient(Anim):
+    '''change surface according to direction'''
+    def __init__(self, scene, parent, params={}):
+        Anim.__init__(self, scene, parent, params)
+        self.parent = parent
+        self.player = self.parent.player
+        self.base_name = self.parent.name
+        #preload oriented sprites
+        self.scene.cont.surf('-' + self.base_name)
+        self.scene.cont.surf(self.base_name + '-')
+        #ref for animation of ship movements
+        self.last_bend = 0
+        self.righto = False
+        self.lefto = False
+        
+    def update(self, interval, time) :
+        #detect change of direction
+        if self.player.go_right and not self.righto :
+            self.righto = True
+            self.lefto = False
+            self.last_bend = time
+        elif self.player.go_left and not self.lefto :
+            self.lefto = True
+            self.righto = False
+            self.last_bend = time
+        #show orientation of ship
+        if self.player.go_right and time > self.last_bend + parameters.ORIENTDELAY :
+            self.parent.surface = '-' + self.base_name
+        elif self.player.go_left  and time > self.last_bend + parameters.ORIENTDELAY :
+            self.parent.surface = self.base_name + '-'
+        else :
+            self.parent.init_surface()
+
 class Projectile(Mobile) :
     """projectile positions should be accessed with position(index)
     damage
@@ -490,15 +523,9 @@ class Ship(ChargeFighter) :
         self.player = player
         #keep ref of maximum life
         self.max_life = self.life
-        #a base name to derive alternate states
-        self.base_name = self.name
-        #preload oriented sprites
-        self.scene.cont.surf('-' + self.base_name)
-        self.scene.cont.surf(self.base_name + '-')
-        #ref for animation of ship movements
-        self.last_bend = 0
-        self.righto = False
-        self.lefto = False
+        #fragile has orientation_anim
+        self.anim_objects.append(Orient(self.scene, self))
+
         
     def fly(self, direction, interval) :
         #should consider time passed
@@ -521,26 +548,6 @@ class Ship(ChargeFighter) :
         ChargeFighter.die(self)
         #player is dead
         self.player.alive = False
-
-    def update(self, interval, time) :
-        #detect change of direction
-        if self.player.go_right and not self.righto :
-            self.righto = True
-            self.lefto = False
-            self.last_bend = time
-        elif self.player.go_left and not self.lefto :
-            self.lefto = True
-            self.righto = False
-            self.last_bend = time
-        #show orientation of ship
-        if self.player.go_right and time > self.last_bend + 200 :
-            self.name = '-' + self.base_name
-        elif self.player.go_left  and time > self.last_bend + 200 :
-            self.name = self.base_name + '-'
-        else :
-            self.name = self.base_name
-        self.surface = self.scene.cont.surf(self.name)
-        ChargeFighter.update(self, interval, time)
 
 class Follower(Mobile) :
     """a sprite following another"""
