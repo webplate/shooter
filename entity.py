@@ -82,16 +82,6 @@ class Visible(Actor) :
                 #a animation object to control surface
                 targClass = globals()[ani['type']]
                 self.anim_objects.append(targClass(self.scene, self, ani))
-    
-    def add(self):
-        Actor.add(self)
-        for ani in self.anim_objects:
-            ani.add()
-        
-    def remove(self):
-        Actor.remove(self)
-        for ani in self.anim_objects:
-            ani.remove()
         
     def _get_surface(self) :
         '''surface is exported as pygame surface
@@ -113,6 +103,16 @@ class Visible(Actor) :
     
     def init_surface(self):
         self.surface = self.name
+    
+    def add(self):
+        Actor.add(self)
+        for ani in self.anim_objects:
+            ani.add()
+        
+    def remove(self):
+        Actor.remove(self)
+        for ani in self.anim_objects:
+            ani.remove()
 
     def hide(self):
         self.visible = False
@@ -352,11 +352,14 @@ class Fragile(Mobile) :
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
+        #cannot leave bonus when death by default
         if 'bonus_rate' not in params :
             self.bonus_rate = 0
         #reward for killing
         if 'reward' not in params :
             self.reward = 0
+        #fragile has hit_anim
+        self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
         #fragile can explode
         self.end = Explosion(self.scene, self)
         #fragiles can give bonuses depending on their bonus rate
@@ -401,10 +404,9 @@ class Fragile(Mobile) :
     def update(self, interval, time) :
         Mobile.update(self, interval, time)
         #change color for some time if hit recently
-        #~ if time < self.last_hit + self.scene.gameplay['flash_pulse'] :
+        if time < self.last_hit + self.hit_anim.duration :
+            self.hit_anim.add()
             #~ self.surface = self.scene.cont.hit[self.name]
-        #~ else :
-            #~ self.surface = self.scene.cont.surfaces[self.name]
         if self.life <= 0 :
             self.die()
 

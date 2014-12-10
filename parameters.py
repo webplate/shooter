@@ -148,7 +148,7 @@ TARGET = {'name':'target',
 'life': 5,
 'weapons' : [BULLET2],
 'trajectory' : 'Circular',
-'animations' : [TARGETBLINK, HITBLINK],
+'animations' : [TARGETBLINK],
 'reward' : 1,
 'bonus_rate' : 0.2
 }
