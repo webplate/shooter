@@ -9,7 +9,8 @@ plug in gamepads for up to 4 players
 
 Windows users can download 'shooter_windows' and launch game.exe at :
 
-https://91.121.141.56/owncloud/public.php?service=files&t=25d90cabd6611353bb8675b9d09a684a
+https://91.121.141.56/owncloud/public.php?service=files&t=3feddd8c098bb12f54899651417bc6bb
+
 
 Dependencies :
 python 2.7, pygame, numpy

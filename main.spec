@@ -5,7 +5,7 @@
 #and put upx in path for compression
 
 a = Analysis(['main.py'],
-             pathex=['E:\\shooter'],
+             pathex=[os.getcwd()],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='shooter.exe',
+          name=os.path.join('pyinstaller','shooter.exe'),
           debug=False,
           strip=None,
           upx=True,
