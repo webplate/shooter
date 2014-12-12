@@ -1,3 +1,9 @@
+bonus hsould die offscreen
+between entities collisions
+
+one pixel projectiles hit on upper corner and not center !
+charge isn't aligned !
+
 shadows
 offset in theme pack 
 shadow attribute on visible
@@ -29,3 +35,4 @@ collisions between entities
 bug of keyboard layout (use event.unicode  ??
 
 idea: one thread for positions, instanciations, one thread for drawing
+TENTACLE BOSS !!

@@ -78,6 +78,7 @@ SHIPLAY = 15
 ACTORLAY = 10
 BELOWSHIPLAY = 8
 SHADOWLAY = 5
+CLOUDLAY = 4
 BGLAY = 1
 
 #
@@ -257,7 +258,7 @@ DESERT = {'name':'desert',
 CLOUD = {'name':'clouds',
 'type' : 'Landscape',
 'speed': 0.1,
-'layer' : OVERLAY,
+'layer' : CLOUDLAY,
 'opacity' : 200,
 }
 
