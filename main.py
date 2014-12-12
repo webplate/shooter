@@ -95,6 +95,9 @@ class Shooter() :
         for x in range(pygame.joystick.get_count())]
         for joy in joysticks :
             joy.init()
+            # disable joystick used by Virtual Box (for mouse integration)
+            if 'VirtualBox' in joy.get_name() :
+                joy.quit()
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
@@ -137,6 +140,7 @@ class Shooter() :
                     key = keymap[event.key]
                     if key in self.players[i].keys :
                         self.players[i].keys[key] = False
+                        
         #Joystick events
         elif event.type == p_l.JOYAXISMOTION :
             tol = 0.8
