@@ -272,7 +272,7 @@ BONUSLIFE = {'name' : 'bonusL',
 'type' : 'Mobile',
 'speed' : 0.1,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 2},
+'trajectory_params' : {'amplitude' : 30},
 'collision_type' : 'pixel_perfect',
 'effect' : {'add_life' : 1}
 }
@@ -281,7 +281,7 @@ BONUSWEAPON = {'name' : 'bonusW',
 'type' : 'Mobile',
 'speed' : 0.1,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 2},
+'trajectory_params' : {'amplitude' : 30},
 'collision_type' : 'pixel_perfect',
 'effect' : {'upgrade_weapon' : 1},
 }

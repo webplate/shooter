@@ -170,6 +170,7 @@ class OscillationDown(Trajectory) :
     """go down while oscillating"""
     def __init__(self, scene, mobile, params={}) :
         Trajectory.__init__(self, scene, mobile, params)
+        self.ref_pos = None
         self.randomV = random.random()/2
         self.randomH = random.random()*2*math.pi
         if 'amplitude' not in params :
@@ -179,8 +180,13 @@ class OscillationDown(Trajectory) :
             
     def rel_pos(self, pos, interval, time) :
         """falling line position (we compute an absolute position relative from this one"""
-        pos_rel = (pos[0], pos[1] + self.mobile.speed * interval + self.randomV)
-        return pos_rel
+        if self.ref_pos == None :
+            self.ref_pos = (pos[0],
+            pos[1] + self.mobile.speed * interval + self.randomV)
+        else :
+            self.ref_pos = (self.ref_pos[0],
+            self.ref_pos[1] + self.mobile.speed * interval + self.randomV)
+        return self.ref_pos
             
     def abs_pos(self, interval, time) :
         """sinusoidal oscillation"""
