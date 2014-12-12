@@ -27,7 +27,7 @@ class Actor(object) :
             self.ally = False
         #layer for drawing on screen
         if 'layer' not in params :
-            self.layer = parameters.BASELAYER
+            self.layer = parameters.ACTORLAY
 
         #priority of update
         self.priority = 0
@@ -543,6 +543,7 @@ class Ship(ChargeFighter) :
         self.max_life = self.life
         #ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
+        self.layer = parameters.SHIPLAY
         
     def fly(self, direction, interval) :
         #should consider time passed
@@ -625,7 +626,7 @@ class Desc(Mobile) :
         self.parent = parent
         self.surface = self.scene.cont.surf(text)
         self.duration = duration
-        self.layer = 4
+        self.layer = parameters.FRONTLAY
 
     def update(self, interval, time) :
         if time > self.parent.time_of_death + self.duration :

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import pygame.locals as p_l
 
+
 GAMESIZE = (320, 240) #~neo geo
 #~ GAMESIZE = (1024, 500)
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
@@ -72,8 +73,12 @@ IRONBRAIN = {'name':'ironbrain',
 }
 
 #set layers of sprites
-BASELAYER = 10
+FRONTLAY = 20
+SHIPLAY = 15
+ACTORLAY = 10
 BELOWSHIPLAY = 8
+SHADOWLAY = 5
+BGLAY = 1
 
 #
 #Animations
@@ -104,10 +109,6 @@ EXPLOSIONANIM = {'type':'Film',
 'to_nothing' : True
 }
 
-TRANSPARENTANIM = {'type':'ShadowAnim',
-'durations' : [200, 200]
-}
-
 CHARGEANIM = {'type':'Film',
 'sprites' : ['B', 'BB', 'BBB'],
 }
@@ -122,14 +123,13 @@ EXPLOSION = {'name':'OOO',
 }
 
 SHADOW = {'type':'Follower',
-'animations':[],
-'layer':BELOWSHIPLAY,
-'offset' : (15, 15)
+'layer':SHADOWLAY,
+'offset' : (10, 15)
 }
 SHADOWSCALE = 0.8
 
 CHARGE = {'type':'Follower',
-'animations':[TRANSPARENTANIM, CHARGEANIM],
+'animations':[CHARGEANIM],
 'layer':BELOWSHIPLAY
 }
 
@@ -140,7 +140,8 @@ BULLET = {'name':'A',
 'trajectory' : 'Up',
 'speed' : 1,
 'cooldown' : 100,
-'damage' : 1
+'damage' : 1,
+'layer' : BELOWSHIPLAY
 }
 
 BULLET2 = {'name':'o',
@@ -150,6 +151,7 @@ BULLET2 = {'name':'o',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
+'layer' : BELOWSHIPLAY
 }
 
 BLAST = {'name' : 'oOOo',
@@ -158,6 +160,7 @@ BLAST = {'name' : 'oOOo',
 'speed' : 1,
 'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
+'layer' : BELOWSHIPLAY
 }
 
 
@@ -173,14 +176,8 @@ SHIP = {'name' : 'ship',
 'weapons' : [BULLET, BLAST]
 }
 
-INVINCIBLE = {'name' : 'ship',
-'type' : 'Ship',
-'ally' : True,
-'speed' : 1,
-'charge_rate' : 0.001,
-'life' : 10000,
-'weapons' : [BULLET, BLAST]
-}
+INVINCIBLE = SHIP.copy()
+INVINCIBLE.update({'life' : 10000})
 
 TARGET = {'name':'target',
 'type' : 'Fighter',
@@ -203,7 +200,7 @@ DESERT = {'name':'desert',
 DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'speed': 0.2,
-'layer' : 0
+'layer' : BGLAY
 }
 
 BONUS = {'name':'bonus',
