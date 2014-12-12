@@ -13,7 +13,6 @@ DEFAULTPLAY = {'name':'default',
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
-'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
 }
 
@@ -137,32 +136,86 @@ CHARGE = {'type':'Follower',
 
 #projectiles
 ########################################
-BULLET = {'name':'A',
+SPREADER0_0 = {'name':'spreader_0',
 'type' : 'Bullet',
 'trajectory' : 'Up',
-'speed' : 1,
+'speed' : 0.3,
 'cooldown' : 100,
 'damage' : 1,
-'layer' : BELOWSHIPLAY
+'layer' : BELOWSHIPLAY,
+'collision_type' : 'pixel_perfect'
+
 }
 
-BULLET2 = {'name':'o',
+SPREADER0_22_5 = {'name':'spreader_0_22.5',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : 22.5},
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADER0_MINUS22_5 = {'name':'spreader_0_-22.5',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : -22.5},
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADER0_45 = {'name':'spreader_0_45',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : 45},
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+SPREADER0_MINUS45 = {'name':'spreader_0_-45',
+'type' : 'Bullet',
+'trajectory' : 'Line',
+'trajectory_params' : {'angle' : -45},
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
+'collision_type' : 'pixel_perfect'
+}
+
+BULLET = {'name':'o',
 'type' : 'Bullet',
 'trajectory' : 'Down',
 'animations' : [BULLETBLINK],
-'speed' : 1,
-'cooldown' : BULLET['cooldown'] * 6,
 'damage' : 1,
-'layer' : BELOWSHIPLAY
+'layer' : BELOWSHIPLAY,
+'speed' : 0.15,
+'cooldown' : SPREADER0_0['cooldown'] * 6,
+'collision_type' : 'pixel'
 }
 
-BLAST = {'name' : 'oOOo',
+BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
-'speed' : 1,
-'cooldown' : BULLET['cooldown'] * 6,
 'power': 1,
-'layer' : BELOWSHIPLAY
+'layer' : BELOWSHIPLAY,
+'speed' : 0.2,
+'cooldown' : SPREADER0_0['cooldown'] * 6,
+'power': -1,
+'collision_type' : 'rectangle'
+}
+
+#weapons
+#################################
+SPREADER0 = {'name' : 'spreader0',
+'levels' : [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
+[SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
+}
+
+BLASTER = {'level0' : [BLAST]
+}
+
+CANON = {'level0' : [BULLET]
 }
 
 
@@ -172,37 +225,38 @@ SHIP = {'name' : 'ship',
 'type' : 'Ship',
 'has_shadow' : True,
 'ally' : True,
-'speed' : 1,
+'speed' : 0.2,
 'charge_rate' : 0.001,
 'life' : 10,
-'weapons' : [BULLET, BLAST]
+'weapons' : [SPREADER0_0, BLAST]
 }
+
 
 INVINCIBLE = SHIP.copy()
 INVINCIBLE.update({'life' : 10000})
 
-TARGET = {'name':'target',
+SAUCER = {'name':'target',
 'type' : 'Fighter',
 'has_shadow' : True,
-'speed': 0.25,
+'speed': 0.05,
 'life': 5,
-'weapons' : [BULLET2],
+'weapons' : [BULLET],
 'trajectory' : 'Circular',
 'animations' : [TARGETBLINK],
 'reward' : 1,
-'bonus_rate' : 0.2
+'bonus_rate' : 1
 }
 
 DESERT = {'name':'desert',
 'type' : 'Landscape',
 'has_alpha':False,
-'speed': 0.2,
+'speed': 0.04,
 'layer' : BGLAY,
 }
 
 CLOUD = {'name':'clouds',
 'type' : 'Landscape',
-'speed': 0.5,
+'speed': 0.1,
 'layer' : OVERLAY,
 'opacity' : 200,
 }
@@ -210,18 +264,30 @@ CLOUD = {'name':'clouds',
 DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'has_alpha':False,
-'speed': 0.2,
 'layer' : BGLAY,
+'speed': 0.04,
 }
 
-BONUS = {'name':'bonus',
+BONUSLIFE = {'name' : 'bonusL',
 'type' : 'Mobile',
-'speed' : 0.5,
+'speed' : 0.1,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 20}
+'trajectory_params' : {'amplitude' : 2},
+'collision_type' : 'pixel_perfect',
+'effect' : {'add_life' : 1}
+}
+
+BONUSWEAPON = {'name' : 'bonusW',
+'type' : 'Mobile',
+'speed' : 0.1,
+'trajectory' : 'OscillationDown',
+'trajectory_params' : {'amplitude' : 2},
+'collision_type' : 'pixel_perfect',
+'effect' : {'upgrade_weapon' : 1},
 }
 
 #Player settings
+######################################"
 PLAYER = {'name' : 'player1',
 'ship' : SHIP
 }

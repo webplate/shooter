@@ -13,7 +13,7 @@ def pol2cart(radius, angle) :
 
 class Trajectory() :
     """a general position modifier"""
-    def __init__(self, scene, mobile) :
+    def __init__(self, scene, mobile, params={}) :
         self.scene = scene
         self.mobile = mobile
         #set init position of mobile
@@ -23,16 +23,34 @@ class Down(Trajectory) :
     """go downward"""
     def next_pos(self, pos, interval, time) :
         """compute new position from floats"""
-        offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset = self.mobile.speed * interval
         pos = pos[0] , pos[1] + offset
         return pos
         
 class Up(Trajectory) :
-    """go downward"""
+    """go upward"""
     def next_pos(self, pos, interval, time) :
         """compute new position from floats"""
-        offset = self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset = self.mobile.speed * interval
         pos = pos[0] , pos[1] - offset
+        return pos
+        
+class Line(Trajectory) :
+    """advance in a line with the given angle"""
+    def __init__(self, scene, mobile, params={}) :
+        Trajectory.__init__(self, scene, mobile, params={})
+        #default trajectory is down
+        if 'angle' not in params :
+            self.angle = 180
+        else :
+            self.angle = params['angle']
+        #convert angle from degree to radians
+        self.angle = math.radians(self.angle) - math.pi/2
+            
+    def next_pos(self, pos, interval, time) :
+        """compute new position from floats"""
+        offset = self.mobile.speed * interval
+        pos = pos[0] + offset*math.cos(self.angle) , pos[1] + offset*math.sin(self.angle)
         return pos
 
 class Align(Trajectory) :
@@ -72,7 +90,7 @@ class AlignV(Align) :
 
     def new_pos(self, pos, interval) :
         """compute new position from floats"""
-        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset =  self.mobile.speed * interval
         #move only if far enough
         distance = abs(self.mobile.center[0] - self.target.center[0])
         if distance > offset :
@@ -91,7 +109,7 @@ class AlignH(Align) :
 
     def new_pos(self, pos, interval) :
         """compute new position from floats"""
-        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset =  self.mobile.speed * interval
         #move only if far enough
         distance = abs(self.mobile.center[1] - self.target.center[1])
         if distance > offset :
@@ -105,7 +123,7 @@ class GoFront(AlignV) :
     """try to be in front of ship"""
     def new_pos(self, pos, interval) :
         pos = AlignV.new_pos(self, pos, interval)
-        offset =  self.mobile.speed * self.scene.gameplay['speed'] * interval
+        offset =  self.mobile.speed * interval
         #y coord to reach
         y = self.target.center[1] - self.scene.limits[1]/2
         #move only if far enough
@@ -151,17 +169,27 @@ class Circular(GoFront) :
 class OscillationDown(Trajectory) :
     """go down while oscillating"""
     def __init__(self, scene, mobile, params={}) :
-        Trajectory.__init__(self, scene, mobile)
-        self.randomV = (random.random() - 0.5)
-        self.randomH = random.random() * 100
+        Trajectory.__init__(self, scene, mobile, params)
+        self.randomV = random.random()/2
+        self.randomH = random.random()*2*math.pi
         if 'amplitude' not in params :
-            self.amplitude = 26
+            self.amplitude = 5
         else :
             self.amplitude = params['amplitude']
-        
-    def next_pos(self, pos, interval, time) :
-        offsetV = self.mobile.speed * self.scene.gameplay['speed'] * interval + self.randomV
-        offsetH = self.mobile.speed * self.scene.gameplay['speed'] * math.sin(self.randomH + time/200.) * self.amplitude
-        pos = pos[0] + offsetH , pos[1] + offsetV
-        return pos
+            
+    def rel_pos(self, pos, interval, time) :
+        """falling line position (we compute an absolute position relative from this one"""
+        pos_rel = (pos[0], pos[1] + self.mobile.speed * interval + self.randomV)
+        return pos_rel
+            
+    def abs_pos(self, interval, time) :
+        """sinusoidal oscillation"""
+        x = math.sin(self.randomH + time/200.) * self.amplitude
+        y = 0
+        return x, y
 
+    def next_pos(self, pos, interval, time) :
+        """add dynamic (relative to others) and passive trajectories"""
+        xrel, yrel = self.rel_pos(pos, interval, time)
+        xabs, yabs = self.abs_pos(interval, time)
+        return xrel+xabs, yrel+yabs
