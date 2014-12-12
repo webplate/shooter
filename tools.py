@@ -115,7 +115,6 @@ def make_shadow(surface, scale=0.5) :
     #rescale shadow
     w, h = int(w*scale), int(h*scale)
     surface = pygame.transform.scale(surface, (w, h))
-    surface.set_alpha(100)
     surface.set_colorkey(white)
     return surface
 

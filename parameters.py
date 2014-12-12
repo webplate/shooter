@@ -125,6 +125,7 @@ EXPLOSION = {'name':'OOO',
 
 SHADOW = {'type':'Follower',
 'layer':SHADOWLAY,
+'opacity' : 100,
 'offset' : (10, 15)
 }
 SHADOWSCALE = 0.8
@@ -202,7 +203,8 @@ DESERT = {'name':'desert',
 CLOUD = {'name':'clouds',
 'type' : 'Landscape',
 'speed': 0.4,
-'layer' : OVERLAY
+'layer' : OVERLAY,
+'opacity' : 200
 }
 
 DEFAULTBACKGROUND = {'name':'background',

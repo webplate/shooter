@@ -73,6 +73,8 @@ class Visible(Actor) :
         #load image of appropriate type (with collisions if has alpha)
         if 'has_alpha' not in params :
             self.has_alpha = True
+        if 'opacity' not in params :
+            self.opacity = 255
         self.init_surface()
         #a list of childrens (following scene state changes)
         self.children = []
@@ -106,12 +108,14 @@ class Visible(Actor) :
                 self.hit = maps[2]
                 self.shadow = maps[3]
                 #remember alpha colorkey
-                self.alpha_key = self._surface.get_colorkey() 
+                self.alpha_key = self._surface.get_colorkey()
             else:
                 self._surface = maps
         else :
             #modify actual surface
             self._surface = new_surface
+        #remember opacity
+        self._surface.set_alpha(self.opacity)
     surface = property(_get_surface, _set_surface)
     
     def init_surface(self):
@@ -379,10 +383,12 @@ class Landscape(Visible) :
                     back = tools.make_rect(w, h, self.alpha_key)
                     s1 = self.full.subsurface(0, t1,w,h1)
                     s2 = self.full.subsurface(0, 0,w,h2)
-                    
+                    s1.set_alpha(255)
+                    s2.set_alpha(255)
                     s = tools.compose_surfaces(w, h, s1, s2, back)
                     
                     s.set_colorkey(self.alpha_key)
+                    s.set_alpha(self.opacity)
                 else:
                     s1 = self.full.subsurface(0, t1,w,h1)
                     s2 = self.full.subsurface(0, 0,w,h2)
