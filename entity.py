@@ -44,13 +44,6 @@ class Actor(object) :
     def remove(self) :
         """remove from scene"""
         self.scene.content.remove(self)
-        
-    #~ def launch_effect(self) :
-        #~ if self.effect != None :
-            #~ if self.effect == 'add_life' :
-                #~ self.
-            #~ elif self.effect == 'upgrade_weapon' :
-                
 
 class Weapon(Actor):
     """generic weapon"""
@@ -58,18 +51,16 @@ class Weapon(Actor):
         Actor.__init__(self, scene, params)
         self.parent = parent
         self.ally = parent.ally
+        proj_list = []
         #the projectile used by weapon
         self.proj = globals()[self.type]
         p = self.proj(self.scene, self.parent, self.params)
-        self.width = p.width
-        self.height = p.height
 
     def shoot(self, x, y, power=0):
         p = self.proj(self.scene, self.parent, self.params)
         p.pos = x, y
         p.charge = power
         p.add()
-
 
 class Visible(Actor) :
     """actor with a surface"""
@@ -193,9 +184,6 @@ class Blast(Projectile) :
         amount = self.charge * self.power
         return amount
 
-
-
-
 class Landscape(Visible) :
     """a scrolling background
     (not moving but looping)
@@ -210,7 +198,7 @@ class Landscape(Visible) :
     
     def update(self, interval, time) :
         #move down the displayed area of landscape
-        self.offset -= self.speed * self.scene.gameplay['speed'] * interval
+        self.offset -= self.speed * interval
         
         w, h = self.width, parameters.GAMESIZE[1]
         #do not loop if smaller than screen background
@@ -283,7 +271,7 @@ class Fragile(Mobile) :
         #fragiles can give bonuses depending on their bonus rate
         if random.random() < self.bonus_rate :
             self.has_bonus = True
-            self.bonus = Catchable(self.scene, parameters.BONUSWEAPON)
+            self.bonus = Catchable(self.scene, parameters.BONUSLIFE)
         else :
             self.has_bonus = False
         #prepare score show if significant
@@ -341,6 +329,8 @@ class Fighter(Fragile) :
             for weapon in params['weapons'] :
                 self.new_weapon(weapon)
         self.score = 0
+        #ref to upgrade_weapon
+        self.weapon_level = 0
 
     def new_weapon(self, params) :
         #instanciate weapon
@@ -356,7 +346,7 @@ class Fighter(Fragile) :
         if weapon == 'Bullet' :
             #limit fire rate
             if time > self.last_shoot + w.cooldown :
-                x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+                x, y = (self.center[0], self.center[1])
                 w.shoot(x, y)
                 self.last_shoot = time
 
@@ -364,8 +354,7 @@ class Fighter(Fragile) :
         Fragile.update(self, interval, time)
         #autofire
         self.shoot(time, 'Bullet')
-            
-
+        
 class ChargeFighter(Fighter) :
     """a charging mobile sprite
     charge_rate"""
@@ -386,15 +375,14 @@ class ChargeFighter(Fighter) :
             #limit fire rate and stop when charging
             if (time > self.last_shoot + w.cooldown
             and self.charge == 0 ) :
-                x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+                x, y = (self.center[0], self.center[1])
                 w.shoot(x, y)
                 self.scene.cont.play('shoot', self.pos[0])
                 self.last_shoot = time
         #blast shot
         elif weapon == 'Blast' :
-            x, y = (self.center[0]-w.width/2, self.center[1]-w.height/2)
+            x, y = (self.center[0], self.center[1])
             w.shoot(x, y, power)
-            
 
     def die(self) :
         Fighter.die(self)
@@ -418,12 +406,10 @@ class Ship(ChargeFighter) :
         self.last_bend = 0
         self.righto = False
         self.lefto = False
-        #ref to upgrade_weapon
-        self.weapon_level = 0
         
     def fly(self, direction, interval) :
         #should consider time passed
-        offset = self.speed * self.scene.gameplay['speed'] * interval
+        offset = self.speed * interval
         if direction == 'right' :
             new_pos = self._pos[0]+offset, self._pos[1]
         elif direction == 'left' :

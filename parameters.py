@@ -13,7 +13,6 @@ DEFAULTPLAY = {'name':'default',
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
-'speed' : 0.2,     #px/ms
 'bullet_speed': 0.25
 }
 
@@ -75,66 +74,78 @@ IRONBRAIN = {'name':'ironbrain',
 
 #projectiles
 ########################################
-SPREADER0 = {'name':'spreader_0',
+SPREADER0_0 = {'name':'spreader_0',
 'type' : 'Bullet',
-'trajectory' : 'Line',
-'trajectory_params' : {'angle' : 0},
-'speed' : 1,
+'trajectory' : 'Up',
+'speed' : 0.3,
 'cooldown' : 100,
 'collision_type' : 'pixel_perfect'
 }
 
-SPREADER22_5 = {'name':'spreader_0_22.5',
+SPREADER0_22_5 = {'name':'spreader_0_22.5',
 'type' : 'Bullet',
 'trajectory' : 'Line',
 'trajectory_params' : {'angle' : 22.5},
-'speed' : SPREADER0['speed'],
-'cooldown' : SPREADER0['cooldown'],
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
 'collision_type' : 'pixel_perfect'
 }
 
-SPREADERMINUS22_5 = {'name':'spreader_0_-22.5',
+SPREADER0_MINUS22_5 = {'name':'spreader_0_-22.5',
 'type' : 'Bullet',
 'trajectory' : 'Line',
 'trajectory_params' : {'angle' : -22.5},
-'speed' : SPREADER0['speed'],
-'cooldown' : SPREADER0['cooldown'],
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
 'collision_type' : 'pixel_perfect'
 }
 
-SPREADER45 = {'name':'spreader_0_45',
+SPREADER0_45 = {'name':'spreader_0_45',
 'type' : 'Bullet',
 'trajectory' : 'Line',
 'trajectory_params' : {'angle' : 45},
-'speed' : SPREADER0['speed'],
-'cooldown' : SPREADER0['cooldown'],
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
 'collision_type' : 'pixel_perfect'
 }
 
-SPREADERMINUS45 = {'name':'spreader_0_-45',
+SPREADER0_MINUS45 = {'name':'spreader_0_-45',
 'type' : 'Bullet',
 'trajectory' : 'Line',
 'trajectory_params' : {'angle' : -45},
-'speed' : SPREADER0['speed'],
-'cooldown' : SPREADER0['cooldown'],
+'speed' : SPREADER0_0['speed'],
+'cooldown' : SPREADER0_0['cooldown'],
 'collision_type' : 'pixel_perfect'
 }
 
-BULLET2 = {'name':'o',
+BULLET = {'name':'o',
 'type' : 'Bullet',
 'trajectory' : 'Down',
-'speed' : 1,
-'cooldown' : SPREADER0['cooldown'] * 6,
+'speed' : 0.15,
+'cooldown' : SPREADER0_0['cooldown'] * 6,
 'collision_type' : 'pixel'
 }
 
 BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
-'speed' : 1,
-'cooldown' : SPREADER0['cooldown'] * 6,
+'speed' : 0.2,
+'cooldown' : SPREADER0_0['cooldown'] * 6,
 'power': -1,
 'collision_type' : 'rectangle'
+}
+
+#weapons
+#################################
+SPREADER0 = {'name' : 'spreader0',
+'levels' : [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
+[SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
+}
+
+BLASTER = {'level0' : [BLAST]
+}
+
+CANON = {'level0' : [BULLET]
 }
 
 #entities
@@ -142,57 +153,57 @@ BLAST = {'name' : 'blast',
 SHIP = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
-'speed' : 1,
+'speed' : 0.2,
 'charge_rate' : 0.001,
 'life' : 10,
-'weapons' : [SPREADER0, SPREADER22_5, SPREADERMINUS22_5, SPREADER45, SPREADERMINUS45, BLAST]
+'weapons' : [SPREADER0_0, BLAST]
 }
 
 INVINCIBLE = {'name' : 'ship',
 'type' : 'Ship',
 'ally' : True,
-'speed' : 1,
+'speed' : 0.2,
 'charge_rate' : 0.001,
 'life' : 10000,
-'weapons' : [SPREADER0, BLAST]
+'weapons' : [SPREADER0_0, BLAST]
 }
 
 SAUCER = {'name':'target',
 'type' : 'Fighter',
-'speed': 0.25,
+'speed': 0.05,
 'life': 5,
-'weapons' : [BULLET2],
+'weapons' : [BULLET],
 'trajectory' : 'Circular',
 'reward' : 1,
-'bonus_rate' : 0.2
+'bonus_rate' : 1
 }
 
 DESERT = {'name':'desert',
 'type' : 'Landscape',
-'speed': 0.2,
+'speed': 0.04,
 'layer' : 0
 }
 
 DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
-'speed': 0.2,
+'speed': 0.04,
 'layer' : 0
 }
 
 BONUSLIFE = {'name' : 'bonusL',
 'type' : 'Mobile',
-'speed' : 0.5,
+'speed' : 0.1,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 20},
+'trajectory_params' : {'amplitude' : 2},
 'collision_type' : 'pixel_perfect',
 'effect' : {'add_life' : 1}
 }
 
 BONUSWEAPON = {'name' : 'bonusW',
 'type' : 'Mobile',
-'speed' : 0.5,
+'speed' : 0.1,
 'trajectory' : 'OscillationDown',
-'trajectory_params' : {'amplitude' : 20},
+'trajectory_params' : {'amplitude' : 2},
 'collision_type' : 'pixel_perfect',
 'effect' : {'upgrade_weapon' : 1},
 }
