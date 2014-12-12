@@ -117,18 +117,18 @@ class Container():
         self.pmap = {}
         self.snds = {}
 
-    def create_surf(self, name):
+    def create_surf(self, name, alpha=True):
         '''generate surface and alternative maps
         and reference them and the pygame surface'''
-        surface = tools.load_image(name, self.theme, self.scene)
-        hit = tools.make_white(surface)
-        shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
-        array = tools.make_array(surface)
-        
+        surface = tools.load_image(name, self.theme, self.scene, alpha)
         self.surfaces.update({name : surface})
-        self.hit.update({name : hit})
-        self.shadow.update({name : shadow})
-        self.array.update({name : array})
+        if alpha :
+            hit = tools.make_white(surface)
+            shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
+            array = tools.make_array(surface)
+            self.hit.update({name : hit})
+            self.shadow.update({name : shadow})
+            self.array.update({name : array})
 
     def surf(self, name) :
         """avoid duplicate loading"""
@@ -141,26 +141,22 @@ class Container():
         surface = self.surfaces[name]
         return surface
     
-    def surf_alt(self, name) :
+    def surf_alt(self, name, alpha=True) :
         """return alt maps too"""
+        #None is the empty surface
         if name == None :
             name = ''
         if name not in self.surfaces :
-            self.create_surf(name)
+            self.create_surf(name, alpha)
         surface = self.surfaces[name]
-        array = self.array[name]
-        hit = self.hit[name]
-        shadow = self.shadow[name]
-        return surface, array, hit, shadow
-
-    def bg(self, name) :
-        """load background images"""
-        if name in self.background :
-            surface = self.background[name]
-        else :
-            surface = tools.load_background(name, self.theme, self.scene)
-            self.background.update({name : surface})
-        return surface
+        if alpha :
+            #generate also variants of image
+            array = self.array[name]
+            hit = self.hit[name]
+            shadow = self.shadow[name]
+            return surface, array, hit, shadow
+        else:
+            return surface
 
     def snd(self, name) :
         """load sounds"""
@@ -257,6 +253,7 @@ class Scene() :
         self.cont.load_music(self.level['music'])
         #launch landscape
         entity.Landscape(self, self.level['background']).add()
+        entity.Landscape(self, parameters.CLOUD).add()
         self.update()
 
     def load_interface(self) :

@@ -44,7 +44,7 @@ def load_stream(filename, scene) :
             return False
         return True
 
-def load_image(filename, theme, scene):
+def load_image(filename, theme, scene, alpha=True):
     """loads an image, prepares it for play
     or create a label if image absent"""
     if theme != None :
@@ -57,27 +57,18 @@ def load_image(filename, theme, scene):
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(parameters.COLORDEPTH)
-            #first pixel sets transparent color
-            color = surface.get_at((0, 0))
-            surface.set_colorkey(color)
+            if alpha:
+                #first pixel sets transparent color
+                color = surface.get_at((0, 0))
+                surface.set_colorkey(color)
     else :
         #no themepack : use labels as sprites 
         surface = font_skin(scene, filename)
     return surface
 
-def load_background(filename, theme, scene):
-    if theme != None :
-        path = get_path('imgs', theme, filename + '.png')
-        try:
-            surface = pygame.image.load(path)
-        except pygame.error:
-            #if no corresponding png : empty background
-            surface = font_skin(scene, ' ')
-        else :
-            surface = surface.convert(parameters.COLORDEPTH)
-    else :
-        #no themepack : empty background
-        surface = font_skin(scene, ' ')
+def make_rect(w, h, color):
+    surface = pygame.Surface((w, h))
+    surface.fill(color)
     return surface
 
 def make_array(surface) :
@@ -128,11 +119,13 @@ def make_shadow(surface, scale=0.5) :
     surface.set_colorkey(white)
     return surface
 
-def compose_surfaces(s1, s2, w, h):
+def compose_surfaces(w, h, s1, s2, back=None):
     """gets two surfaces and blit them on a new one
     of size w,h
     """
     s = pygame.Surface((w, h))
+    if back != None:
+        s.blit(back, (0,0))
     s.blit(s1, (0, 0))
     s.blit(s2, (0, s1.get_height()))
     return s

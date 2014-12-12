@@ -203,7 +203,6 @@ class Shooter() :
         #Main loop
         self.frame = 0
         self.now = pygame.time.get_ticks()
-        self.last_flip = self.now
         self.last_iter = self.now
         while self.running :
             #EVENTS

@@ -74,6 +74,7 @@ IRONBRAIN = {'name':'ironbrain',
 
 #set layers of sprites
 FRONTLAY = 20
+OVERLAY = 18
 SHIPLAY = 15
 ACTORLAY = 10
 BELOWSHIPLAY = 8
@@ -193,12 +194,20 @@ TARGET = {'name':'target',
 
 DESERT = {'name':'desert',
 'type' : 'Landscape',
+'has_alpha':False,
 'speed': 0.2,
-'layer' : 0
+'layer' : BGLAY
+}
+
+CLOUD = {'name':'clouds',
+'type' : 'Landscape',
+'speed': 0.4,
+'layer' : OVERLAY
 }
 
 DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
+'has_alpha':False,
 'speed': 0.2,
 'layer' : BGLAY
 }
@@ -209,7 +218,8 @@ BONUS = {'name':'bonus',
 'trajectory' : 'OscillationDown',
 'trajectory_params' : {'amplitude' : 20}
 }
-#Player settins
+
+#Player settings
 PLAYER = {'name' : 'player1',
 'ship' : SHIP
 }

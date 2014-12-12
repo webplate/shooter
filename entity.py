@@ -70,8 +70,9 @@ class Visible(Actor) :
     def __init__(self, scene, params={}) :
         Actor.__init__(self, scene, params)
         self.visible = True
-        #load image of appropriate type (with collisions or looping back)
-        self.no_collide = hasattr(self, 'type') and self.type == 'Landscape'
+        #load image of appropriate type (with collisions if has alpha)
+        if 'has_alpha' not in params :
+            self.has_alpha = True
         self.init_surface()
         #a list of childrens (following scene state changes)
         self.children = []
@@ -97,15 +98,17 @@ class Visible(Actor) :
         '''set pygame surface, collision array and hitmap
         according to newsurface (string of name or pygame surf)'''
         if isinstance(new_surface, str) or new_surface == None :
-            if self.no_collide:
-                self._surface = self.scene.cont.bg(new_surface)
-            else:
+            maps = self.scene.cont.surf_alt(new_surface, self.has_alpha)
+            if self.has_alpha:
                 #with alpha channel and collision array
-                maps = self.scene.cont.surf_alt(new_surface)
                 self._surface = maps[0]
                 self.array = maps[1]
                 self.hit = maps[2]
                 self.shadow = maps[3]
+                #remember alpha colorkey
+                self.alpha_key = self._surface.get_colorkey() 
+            else:
+                self._surface = maps
         else :
             #modify actual surface
             self._surface = new_surface
@@ -371,13 +374,20 @@ class Landscape(Visible) :
             if self.offset + h > self.height :
                 t1 = self.offset
                 h1 = self.height - self.offset
-                
                 h2 = h - (self.height - self.offset)
-                
-                s1 = self.full.subsurface(0, t1,w,h1)
-                s2 = self.full.subsurface(0, 0,w,h2)
-                
-                s = tools.compose_surfaces(s1, s2, w, h)
+                if self.has_alpha :
+                    back = tools.make_rect(w, h, self.alpha_key)
+                    s1 = self.full.subsurface(0, t1,w,h1)
+                    s2 = self.full.subsurface(0, 0,w,h2)
+                    
+                    s = tools.compose_surfaces(w, h, s1, s2, back)
+                    
+                    s.set_colorkey(self.alpha_key)
+                else:
+                    s1 = self.full.subsurface(0, t1,w,h1)
+                    s2 = self.full.subsurface(0, 0,w,h2)
+                    
+                    s = tools.compose_surfaces(w, h, s1, s2)
             else:
                 s = self.full.subsurface(0, self.offset,w,h)
         else :

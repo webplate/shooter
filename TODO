@@ -2,6 +2,10 @@ shadows
 offset in theme pack 
 shadow attribute on visible
 
+visible should have has_alpha so that backgrounds can have colorkey
+
+are we skipping sometime one frame ? derval inspection
+
 use
 class A:
     def __init__(self, **kwargs):
