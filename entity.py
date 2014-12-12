@@ -73,16 +73,22 @@ class Visible(Actor) :
         #load image of appropriate type (with collisions or looping back)
         self.no_collide = hasattr(self, 'type') and self.type == 'Landscape'
         self.init_surface()
+        #a list of childrens (following scene state changes)
+        self.children = []
         #animation controler ?
-        self.anim_objects = []
         if 'animations' not in params :
             self.animations = []
         else:
             for ani in self.animations:
                 #a animation object to control surface
                 targClass = globals()[ani['type']]
-                self.anim_objects.append(targClass(self.scene, self, ani))
-        
+                self.children.append(targClass(self.scene, self, ani))
+        if 'has_shadow' not in params :
+            self.has_shadow = False
+        else:
+            if self.has_shadow:
+                self.children.append(Shadow(self.scene, self, parameters.SHADOW))
+
     def _get_surface(self) :
         '''surface is exported as pygame surface
         BUT set with an str in next function'''
@@ -90,12 +96,16 @@ class Visible(Actor) :
     def _set_surface(self, new_surface) :
         '''set pygame surface, collision array and hitmap
         according to newsurface (string of name or pygame surf)'''
-        if isinstance(new_surface, str) :
+        if isinstance(new_surface, str) or new_surface == None :
             if self.no_collide:
                 self._surface = self.scene.cont.bg(new_surface)
             else:
                 #with alpha channel and collision array
-                self._surface, self.array, self.hit = self.scene.cont.surf_hit(new_surface)
+                maps = self.scene.cont.surf_alt(new_surface)
+                self._surface = maps[0]
+                self.array = maps[1]
+                self.hit = maps[2]
+                self.shadow = maps[3]
         else :
             #modify actual surface
             self._surface = new_surface
@@ -106,12 +116,12 @@ class Visible(Actor) :
     
     def add(self):
         Actor.add(self)
-        for ani in self.anim_objects:
+        for ani in self.children:
             ani.add()
         
     def remove(self):
         Actor.remove(self)
-        for ani in self.anim_objects:
+        for ani in self.children:
             ani.remove()
 
     def hide(self):
@@ -124,8 +134,8 @@ class Mobile(Visible) :
     """a mobile sprite
     """
     def __init__(self, scene, params={}) :
-        Visible.__init__(self, scene, params)
         self._pos = (0, 0)
+        Visible.__init__(self, scene, params)
         if 'speed' not in params :
             self.speed = 0
         if 'trajectory' not in params :
@@ -155,13 +165,13 @@ class Mobile(Visible) :
             self._pos = self.movement.next_pos(self._pos, interval, time)
         
     def center_on(self, mobile) :
-        x, y = mobile.pos
-        w, h = mobile.surface.get_width()/2, mobile.surface.get_height()/2
-        sw, sh = self.surface.get_width()/2, self.surface.get_height()/2
+        x, y = mobile._pos
+        w, h = mobile.surface.get_width()/2., mobile.surface.get_height()/2.
+        sw, sh = self.surface.get_width()/2., self.surface.get_height()/2.
         self._pos = x + w - sw, y + h - sh 
 
     def update(self, interval, time) :
-        self.center = tools.get_center(self.pos, self.surface)
+        self.center = tools.get_center(self._pos, self.surface)
         self.move(interval, time)
 
 class Anim(Actor):
@@ -184,21 +194,16 @@ class Film(Anim) :
             self.to_nothing = False
 
     def update(self, interval, time) :
-        print 'yo'
         still_up = False
         #accordin to time select right sprite or remove
         for i in range(self.nb_frames) :
-            #~ print i, self.init_time, time, self.pulse
             if (time >= self.init_time + i * self.pulse
             and time < self.init_time + (i+1) * self.pulse) :
-                print self.sprites[i]
                 self.parent.surface = self.sprites[i]
                 still_up = True
                 break
         if not still_up :
-                print 'end'
                 if self.to_nothing:
-                    print 'clear'
                     self.parent.init_surface()
                     self.parent.remove()
                 self.remove()
@@ -500,11 +505,11 @@ class ChargeFighter(Fighter) :
         Fighter.__init__(self, scene, params)
         self.charge = 0.
         #can have a charge display following fighter
-        self.aura = Charge(self.scene, self)
+        #~ self.aura = Charge(self.scene, self)
 
     def add(self) :
         Fighter.add(self)
-        self.aura.add()
+        #~ self.aura.add()
 
     def shoot(self, time, weapon, power=None) :
         w = self.arms[weapon]
@@ -526,7 +531,7 @@ class ChargeFighter(Fighter) :
     def die(self) :
         Fighter.die(self)
         #remove also charge display
-        self.aura.remove()
+        #~ self.aura.remove()
 
 class Ship(ChargeFighter) :
     """A ship controlled by player and shooting
@@ -537,7 +542,7 @@ class Ship(ChargeFighter) :
         #keep ref of maximum life
         self.max_life = self.life
         #ship has orientation_anim
-        self.anim_objects.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
+        self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         
     def fly(self, direction, interval) :
         #should consider time passed
@@ -563,19 +568,30 @@ class Ship(ChargeFighter) :
 
 class Follower(Mobile) :
     """a sprite following another"""
-    def __init__(self, scene, parent, offset) :
-        Mobile.__init__(self, scene)
+    def __init__(self, scene, parent, params) :
+        Mobile.__init__(self, scene, params)
+        if 'offset' not in params:
+            self.offset = 0, 0
         self.parent = parent
-        self.offset = offset
         self.center_on(self.parent)
         #should be updated after parents
         self.priority = 1
 
     def move(self, interval, time) :
         """move to be centered on parent"""
+        #~ print self._pos, self.parent._pos, self.offset
         self.center_on(self.parent)
-        new_pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
-        self._pos = new_pos
+        #~ print self._pos
+        self._pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
+
+class Shadow(Follower) :
+    def __init__(self, scene, parent, params) :
+        Follower.__init__(self, scene, parent, params)
+        self.surface = self.parent.shadow
+    
+    def update(self, interval, time):
+        Follower.update(self, interval, time)
+        self.surface = self.parent.shadow
 
 class Charge(Follower) :
     """showing the charge of ship"""
@@ -587,7 +603,7 @@ class Charge(Follower) :
         self.scene.cont.surf('BB'),
         self.scene.cont.surf('BBB')]
         #draw over background but under ship
-        self.layer = 1
+        self.layer = parameters.BELOWSHIPLAY
 
     def update(self, interval, time) :
         if self.parent.charge >= 1 :

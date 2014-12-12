@@ -111,46 +111,47 @@ class Container():
         self.surfaces = {}
         self.array = {}
         self.hit = {}
+        self.shadow = {}
         self.maps = {}
         self.background = {}
         self.pmap = {}
         self.snds = {}
 
+    def create_surf(self, name):
+        '''generate surface and alternative maps
+        and reference them and the pygame surface'''
+        surface = tools.load_image(name, self.theme, self.scene)
+        hit = tools.make_white(surface)
+        shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
+        array = tools.make_array(surface)
+        
+        self.surfaces.update({name : surface})
+        self.hit.update({name : hit})
+        self.shadow.update({name : shadow})
+        self.array.update({name : array})
+
     def surf(self, name) :
         """avoid duplicate loading"""
-        #None is an empty surface
+        #None is the empty surface
         if name == None :
             name = ''
-        if name in self.surfaces :
-            surface = self.surfaces[name]
-        else :
-            surface = tools.load_image(name, self.theme, self.scene)
-            #generate variants of image
-            hit = tools.make_white(surface)
-            array = tools.make_array(surface)
-            self.surfaces.update({name : surface})
-            self.hit.update({name : hit})
-            self.array.update({name : array})
+        if name not in self.surfaces :
+            #generate also variants of image
+            self.create_surf(name)
+        surface = self.surfaces[name]
         return surface
     
-    def surf_hit(self, name) :
+    def surf_alt(self, name) :
         """return alt maps too"""
-        #None is an empty surface
         if name == None :
             name = ''
-        if name in self.surfaces :
-            surface = self.surfaces[name]
-            array = self.array[name]
-            hit = self.hit[name]
-        else :
-            surface = tools.load_image(name, self.theme, self.scene)
-            #generate variants of image
-            hit = tools.make_white(surface)
-            array = tools.make_array(surface)
-            self.surfaces.update({name : surface})
-            self.hit.update({name : hit})
-            self.array.update({name : array})
-        return surface, array, hit
+        if name not in self.surfaces :
+            self.create_surf(name)
+        surface = self.surfaces[name]
+        array = self.array[name]
+        hit = self.hit[name]
+        shadow = self.shadow[name]
+        return surface, array, hit, shadow
 
     def bg(self, name) :
         """load background images"""
@@ -335,6 +336,11 @@ class Scene() :
         self.lst_sprites = Ordered()
         self.nb_fighters = 0
         #explore scene
+        #update individuals
+        for item in self.content :
+            #shoot and stuff
+            item.update(interval, self.now)
+        #create collision maps and sprite composition
         for item in self.content :
             if isinstance(item, entity.Mobile) :
                 x, y = item.pos
@@ -380,9 +386,5 @@ class Scene() :
             fighter = entity.Fighter(self, parameters.TARGET)
             #add in scene
             fighter.add()
-        #update individuals
-        for item in self.content :
-            #shoot and stuff
-            item.update(interval, self.now)
         #update music playback
         self.cont.music()

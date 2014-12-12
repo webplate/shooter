@@ -1,3 +1,7 @@
+shadows
+offset in theme pack 
+shadow attribute on visible
+
 use
 class A:
     def __init__(self, **kwargs):
@@ -21,6 +25,3 @@ collisions between entities
 bug of keyboard layout (use event.unicode  ??
 
 idea: one thread for positions, instanciations, one thread for drawing
-
-windows packing fails :
-éloi XP

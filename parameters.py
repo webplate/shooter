@@ -73,7 +73,7 @@ IRONBRAIN = {'name':'ironbrain',
 
 #set layers of sprites
 BASELAYER = 10
-
+BELOWSHIPLAY = 8
 
 #
 #Animations
@@ -104,16 +104,34 @@ EXPLOSIONANIM = {'type':'Film',
 'to_nothing' : True
 }
 
+TRANSPARENTANIM = {'type':'ShadowAnim',
+'durations' : [200, 200]
+}
+
+CHARGEANIM = {'type':'Film',
+'sprites' : ['B', 'BB', 'BBB'],
+}
+
 #Special Effects
 #######################
 
 EXPLOSION = {'name':'OOO',
 'type':'Mobile',
 'animations':[EXPLOSIONANIM],
-'layer':3
+'layer':9
 }
 
+SHADOW = {'type':'Follower',
+'animations':[],
+'layer':BELOWSHIPLAY,
+'offset' : (15, 15)
+}
+SHADOWSCALE = 0.8
 
+CHARGE = {'type':'Follower',
+'animations':[TRANSPARENTANIM, CHARGEANIM],
+'layer':BELOWSHIPLAY
+}
 
 #projectiles
 ########################################
@@ -147,6 +165,7 @@ BLAST = {'name' : 'oOOo',
 #################################
 SHIP = {'name' : 'ship',
 'type' : 'Ship',
+'has_shadow' : True,
 'ally' : True,
 'speed' : 1,
 'charge_rate' : 0.001,
@@ -165,10 +184,11 @@ INVINCIBLE = {'name' : 'ship',
 
 TARGET = {'name':'target',
 'type' : 'Fighter',
+'has_shadow' : True,
 'speed': 0.25,
 'life': 5,
 'weapons' : [BULLET2],
-'trajectory' : 'GoFront',
+'trajectory' : 'Circular',
 'animations' : [TARGETBLINK],
 'reward' : 1,
 'bonus_rate' : 0.2
@@ -224,7 +244,7 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 1
+'nb_enemies' : 4
 }
 
 LEVEL = CLEBLEVEL

@@ -4,7 +4,7 @@ import os, sys, pygame
 import parameters
 
 def get_center(pos, surface) :
-    center = (pos[0]+surface.get_width()/2, pos[1]+surface.get_height()/2)
+    center = (pos[0]+surface.get_width()/2., pos[1]+surface.get_height()/2.)
     return center
 
 def resource_path(relative):
@@ -98,24 +98,34 @@ def make_white(surface) :
     covered = make_array(surface)
     surface = pygame.Surface(surface.get_size(), depth = 8)
     surface.set_palette([black, white])
-    pix_array = pygame.PixelArray(surface)
     w, h = covered.shape
-    #bypass unfitted one dimensional pixel array if w = 1
-    if w != 1 :
-        for i in range(w) :
-            for j in range(h) :
-                if covered[i,j] :
-                    pix_array[i,j] = white
-                else :
-                    pix_array[i,j] = black
-    else :
-        for i in range(w) :
-            for j in range(h) :
-                if covered[i,j] :
-                    surface.set_at((i, j), white)
-                else :
-                    surface.set_at((i, j), black)
+    for i in range(w) :
+        for j in range(h) :
+            if covered[i,j] :
+                surface.set_at((i, j), white)
+            else :
+                surface.set_at((i, j), black)
     surface.set_colorkey(black)
+    return surface
+
+def make_shadow(surface, scale=0.5) :
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+    covered = make_array(surface)
+    surface = pygame.Surface(surface.get_size(), depth = 8)
+    surface.set_palette([black, white])
+    w, h = covered.shape
+    for i in range(w) :
+        for j in range(h) :
+            if covered[i,j] :
+                surface.set_at((i, j), black)
+            else :
+                surface.set_at((i, j), white)
+    #rescale shadow
+    w, h = int(w*scale), int(h*scale)
+    surface = pygame.transform.scale(surface, (w, h))
+    surface.set_alpha(100)
+    surface.set_colorkey(white)
     return surface
 
 def compose_surfaces(s1, s2, w, h):
