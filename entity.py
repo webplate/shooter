@@ -20,13 +20,13 @@ class Actor(object) :
         #set attributes from params
         self.set_param(params)
         #must have a name
-        if 'name' not in params :
+        if not hasattr(self, 'name') :
             self.name = ' '
         #default is not ally
-        if 'ally' not in params :
+        if not hasattr(self, 'ally') :
             self.ally = False
         #layer for drawing on screen
-        if 'layer' not in params :
+        if not hasattr(self, 'layer') :
             self.layer = parameters.ACTORLAY
 
         #priority of update
@@ -71,22 +71,24 @@ class Visible(Actor) :
         Actor.__init__(self, scene, params)
         self.visible = True
         #load image of appropriate type (with collisions if has alpha)
-        if 'has_alpha' not in params :
+        if not hasattr(self, 'has_alpha') :
             self.has_alpha = True
-        if 'opacity' not in params :
+        if not hasattr(self, 'opacity') :
             self.opacity = 255
+        if not hasattr(self, 'can_collide') :
+            self.can_collide = True
         self.init_surface()
         #a list of childrens (following scene state changes)
         self.children = []
         #animation controler ?
-        if 'animations' not in params :
+        if not hasattr(self, 'animations') :
             self.animations = []
         else:
             for ani in self.animations:
                 #a animation object to control surface
                 targClass = globals()[ani['type']]
                 self.children.append(targClass(self.scene, self, ani))
-        if 'has_shadow' not in params :
+        if  not hasattr(self,'has_shadow') :
             self.has_shadow = False
         else:
             if self.has_shadow:
@@ -100,17 +102,18 @@ class Visible(Actor) :
         '''set pygame surface, collision array and hitmap
         according to newsurface (string of name or pygame surf)'''
         if isinstance(new_surface, str) or new_surface == None :
-            maps = self.scene.cont.surf_alt(new_surface, self.has_alpha)
-            if self.has_alpha:
+            if self.can_collide:
+                maps = self.scene.cont.surf_alt(new_surface, self.has_alpha)
                 #with alpha channel and collision array
                 self._surface = maps[0]
                 self.array = maps[1]
                 self.hit = maps[2]
                 self.shadow = maps[3]
-                #remember alpha colorkey
-                self.alpha_key = self._surface.get_colorkey()
             else:
-                self._surface = maps
+                surf = self.scene.cont.surf_noalt(new_surface, self.has_alpha)
+                self._surface = surf
+            #remember alpha colorkey
+            self.alpha_key = self._surface.get_colorkey()
         else :
             #modify actual surface
             self._surface = new_surface
@@ -143,9 +146,9 @@ class Mobile(Visible) :
     def __init__(self, scene, params={}) :
         self._pos = (0, 0)
         Visible.__init__(self, scene, params)
-        if 'speed' not in params :
+        if not hasattr(self, 'speed') :
             self.speed = 0
-        if 'trajectory' not in params :
+        if not hasattr(self, 'trajectory') :
             self.trajectory = None
         else :
             #a trajectory object to control position
@@ -197,7 +200,7 @@ class Film(Anim) :
         Anim.__init__(self, scene, parent, params)
         self.nb_frames = len(self.sprites)
         self.parent = parent
-        if 'to_nothing' not in params :
+        if  not hasattr(self,'to_nothing') :
             self.to_nothing = False
 
     def update(self, interval, time) :
@@ -358,8 +361,9 @@ class Landscape(Visible) :
     (not moving but looping)
     """
     def __init__(self, scene, params={}) :
+        self.can_collide = False
         Visible.__init__(self, scene, params)
-        if 'speed' not in params :
+        if  not hasattr(self,'speed') :
             self.speed = 0
         self.full = self.surface
         self.width, self.height = self.full.get_size()
@@ -418,10 +422,10 @@ class Fragile(Mobile) :
         self.last_hit = 0
         self.time_of_death = None
         #cannot leave bonus when death by default
-        if 'bonus_rate' not in params :
+        if  not hasattr(self,'bonus_rate') :
             self.bonus_rate = 0
         #reward for killing
-        if 'reward' not in params :
+        if  not hasattr(self,'reward') :
             self.reward = 0
         #fragile has hit_anim
         self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
@@ -587,7 +591,7 @@ class Follower(Mobile) :
     """a sprite following another"""
     def __init__(self, scene, parent, params) :
         Mobile.__init__(self, scene, params)
-        if 'offset' not in params:
+        if  not hasattr(self,'offset'):
             self.offset = 0, 0
         self.parent = parent
         self.center_on(self.parent)

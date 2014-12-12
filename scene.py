@@ -117,18 +117,22 @@ class Container():
         self.pmap = {}
         self.snds = {}
 
-    def create_surf(self, name, alpha=True):
+    def create_all(self, name, alpha=True):
         '''generate surface and alternative maps
-        and reference them and the pygame surface'''
+        and reference them'''
         surface = tools.load_image(name, self.theme, self.scene, alpha)
         self.surfaces.update({name : surface})
-        if alpha :
-            hit = tools.make_white(surface)
-            shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
-            array = tools.make_array(surface)
-            self.hit.update({name : hit})
-            self.shadow.update({name : shadow})
-            self.array.update({name : array})
+        hit = tools.make_white(surface)
+        shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
+        array = tools.make_array(surface)
+        self.hit.update({name : hit})
+        self.shadow.update({name : shadow})
+        self.array.update({name : array})
+    
+    def create_surf(self, name, alpha=True):
+        '''generate only pygame surface '''
+        surface = tools.load_image(name, self.theme, self.scene, alpha)
+        self.surfaces.update({name : surface})
 
     def surf(self, name) :
         """avoid duplicate loading"""
@@ -137,7 +141,7 @@ class Container():
             name = ''
         if name not in self.surfaces :
             #generate also variants of image
-            self.create_surf(name)
+            self.create_all(name)
         surface = self.surfaces[name]
         return surface
     
@@ -147,16 +151,22 @@ class Container():
         if name == None :
             name = ''
         if name not in self.surfaces :
+            self.create_all(name, alpha)
+        surface = self.surfaces[name]
+        array = self.array[name]
+        hit = self.hit[name]
+        shadow = self.shadow[name]
+        return surface, array, hit, shadow
+        
+    def surf_noalt(self, name, alpha=True) :
+        """generate and return only pygame surface"""
+        #None is the empty surface
+        if name == None :
+            name = ''
+        if name not in self.surfaces :
             self.create_surf(name, alpha)
         surface = self.surfaces[name]
-        if alpha :
-            #generate also variants of image
-            array = self.array[name]
-            hit = self.hit[name]
-            shadow = self.shadow[name]
-            return surface, array, hit, shadow
-        else:
-            return surface
+        return surface
 
     def snd(self, name) :
         """load sounds"""

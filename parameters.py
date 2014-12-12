@@ -197,21 +197,21 @@ DESERT = {'name':'desert',
 'type' : 'Landscape',
 'has_alpha':False,
 'speed': 0.2,
-'layer' : BGLAY
+'layer' : BGLAY,
 }
 
 CLOUD = {'name':'clouds',
 'type' : 'Landscape',
-'speed': 0.4,
+'speed': 0.5,
 'layer' : OVERLAY,
-'opacity' : 200
+'opacity' : 200,
 }
 
 DEFAULTBACKGROUND = {'name':'background',
 'type' : 'Landscape',
 'has_alpha':False,
 'speed': 0.2,
-'layer' : BGLAY
+'layer' : BGLAY,
 }
 
 BONUS = {'name':'bonus',
