@@ -356,6 +356,7 @@ class Scene() :
         ship_map = []
         target_map = []
         ship_proj_map = []
+        ship_blast_map = []
         target_proj_map = []
         bonus_map = []
         #reset sprite list for drawing
@@ -390,6 +391,8 @@ class Scene() :
                         identifier = (x, y, x+item.width, y+item.height, item)
                         if item.ally :
                             ship_proj_map.append(identifier)
+                            if isinstance(item, entity.Blast) :
+                                ship_blast_map.append(identifier)
                         else :
                             target_proj_map.append(identifier)
             elif isinstance(item, entity.Landscape) :
@@ -404,6 +407,8 @@ class Scene() :
         self.collide(target_proj_map, ship_map, self.now)
         #between allies and enemies ships
         self.collide(target_map, ship_map, self.now)
+        #between projectiles
+        self.collide(target_proj_map, ship_blast_map, self.now)
         #catch bonuses, hurray !! \o/
         self.collide(bonus_map, ship_map, self.now)
         #evolution of scenery
