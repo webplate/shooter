@@ -3,8 +3,8 @@
 import os, sys, pygame
 import parameters
 
-def get_center(pos, surface) :
-    center = (pos[0]+surface.get_width()/2., pos[1]+surface.get_height()/2.)
+def get_center(pos, w, h) :
+    center = (pos[0]+w/2., pos[1]+h/2.)
     return center
 
 def resource_path(relative):

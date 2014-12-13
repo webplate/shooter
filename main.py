@@ -118,7 +118,8 @@ class Shooter() :
                     #switch to fullscreen
                     if key == 'fullscreen' :
                         if self.fullscreen :
-                            self.display = pygame.display.set_mode(self.winsize)
+                            self.display = pygame.display.set_mode(self.winsize,
+                            p_l.HWSURFACE)
                         else :
                             self.display = pygame.display.set_mode(self.winsize,
                             p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
@@ -173,6 +174,7 @@ class Shooter() :
     def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
         self.now = pygame.time.get_ticks()
+        print self.interval
         #recompute scene status
         self.scene.update(self.interval*self.speed, self.now*self.speed)
 

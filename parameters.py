@@ -13,7 +13,6 @@ DEFAULTPLAY = {'name':'default',
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
-'bullet_speed': 0.25
 }
 
 #control settings
@@ -194,7 +193,6 @@ BULLET = {'name':'o',
 BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
-'power': 1,
 'layer' : BELOWSHIPLAY,
 'speed' : 0.2,
 'cooldown' : SPREADER0_0['cooldown'] * 6,
@@ -306,9 +304,10 @@ DEFAULTLEVEL = {'name':'default',
 }
 
 STRESSLEVEL = {'name':'stress',
-'theme' : DERVAL,
+'theme' : CLEBARD,
+'background' : DESERT,
 'sound_pack' : DEFAULTSNDPACK,
-'nb_enemies' : 300,
+'nb_enemies' : 150,
 'player' : ALTPLAYER
 }
 
@@ -319,4 +318,4 @@ CLEBLEVEL = {'name':'clebard',
 'nb_enemies' : 4
 }
 
-LEVEL = CLEBLEVEL
+LEVEL = STRESSLEVEL

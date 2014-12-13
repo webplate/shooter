@@ -145,6 +145,9 @@ class Mobile(Visible) :
         Visible.__init__(self, scene, params)
         if not hasattr(self, 'speed') :
             self.speed = 0
+        #the proportion of outside screen where mobile can subsist
+        if not hasattr(self, 'margin_proportion') :
+            self.margin_proportion = 1
         if not hasattr(self, 'trajectory') :
             self.trajectory = None
         else :
@@ -156,8 +159,9 @@ class Mobile(Visible) :
                 params['trajectory_params'])
             else :
                 self.movement = trajClass(self.scene, self)
+        
         self.base_surface = self.surface
-        self.center = tools.get_center(self.pos, self.surface)
+        self.update_frame()
         
     def _get_pos(self) :
         """world wants exact position"""
@@ -167,6 +171,11 @@ class Mobile(Visible) :
         self._pos = new_position[0], new_position[1]
     pos = property(_get_pos, _set_pos)
     
+    def update_frame(self) :
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        self.center = tools.get_center(self.pos, self.width, self.height)
+    
     def move(self, interval, time) :
         if self.trajectory != None :
             self._pos = self.movement.next_pos(self._pos, interval, time)
@@ -174,12 +183,31 @@ class Mobile(Visible) :
     def center_on(self, mobile) :
         x, y = mobile._pos
         w, h = mobile.surface.get_width()/2., mobile.surface.get_height()/2.
-        sw, sh = self.surface.get_width()/2., self.surface.get_height()/2.
+        sw, sh = self.width/2., self.height/2.
         self._pos = x + w - sw, y + h - sh 
 
+    def in_boundaries(self, pos, margin_proportion=0) :
+        #bad if outside screen and too far
+        left_limit = - self.scene.limits[0] * margin_proportion
+        right_limit = self.scene.limits[0] + self.scene.limits[0] * margin_proportion
+        up_limit = - self.scene.limits[1] * margin_proportion
+        down_limit = self.scene.limits[1] + self.scene.limits[1] * margin_proportion
+        
+        if (pos[0] > right_limit
+        or pos[1] > down_limit
+        or pos[0] + self.width < left_limit
+        or pos[1] + self.height < up_limit) :
+            return False
+        else :
+            return True
+
     def update(self, interval, time) :
-        self.center = tools.get_center(self._pos, self.surface)
+        self.update_frame()
         self.move(interval, time)
+        #delete if outside screen
+        if not self.in_boundaries(self.pos, self.margin_proportion) :
+            self.remove()
+            del self
 
 class Anim(Actor):
     """basic animation actor
@@ -303,11 +331,11 @@ class Projectile(Mobile) :
     damage
     """
     def __init__(self, scene, parent, params={}) :
+        #projectiles shouldn't exist outside screen
+        self.margin_proportion = 0
         Mobile.__init__(self, scene, params)
         self.parent = parent
         self.ally = parent.ally
-        self.width = self.surface.get_width()
-        self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
         #how a projectile can be collided
         if not hasattr(self, 'collision_type') :
@@ -326,21 +354,6 @@ class Projectile(Mobile) :
 
     def get_damage(self) :
         return self.add_life
-
-    def in_screen(self, pos) :
-        #bad if outside screen
-        if (pos[0] > self.scene.limits[0] or pos[1] > self.scene.limits[1]
-        or pos[0] + self.width < 0 or pos[1] + self.height < 0) :
-            return False
-        else :
-            return True
-
-    def update(self, interval, time) :
-        Mobile.update(self, interval, time)
-        #delete if outside screen
-        if not self.in_screen(self.pos) :
-            self.remove()
-            del self
 
 class Bullet(Projectile):
     pass
@@ -612,7 +625,7 @@ class Ship(ChargeFighter) :
             new_pos = self._pos[0], self._pos[1]-offset
         elif direction == 'down' :
             new_pos = self._pos[0], self._pos[1]+offset
-        new_center = tools.get_center(new_pos, self.surface)
+        new_center = tools.get_center(new_pos, self.width, self.height)
         #do not step outside screen
         if (new_center[0] < self.scene.limits[0] and new_center[0] > 0
         and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
@@ -642,9 +655,7 @@ class Follower(Mobile) :
 
     def move(self, interval, time) :
         """move to be centered on parent"""
-        #~ print self._pos, self.parent._pos, self.offset
         self.center_on(self.parent)
-        #~ print self._pos
         self._pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
 
 class Shadow(Follower) :

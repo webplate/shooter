@@ -1,7 +1,5 @@
-bonus hsould die offscreen
-between entities collisions
+do not skip frames
 
-one pixel projectiles hit on upper corner and not center !
 charge isn't aligned !
 
 shadows

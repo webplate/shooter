@@ -292,6 +292,8 @@ class Scene() :
         for xP, yP, xPe, yPe, itemP in proj_map :
             #one pixel projectile
             if itemP.collision_type == 'pixel' :
+                #focus on center_pixel
+                xP, yP = itemP.center
                 for xT, yT, xTe, yTe, itemT in target_map :
                     #is in range ?
                     if xP < xTe and xP > xT and yP < yTe and yP > yT :
@@ -402,15 +404,16 @@ class Scene() :
         for player in self.players :
             player.update(interval, self.now)
         #detect collisions and update accordingly
-        #for projectiles against enemies and allies
-        self.collide(ship_proj_map, target_map, self.now)
-        self.collide(target_proj_map, ship_map, self.now)
-        #between allies and enemies ships
-        self.collide(target_map, ship_map, self.now)
-        #between projectiles
-        self.collide(target_proj_map, ship_blast_map, self.now)
         #catch bonuses, hurray !! \o/
         self.collide(bonus_map, ship_map, self.now)
+        #for projectiles against enemies
+        self.collide(ship_proj_map, target_map, self.now)
+        #between projectiles
+        self.collide(target_proj_map, ship_blast_map, self.now)
+        #between allies and enemies ships
+        self.collide(target_map, ship_map, self.now)
+        #enemies can hit us
+        self.collide(target_proj_map, ship_map, self.now)
         #evolution of scenery
         if self.nb_fighters < self.level['nb_enemies'] :
             fighter = entity.Fighter(self, parameters.SAUCER)
