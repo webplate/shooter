@@ -309,16 +309,19 @@ class Projectile(Mobile) :
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center_offset = self.width/2, self.height/2
+        #how a projectile can be collided
+        if not hasattr(self, 'collision_type') :
+            self.collision_type = 'pixel_perfect'
         #how does it affect life
-        if 'effect' not in params :
+        if not hasattr(self, 'effect') :
             self.add_life = -1
         else :
-            if 'add_life' not in params['effect'] :
+            if 'add_life' not in self.effect :
                 self.add_life = -1
             else :
-                self.add_life = params['effect']['add_life']
+                self.add_life = self.effect['add_life']
 
-    def collided(self) :
+    def collided(self, projectile, time) :
         self.remove()
 
     def get_damage(self) :
@@ -350,7 +353,7 @@ class Blast(Projectile) :
         Projectile.__init__(self, scene, parent, params)
         self.charge = 0
 
-    def collided(self) :
+    def collided(self, projectile, time) :
         pass
 
     def get_damage(self) :
@@ -416,17 +419,17 @@ class Catchable(Mobile) :
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         #how does it affect life
-        if 'add_life' not in params['effect'] :
+        if 'add_life' not in self.effect :
             self.add_life = 0
         else :
-            self.add_life = params['effect']['add_life']
+            self.add_life = self.effect['add_life']
         #how does it affect weapons
-        if 'upgrade_weapon' not in params['effect'] :
+        if 'upgrade_weapon' not in self.effect :
             self.weapon_bonus = 0
         else :
-            self.weapon_bonus = params['effect']['upgrade_weapon']
+            self.weapon_bonus = self.effect['upgrade_weapon']
     #what happens when it collides with another object
-    def collided(self) :
+    def collided(self, projectile, time) :
         self.remove()
     #return quantity of heal (or damage)
     def get_damage(self) :
@@ -446,11 +449,14 @@ class Fragile(Mobile) :
         self.last_hit = 0
         self.time_of_death = None
         #cannot leave bonus when death by default
-        if  not hasattr(self,'bonus_rate') :
+        if not hasattr(self,'bonus_rate') :
             self.bonus_rate = 0
         #reward for killing
-        if  not hasattr(self,'reward') :
+        if not hasattr(self,'reward') :
             self.reward = 0
+        #how a fragile can be collided
+        if not hasattr(self, 'collision_type') :
+            self.collision_type = 'pixel_perfect'
         #fragile has hit_anim
         self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
         #fragile can explode
@@ -474,8 +480,14 @@ class Fragile(Mobile) :
             if self.life <= 0 :
                 self.time_of_death = time
                 #recognize killer in the distance
-                self.killer = projectile.parent
-
+                if hasattr(projectile, 'parent'): 
+                    self.killer = projectile.parent
+                #close combat killing
+                else:
+                    self.killer = projectile
+    def get_damage(self) :
+        return parameters.COLLISIONDAMAGE
+    
     def die(self) :
         #remove of scene
         self.remove()

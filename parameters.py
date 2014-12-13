@@ -71,6 +71,8 @@ IRONBRAIN = {'name':'ironbrain',
 'txt_inter' : 16
 }
 
+#Various....
+COLLISIONDAMAGE = -1
 #set layers of sprites
 FRONTLAY = 20
 OVERLAY = 18
@@ -144,8 +146,6 @@ SPREADER0_0 = {'name':'spreader_0',
 'cooldown' : 100,
 'damage' : 1,
 'layer' : BELOWSHIPLAY,
-'collision_type' : 'pixel_perfect'
-
 }
 
 SPREADER0_22_5 = {'name':'spreader_0_22.5',
@@ -154,7 +154,6 @@ SPREADER0_22_5 = {'name':'spreader_0_22.5',
 'trajectory_params' : {'angle' : 22.5},
 'speed' : SPREADER0_0['speed'],
 'cooldown' : SPREADER0_0['cooldown'],
-'collision_type' : 'pixel_perfect'
 }
 
 SPREADER0_MINUS22_5 = {'name':'spreader_0_-22.5',
@@ -163,7 +162,6 @@ SPREADER0_MINUS22_5 = {'name':'spreader_0_-22.5',
 'trajectory_params' : {'angle' : -22.5},
 'speed' : SPREADER0_0['speed'],
 'cooldown' : SPREADER0_0['cooldown'],
-'collision_type' : 'pixel_perfect'
 }
 
 SPREADER0_45 = {'name':'spreader_0_45',
@@ -172,7 +170,6 @@ SPREADER0_45 = {'name':'spreader_0_45',
 'trajectory_params' : {'angle' : 45},
 'speed' : SPREADER0_0['speed'],
 'cooldown' : SPREADER0_0['cooldown'],
-'collision_type' : 'pixel_perfect'
 }
 
 SPREADER0_MINUS45 = {'name':'spreader_0_-45',
@@ -181,7 +178,6 @@ SPREADER0_MINUS45 = {'name':'spreader_0_-45',
 'trajectory_params' : {'angle' : -45},
 'speed' : SPREADER0_0['speed'],
 'cooldown' : SPREADER0_0['cooldown'],
-'collision_type' : 'pixel_perfect'
 }
 
 BULLET = {'name':'o',
@@ -245,7 +241,7 @@ SAUCER = {'name':'target',
 'trajectory' : 'Circular',
 'animations' : [TARGETBLINK],
 'reward' : 1,
-'bonus_rate' : 1
+'bonus_rate' : 0.2
 }
 
 DESERT = {'name':'desert',

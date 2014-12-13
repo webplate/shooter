@@ -300,7 +300,7 @@ class Scene() :
                             #hurt or not, entity
                             itemT.collided(itemP, time)
                             #remove or not, colliding projectile
-                            itemP.collided()
+                            itemP.collided(itemT, time)
             #rectangular projectile
             elif itemP.collision_type == 'rectangle' :
                 for xT, yT, xTe, yTe, itemT in target_map :
@@ -312,7 +312,7 @@ class Scene() :
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
                             itemT.collided(itemP, time)
-                            itemP.collided()
+                            itemP.collided(itemT, time)
             #pixel perfect projectile
             else :
                 for xT, yT, xTe, yTe, itemT in target_map :
@@ -326,7 +326,7 @@ class Scene() :
                         self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
                         if True in touch :
                             itemT.collided(itemP, time)
-                            itemP.collided()
+                            itemP.collided(itemT, time)
 
     def update_paused(self, interval=0, time=0) :
         #stop background music
@@ -399,8 +399,11 @@ class Scene() :
         for player in self.players :
             player.update(interval, self.now)
         #detect collisions and update accordingly
+        #for projectiles against enemies and allies
         self.collide(ship_proj_map, target_map, self.now)
         self.collide(target_proj_map, ship_map, self.now)
+        #between allies and enemies ships
+        self.collide(target_map, ship_map, self.now)
         #catch bonuses, hurray !! \o/
         self.collide(bonus_map, ship_map, self.now)
         #evolution of scenery
