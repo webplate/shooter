@@ -68,6 +68,7 @@ class Shooter() :
         self.interval = 0
         self.speed = parameters.DEFAULTPLAY['game_speed']
         self.flip_rate = parameters.DEFAULTPLAY['flip_rate']
+        self.frame_limit = 1000. / self.flip_rate   #max time for a scene update
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x'] :
@@ -95,8 +96,8 @@ class Shooter() :
         for x in range(pygame.joystick.get_count())]
         for joy in joysticks :
             joy.init()
-        #time 
-        self.now = pygame.time.get_ticks()
+        #time reference
+        self.now = 0
         #Initialize scene
         self.scene = scene.Scene(self)
         #Players
@@ -173,8 +174,9 @@ class Shooter() :
 
     def on_loop(self) :
         """alter and move objects according to altitude, movement..."""
-        self.now = pygame.time.get_ticks()
-        print self.interval
+        if self.interval > self.frame_limit :
+            self.interval = self.frame_limit
+        self.now = self.now + self.interval
         #recompute scene status
         self.scene.update(self.interval*self.speed, self.now*self.speed)
 
@@ -204,7 +206,6 @@ class Shooter() :
         """launch mainloop"""
         #Main loop
         self.frame = 0
-        self.now = pygame.time.get_ticks()
         while self.running :
             #EVENTS
             evts = pygame.event.get()

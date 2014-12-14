@@ -6,7 +6,7 @@ import pygame.locals as p_l
 GAMESIZE = (320, 240) #~neo geo
 #~ GAMESIZE = (1024, 500)
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
-RESCALE = '2x' #set to 2x or mame
+RESCALE = '2x' #set to 2x or mame or None
 
 DEFAULTPLAY = {'name':'default',
 'flip_rate' : 70, #fps cap
@@ -73,6 +73,7 @@ IRONBRAIN = {'name':'ironbrain',
 #Various....
 COLLISIONDAMAGE = -1
 #set layers of sprites
+INTERFACELAY = 25
 FRONTLAY = 20
 OVERLAY = 18
 SHIPLAY = 15
@@ -97,7 +98,7 @@ BULLETBLINK = {'type':'SyncLoop',
 }
 
 HITBLINK = {'type':'Blank',
-'duration' : 16     #ms for white flash when collision
+'duration' : 25     #ms for white flash when collision
 }
 
 SHIPORIENTATION = {'type':'Orient',
@@ -307,7 +308,7 @@ STRESSLEVEL = {'name':'stress',
 'theme' : CLEBARD,
 'background' : DESERT,
 'sound_pack' : DEFAULTSNDPACK,
-'nb_enemies' : 150,
+'nb_enemies' : 200,
 'player' : ALTPLAYER
 }
 
@@ -318,4 +319,4 @@ CLEBLEVEL = {'name':'clebard',
 'nb_enemies' : 4
 }
 
-LEVEL = STRESSLEVEL
+LEVEL = CLEBLEVEL
