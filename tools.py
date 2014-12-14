@@ -7,6 +7,10 @@ def get_center(pos, w, h) :
     center = (pos[0]+w/2., pos[1]+h/2.)
     return center
 
+def get_pos_from_center(center,w, h) :
+    pos = (center[0]-w/2., center[1]-h/2.)
+    return pos
+
 def resource_path(relative):
     """path translator for pyinstaller
     """

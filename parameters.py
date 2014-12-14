@@ -316,7 +316,7 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 4
+'nb_enemies' : 0
 }
 
-LEVEL = CLEBLEVEL
+LEVEL = STRESSLEVEL

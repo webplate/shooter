@@ -627,9 +627,22 @@ class Ship(ChargeFighter) :
             new_pos = self._pos[0], self._pos[1]+offset
         new_center = tools.get_center(new_pos, self.width, self.height)
         #do not step outside screen
-        if (new_center[0] < self.scene.limits[0] and new_center[0] > 0
-        and new_center[1] < self.scene.limits[1] and new_center[1] > 0) :
+        if (new_center[0] <= self.scene.limits[0] and new_center[0] >= 0
+        and new_center[1] <= self.scene.limits[1] and new_center[1] >= 0) :
             self._pos = new_pos
+        else :
+            #stick on border
+            new_center = list(new_center)
+            if new_center[0] > self.scene.limits[0] :
+                new_center[0] = self.scene.limits[0]
+            if new_center[0] < 0 : 
+                new_center[0] = 0
+            if new_center[1] > self.scene.limits[1] :
+                new_center[1] = self.scene.limits[1]
+            if new_center[1] < 0 :
+                new_center[1] = 0
+
+            self._pos = tools.get_pos_from_center(new_center, self.width, self.height)
 
     def collided(self, projectile, time) :
         ChargeFighter.collided(self, projectile, time)
@@ -724,7 +737,7 @@ class Widget(Mobile):
         else :
             self.low = False
         #draw interface over rest of scene
-        self.layer = 5
+        self.layer = parameters.INTERFACELAY
 
     def new_value(self) :
         """gets a value deep in scene"""
