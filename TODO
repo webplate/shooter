@@ -1,20 +1,9 @@
-ship doesn't go fully on both sides of screen
-charge isn't aligned !
-
-shadows
-offset in theme pack 
-shadow attribute on visible
-
-visible should have has_alpha so that backgrounds can have colorkey
-
-are we skipping sometime one frame ? derval inspection
 
 use
 class A:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-instantiator in scene to uniformize instanciation and split entity
 
 user can set keys and buttons/axis (as windows has different keys :/
 so make a menu
@@ -27,9 +16,10 @@ link player keys , projectile maps, and ships weapons...
 
 
 ??use pygame rect object for collisions
-collisions between entities
 
 bug of keyboard layout (use event.unicode  ??
 
 idea: one thread for positions, instanciations, one thread for drawing
+instantiator in scene to uniformize instanciation and split entity
+
 TENTACLE BOSS !!

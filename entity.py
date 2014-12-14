@@ -58,7 +58,7 @@ class Weapon(Actor):
 
     def shoot(self, x, y, power=0):
         p = self.proj(self.scene, self.parent, self.params)
-        p.pos = x, y
+        p.center_on((x, y))
         p.charge = power
         p.add()
 
@@ -180,11 +180,17 @@ class Mobile(Visible) :
         if self.trajectory != None :
             self._pos = self.movement.next_pos(self._pos, interval, time)
         
-    def center_on(self, mobile) :
-        x, y = mobile._pos
-        w, h = mobile.surface.get_width()/2., mobile.surface.get_height()/2.
-        sw, sh = self.width/2., self.height/2.
-        self._pos = x + w - sw, y + h - sh 
+    def center_on(self, target) :
+        """center self on amother mobile or on x, y coordinates"""
+        if hasattr(target, 'pos') :
+            x, y = target._pos
+            w, h = target.surface.get_width()/2., target.surface.get_height()/2.
+            sw, sh = self.width/2., self.height/2.
+            self._pos = x + w - sw, y + h - sh 
+        else :
+            x, y = target
+            sw, sh = self.width/2., self.height/2.
+            self._pos = x - sw, y - sh 
 
     def in_boundaries(self, pos, margin_proportion=0) :
         #bad if outside screen and too far

@@ -195,7 +195,7 @@ BLAST = {'name' : 'blast',
 'type' : 'Blast',
 'trajectory' : 'Up',
 'layer' : BELOWSHIPLAY,
-'speed' : 0.2,
+'speed' : 0.15,
 'cooldown' : SPREADER0_0['cooldown'] * 6,
 'power': -1,
 'collision_type' : 'rectangle'
@@ -316,7 +316,7 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 0
+'nb_enemies' : 6
 }
 
-LEVEL = STRESSLEVEL
+LEVEL = CLEBLEVEL
