@@ -103,7 +103,6 @@ class Shooter() :
         #Players
         self.players = self.scene.players
 
-
     def on_event(self, event) :
         """propagate and interpret events"""
         if (event.type == p_l.QUIT or
@@ -119,8 +118,7 @@ class Shooter() :
                     #switch to fullscreen
                     if key == 'fullscreen' :
                         if self.fullscreen :
-                            self.display = pygame.display.set_mode(self.winsize,
-                            p_l.HWSURFACE)
+                            self.display = pygame.display.set_mode(self.winsize)
                         else :
                             self.display = pygame.display.set_mode(self.winsize,
                             p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
@@ -194,7 +192,7 @@ class Shooter() :
         else :
             self.display.blit(self.screen, (0, 0))
         #limit flipping rate
-        self.interval = self.clock.tick(self.flip_rate)
+        self.interval = self.clock.tick_busy_loop(self.flip_rate)
         self.fps = self.clock.get_fps()
         pygame.display.flip()
         self.frame += 1
