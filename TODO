@@ -1,14 +1,9 @@
-bonus hsould die offscreen
-between entities collisions
+weapon should be able to fire multiple projectiles depending on the fighter level
+
+bonus should die offscreen
 
 one pixel projectiles hit on upper corner and not center !
 charge isn't aligned !
-
-shadows
-offset in theme pack 
-shadow attribute on visible
-
-visible should have has_alpha so that backgrounds can have colorkey
 
 are we skipping sometime one frame ? derval inspection
 
@@ -30,7 +25,6 @@ link player keys , projectile maps, and ships weapons...
 
 
 ??use pygame rect object for collisions
-collisions between entities
 
 bug of keyboard layout (use event.unicode  ??
 

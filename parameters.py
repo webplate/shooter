@@ -13,7 +13,8 @@ DEFAULTPLAY = {'name':'default',
 'hit_pulse' : 50, #ms between two hits on ship
 'blast_hit_pulse' : 20, #ms between two blast hits
 'game_speed' : 1,
-'bullet_speed': 0.25
+'bullet_speed': 0.25,
+'ratio_life_upgrade' : 0.1
 }
 
 #control settings
@@ -213,10 +214,10 @@ SPREADER0 = {'name' : 'spreader0',
 [SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
 }
 
-BLASTER = {'level0' : [BLAST]
+BLASTER = {'name' : 'blaster', 'levels' : [[BLAST]]
 }
 
-CANON = {'level0' : [BULLET]
+CANON = {'name' : 'canon', 'levels' : [[BULLET]]
 }
 
 
@@ -229,7 +230,7 @@ SHIP = {'name' : 'ship',
 'speed' : 0.2,
 'charge_rate' : 0.001,
 'life' : 10,
-'weapons' : [SPREADER0_0, BLAST]
+'weapons' : [SPREADER0, BLASTER]
 }
 
 
@@ -241,11 +242,11 @@ SAUCER = {'name':'target',
 'has_shadow' : True,
 'speed': 0.05,
 'life': 5,
-'weapons' : [BULLET],
+'weapons' : [CANON],
 'trajectory' : 'Circular',
 'animations' : [TARGETBLINK],
 'reward' : 1,
-'bonus_rate' : 1
+'bonus_rate' : 0.2
 }
 
 DESERT = {'name':'desert',
