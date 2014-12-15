@@ -123,7 +123,7 @@ CHARGEANIM = {'type':'Film',
 EXPLOSION = {'name':'OOO',
 'type':'Mobile',
 'animations':[EXPLOSIONANIM],
-'layer':9
+'layer': OVERLAY
 }
 
 SHADOW = {'type':'Follower',
@@ -317,7 +317,7 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 6
+'nb_enemies' : 20
 }
 
 LEVEL = CLEBLEVEL

@@ -25,7 +25,6 @@ def load_font(filename, size) :
     myfontfile = resource_path(os.path.join('fonts', filename))
     return pygame.font.Font(myfontfile, size)
     
-
 def load_sound(filename, scene) :
     """load sound or not"""
     if scene.snd_pack['name'] != None :
@@ -48,6 +47,12 @@ def load_stream(filename, scene) :
             return False
         return True
 
+def uniformize_surf(surface) :
+    """try to convert surface if necessary
+    so that all our surf are of same type :
+    no per pixel transparency"""
+    
+
 def load_image(filename, theme, scene, alpha=True):
     """loads an image, prepares it for play
     or create a label if image absent"""
@@ -60,6 +65,8 @@ def load_image(filename, theme, scene, alpha=True):
             surface = font_skin(scene, filename)
         else :
             #strip of alpha channel for colorkey transparency and notmuch colors
+            print filename, surface.get_at((0, 0)), surface.get_bitsize(), pygame.locals.SRCALPHA,pygame.locals.HWSURFACE, 'flag', surface.get_flags()
+            
             surface = surface.convert(parameters.COLORDEPTH)
             if alpha:
                 #first pixel sets transparent color
