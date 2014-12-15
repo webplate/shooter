@@ -64,9 +64,7 @@ def load_image(filename, theme, scene, alpha=True):
             #if no corresponding png generate from label
             surface = font_skin(scene, filename)
         else :
-            #strip of alpha channel for colorkey transparency and notmuch colors
-            print filename, surface.get_at((0, 0)), surface.get_bitsize(), pygame.locals.SRCALPHA,pygame.locals.HWSURFACE, 'flag', surface.get_flags()
-            
+            #strip of alpha channel for colorkey transparency and notmuch colors            
             surface = surface.convert(parameters.COLORDEPTH)
             if alpha:
                 #first pixel sets transparent color
