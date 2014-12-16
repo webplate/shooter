@@ -8,67 +8,76 @@ GAMESIZE = (320, 240) #~neo geo
 COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
 RESCALE = '2x' #set to 2x or mame or None
 
-DEFAULTPLAY = {'name':'default',
-'flip_rate': 70, #fps cap
-'hit_pulse': 50, #ms between two hits on ship
-'blast_hit_pulse': 20, #ms between two blast hits
-'game_speed': 1,
-'ratio_life_upgrade': 0.1
+DEFAULTPLAY = {
+    'name': 'default',
+    'flip_rate': 70, #fps cap
+    'hit_pulse': 50, #ms between two hits on ship
+    'blast_hit_pulse': 20, #ms between two blast hits
+    'game_speed': 1,
+    'ratio_life_upgrade': 0.1
 }
 
 #control settings
-KEYMAP1 = {p_l.K_f: 'fullscreen',
-p_l.K_m: 'mute',
-p_l.K_p: 'pause',
-p_l.K_RIGHT: 'right',
-p_l.K_LEFT: 'left',
-p_l.K_UP: 'up',
-p_l.K_DOWN: 'down',
-p_l.K_SPACE: 'shoot'
+KEYMAP1 = {
+    p_l.K_f: 'fullscreen',
+    p_l.K_m: 'mute',
+    p_l.K_p: 'pause',
+    p_l.K_RIGHT: 'right',
+    p_l.K_LEFT: 'left',
+    p_l.K_UP: 'up',
+    p_l.K_DOWN: 'down',
+    p_l.K_SPACE: 'shoot'
 }
 
-KEYMAP2 = {p_l.K_d: 'right',
-p_l.K_q: 'left',
-p_l.K_z: 'up',
-p_l.K_s: 'down',
-p_l.K_LSHIFT: 'shoot'
+KEYMAP2 = {
+    p_l.K_d: 'right',
+    p_l.K_q: 'left',
+    p_l.K_z: 'up',
+    p_l.K_s: 'down',
+    p_l.K_LSHIFT: 'shoot'
 }
 
 KEYMAPS = [KEYMAP1, KEYMAP2]
 
 
 #Theme packs
-DEFAULTTHEME = {'name': None,
-'bg_color': (50, 50, 50),
-'txt_color': (100, 100, 100),
-'font': "FIXED_BO.TTF",
-'monospace_font': "FIXED_BO.TTF",
-'small_font': "MiniPower.ttf",
-'txt_size': 8,
-'txt_inter': 8,
-'small_size': 16
+DEFAULTTHEME = {
+    'name': None,
+    'bg_color': (50, 50, 50),
+    'txt_color': (100, 100, 100),
+    'font': "FIXED_BO.TTF",
+    'monospace_font': "FIXED_BO.TTF",
+    'small_font': "MiniPower.ttf",
+    'txt_size': 8,
+    'txt_inter': 8,
+    'small_size': 16
 }
 
-DEFAULTSNDPACK = {'name': None,
-'music_volume': 0.3,
-'effect_volume': 0.2
+DEFAULTSNDPACK = {
+    'name': None,
+    'music_volume': 0.3,
+    'effect_volume': 0.2
 }
 
-MCPACK = {'name': 'mc'
+MCPACK = {
+    'name': 'mc'
 }
 
-DERVAL = {'name':'derval'
+DERVAL = {
+    'name': 'derval'
 }
 
-CLEBARD = {'name':'clebard',
-'txt_color': (255, 200, 150)
+CLEBARD = {
+    'name': 'clebard',
+    'txt_color': (255, 200, 150)
 }
 
-IRONBRAIN = {'name':'ironbrain',
-'bg_color': (100, 110, 100),
-'font': "AtariSmall.ttf",
-'txt_size': 16,
-'txt_inter': 16
+IRONBRAIN = {
+    'name': 'ironbrain',
+    'bg_color': (100, 110, 100),
+    'font': "AtariSmall.ttf",
+    'txt_size': 16,
+    'txt_inter': 16
 }
 
 #Various....
@@ -88,265 +97,301 @@ BGLAY = 1
 #Animations
 ########################
 
-TARGETBLINK = {'type':'Loop',
-'sprites': ['target_red', 'target'],
-'durations': [1000, 1000]
+TARGETBLINK = {
+    'type': 'Loop',
+    'sprites': ['target_red', 'target'],
+    'durations': [1000, 1000]
 }
 
-BULLETBLINK = {'type':'SyncLoop',
-'sprites': ['o', 'x'],
-'durations': [300, 200]
+BULLETBLINK = {
+    'type': 'SyncLoop',
+    'sprites': ['o', 'x'],
+    'durations': [300, 200]
 }
 
-HITBLINK = {'type':'Blank',
-'duration': 25     #ms for white flash when collision
+HITBLINK = {
+    'type': 'Blank',
+    'duration': 25     #ms for white flash when collision
 }
 
-SHIPORIENTATION = {'type':'Orient',
-'id_char':'-',
-'delay':100,
+SHIPORIENTATION = {
+    'type': 'Orient',
+    'id_char': '-',
+    'delay': 100
 }
 
-EXPLOSIONANIM = {'type':'Film',
-'sprites': ['OOO', 'OOOOO', 'OOOOOOO'],
-'pulse': 100,
-'to_nothing': True
+EXPLOSIONANIM = {
+    'type': 'Film',
+    'sprites': ['OOO', 'OOOOO', 'OOOOOOO'],
+    'pulse': 100,
+    'to_nothing': True
 }
 
-CHARGEANIM = {'type':'Film',
-'sprites': ['B', 'BB', 'BBB'],
+CHARGEANIM = {
+    'type': 'Film',
+    'sprites': ['B', 'BB', 'BBB']
 }
 
 #Special Effects
 #######################
 
-EXPLOSION = {'name':'OOO',
-'type':'Mobile',
-'animations':[EXPLOSIONANIM],
-'layer': OVERLAY
+EXPLOSION = {
+    'name': 'OOO',
+    'type': 'Mobile',
+    'animations': [EXPLOSIONANIM],
+    'layer': OVERLAY
 }
 
-SHADOW = {'type':'Follower',
-'layer':SHADOWLAY,
-'opacity': 100,
-'offset': (10, 15)
+SHADOW = {
+    'type': 'Follower',
+    'layer': SHADOWLAY,
+    'opacity': 100,
+    'offset': (10, 15)
 }
 SHADOWSCALE = 0.8
 
-CHARGE = {'type':'Follower',
-'animations':[CHARGEANIM],
-'layer':BELOWSHIPLAY
+CHARGE = {
+    'type': 'Follower',
+    'animations': [CHARGEANIM],
+    'layer': BELOWSHIPLAY
 }
 
 #projectiles
 ########################################
-SPREADER0_0 = {'name':'spreader_0',
-'type': 'Bullet',
-'trajectory': 'Up',
-'speed': 0.3,
-'cooldown': 100,
-'damage': 1,
-'layer': BELOWSHIPLAY,
+SPREADER0_0 = {
+    'name': 'spreader_0',
+    'type': 'Bullet',
+    'trajectory': 'Up',
+    'speed': 0.3,
+    'cooldown': 100,
+    'damage': 1,
+    'layer': BELOWSHIPLAY,
+    }
+
+SPREADER0_22_5 = {
+    'name': 'spreader_0_22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown']
 }
 
-SPREADER0_22_5 = {'name':'spreader_0_22.5',
-'type': 'Bullet',
-'trajectory': 'Line',
-'trajectory_params': {'angle': 22.5},
-'speed': SPREADER0_0['speed'],
-'cooldown': SPREADER0_0['cooldown'],
+SPREADER0_MINUS22_5 = {
+    'name': 'spreader_0_-22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown']
 }
 
-SPREADER0_MINUS22_5 = {'name':'spreader_0_-22.5',
-'type': 'Bullet',
-'trajectory': 'Line',
-'trajectory_params': {'angle': -22.5},
-'speed': SPREADER0_0['speed'],
-'cooldown': SPREADER0_0['cooldown'],
+SPREADER0_45 = {
+    'name': 'spreader_0_45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown']
 }
 
-SPREADER0_45 = {'name':'spreader_0_45',
-'type': 'Bullet',
-'trajectory': 'Line',
-'trajectory_params': {'angle': 45},
-'speed': SPREADER0_0['speed'],
-'cooldown': SPREADER0_0['cooldown'],
+SPREADER0_MINUS45 = {
+    'name': 'spreader_0_-45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown']
 }
 
-SPREADER0_MINUS45 = {'name':'spreader_0_-45',
-'type': 'Bullet',
-'trajectory': 'Line',
-'trajectory_params': {'angle': -45},
-'speed': SPREADER0_0['speed'],
-'cooldown': SPREADER0_0['cooldown'],
+BULLET = {
+    'name': 'o',
+    'type': 'Bullet',
+    'trajectory': 'Down',
+    'animations': [BULLETBLINK],
+    'damage': 1,
+    'layer': BELOWSHIPLAY,
+    'speed': 0.15,
+    'cooldown': SPREADER0_0['cooldown'] * 6,
+    'collision_type': 'pixel'
 }
 
-BULLET = {'name':'o',
-'type': 'Bullet',
-'trajectory': 'Down',
-'animations': [BULLETBLINK],
-'damage': 1,
-'layer': BELOWSHIPLAY,
-'speed': 0.15,
-'cooldown': SPREADER0_0['cooldown'] * 6,
-'collision_type': 'pixel'
+BLAST = {
+    'name': 'blast',
+    'type': 'Blast',
+    'trajectory': 'Up',
+    'layer': BELOWSHIPLAY,
+    'speed': 0.15,
+    'cooldown': SPREADER0_0['cooldown'] * 6,
+    'power': -1,
+    'collision_type': 'rectangle'
 }
 
-BLAST = {'name': 'blast',
-'type': 'Blast',
-'trajectory': 'Up',
-'layer': BELOWSHIPLAY,
-'speed': 0.15,
-'cooldown': SPREADER0_0['cooldown'] * 6,
-'power': -1,
-'collision_type': 'rectangle'
+MISSILE = {
+    'name': 'o',
+    'type': 'Missile',
+    'trajectory': 'Targeted',
+    'effect': {'add_life': -5},
+    'layer': BELOWSHIPLAY,
+    'speed': 0.3,
+    'cooldown': 300,
+    'collision_type': 'pixel'
 }
-
-MISSILE = {'name': 'o',
-           'type': 'Missile',
-           'trajectory': 'Targeted',
-           'effect': {'add_life': -5},
-           'layer': BELOWSHIPLAY,
-           'speed': 0.3,
-           'cooldown': 300,
-           'collision_type': 'pixel',
-           }
 
 #weapons
 #################################
-SPREADER0 = {'name': 'spreader0',
-'levels': [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
-[SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
+SPREADER0 = {
+    'name': 'spreader0',
+    'levels': [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
+               [SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
 }
 
-BLASTER = {'name': 'blaster', 'levels': [[BLAST]]
+BLASTER = {
+    'name': 'blaster',
+    'levels': [[BLAST]]
 }
 
-CANON = {'name': 'canon', 'levels': [[BULLET]]
+CANON = {
+    'name': 'canon',
+    'levels': [[BULLET]]
 }
 
-MISSILE = {'name':'missile',
-           'levels':[[MISSILE]]
+MISSILE = {'name': 'missile',
+           'levels': [[MISSILE]]
 }
 
 
 #entities
 #################################
-SHIP = {'name': 'ship',
-'type': 'Ship',
-'has_shadow': True,
-'ally': True,
-'speed': 0.2,
-'charge_rate': 0.001,
-'life': 10,
-'weapons': [SPREADER0, BLASTER]
+SHIP = {
+    'name': 'ship',
+    'type': 'Ship',
+    'has_shadow': True,
+    'ally': True,
+    'speed': 0.2,
+    'charge_rate': 0.001,
+    'life': 10,
+    'weapons': [SPREADER0, BLASTER]
 }
 
-STALKER = {'name':'ship',
-          'type':'Ship',
-          'has_shadow':True,
-          'ally':True,
-          'speed':0.1,
-          'charge_rate': 0.001,
-          'life':20,
-          'weapons':[MISSILE, BLASTER]
+STALKER = {
+    'name': 'ship',
+    'type': 'Ship',
+    'has_shadow': True,
+    'ally': True,
+    'speed': 0.1,
+    'charge_rate': 0.001,
+    'life': 20,
+    'weapons': [MISSILE, BLASTER]
 }
 
 
 INVINCIBLE = SHIP.copy()
 INVINCIBLE.update({'life': 10000})
 
-SAUCER = {'name':'target',
-'type': 'Fighter',
-'has_shadow': True,
-'speed': 0.05,
-'life': 5,
-'weapons': [CANON],
-'trajectory': 'Circular',
-'animations': [TARGETBLINK],
-'reward': 1,
-'bonus_rate': 0.2
+SAUCER = {
+    'name': 'target',
+    'type': 'Fighter',
+    'has_shadow': True,
+    'speed': 0.05,
+    'life': 5,
+    'weapons': [CANON],
+    'trajectory': 'Circular',
+    'animations': [TARGETBLINK],
+    'reward': 1,
+    'bonus_rate': 0.2
 }
 
-DESERT = {'name':'desert',
-'type': 'Landscape',
-'has_alpha':False,
-'speed': 0.04,
-'layer': BGLAY,
+DESERT = {
+    'name': 'desert',
+    'type': 'Landscape',
+    'has_alpha': False,
+    'speed': 0.04,
+    'layer': BGLAY,
+    }
+
+CLOUD = {
+    'name': 'clouds',
+    'type': 'Landscape',
+    'speed': 0.1,
+    'layer': CLOUDLAY,
+    'opacity': 200,
+    }
+
+DEFAULTBACKGROUND = {
+    'name': 'background',
+    'type': 'Landscape',
+    'has_alpha': False,
+    'layer': BGLAY,
+    'speed': 0.04,
+    }
+
+BONUSLIFE = {
+    'name': 'bonusL',
+    'type': 'Mobile',
+    'speed': 0.1,
+    'trajectory': 'OscillationDown',
+    'trajectory_params': {'amplitude': 30},
+    'collision_type': 'pixel_perfect',
+    'effect': {'add_life': 1}
 }
 
-CLOUD = {'name':'clouds',
-'type': 'Landscape',
-'speed': 0.1,
-'layer': CLOUDLAY,
-'opacity': 200,
-}
-
-DEFAULTBACKGROUND = {'name':'background',
-'type': 'Landscape',
-'has_alpha':False,
-'layer': BGLAY,
-'speed': 0.04,
-}
-
-BONUSLIFE = {'name': 'bonusL',
-'type': 'Mobile',
-'speed': 0.1,
-'trajectory': 'OscillationDown',
-'trajectory_params': {'amplitude': 30},
-'collision_type': 'pixel_perfect',
-'effect': {'add_life': 1}
-}
-
-BONUSWEAPON = {'name': 'bonusW',
-'type': 'Mobile',
-'speed': 0.1,
-'trajectory': 'OscillationDown',
-'trajectory_params': {'amplitude': 30},
-'collision_type': 'pixel_perfect',
-'effect': {'upgrade_weapon': 1},
-}
+BONUSWEAPON = {
+    'name': 'bonusW',
+    'type': 'Mobile',
+    'speed': 0.1,
+    'trajectory': 'OscillationDown',
+    'trajectory_params': {'amplitude': 30},
+    'collision_type': 'pixel_perfect',
+    'effect': {'upgrade_weapon': 1},
+    }
 
 #Player settings
 ######################################"
-PLAYER = {'name': 'player1',
-'ship': SHIP
+PLAYER = {
+    'name': 'player1',
+    'ship': SHIP
 }
 
-ALTPLAYER = {'name': 'Bloody Barron',
-'ship': INVINCIBLE
+ALTPLAYER = {
+    'name': 'Bloody Barron',
+    'ship': INVINCIBLE
 }
 
-DERVAL = {'name': 'derval',
-'ship': STALKER
+DERVAL = {
+    'name': 'derval',
+    'ship': STALKER
 }
 
 #The reference playable level used to complete others
 ##############################################
-DEFAULTLEVEL = {'name':'default',
-'theme': DEFAULTTHEME,
-'sound_pack': DEFAULTSNDPACK,
-'gameplay': DEFAULTPLAY,
-'background': DEFAULTBACKGROUND,
-'music': 'background',
-'nb_enemies': 6,
-'player': PLAYER
+DEFAULTLEVEL = {
+    'name': 'default',
+    'theme': DEFAULTTHEME,
+    'sound_pack': DEFAULTSNDPACK,
+    'gameplay': DEFAULTPLAY,
+    'background': DEFAULTBACKGROUND,
+    'music': 'background',
+    'nb_enemies': 6,
+    'player': PLAYER
 }
 
-STRESSLEVEL = {'name':'stress',
-'theme': CLEBARD,
-'background': DESERT,
-'sound_pack': DEFAULTSNDPACK,
-'nb_enemies': 200,
-'player': ALTPLAYER
+STRESSLEVEL = {
+    'name': 'stress',
+    'theme': CLEBARD,
+    'background': DESERT,
+    'sound_pack': DEFAULTSNDPACK,
+    'nb_enemies': 200,
+    'player': ALTPLAYER
 }
 
-CLEBLEVEL = {'name':'clebard',
-'theme': CLEBARD,
-'sound_pack': MCPACK,
-'background': DESERT,
-'nb_enemies': 6,
-'player': DERVAL
+CLEBLEVEL = {
+    'name': 'clebard',
+    'theme': CLEBARD,
+    'sound_pack': MCPACK,
+    'background': DESERT,
+    'nb_enemies': 6,
+    'player': DERVAL
 }
 
 LEVEL = CLEBLEVEL
