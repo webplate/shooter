@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import random, math
+import random, math, cmath
 
 def random_up(limits) :
     """a position in upper screen"""
@@ -199,3 +199,54 @@ class OscillationDown(Trajectory) :
         xrel, yrel = self.rel_pos(pos, interval, time)
         xabs, yabs = self.abs_pos(interval, time)
         return xrel+xabs, yrel+yabs
+
+class Targeted(Trajectory):
+    """ trajectory for guided missiles """
+    """ positions and speeds are complex numbers """
+    def __init__(self, scene, mobile, params={}):
+        Trajectory.__init__(self, scene, mobile, params)
+        self.target = None
+        self.speed = -1j * self.mobile.speed  # for now, missiles are fired vertically
+        self.max_rotate_speed = 0.004  # degree per millisecond
+
+    def next_pos(self, pos, interval, time):
+        pos = pos[0] + 1j * pos[1]  # make current position complex
+        if self.target == None:
+            min_target_count = 100000
+            for item in self.scene.content:
+                if not item.ally and hasattr(item, 'life'):
+                    # add actor to the targeting system
+                    if not hasattr(item, 'is_target'):
+                        item.is_target = 0
+                    # target the actor if not already targeted
+                    if item.is_target == 0:
+                        self.target = item
+                        break
+                    # otherwise, target the least targeted actor
+                    elif item.is_target < min_target_count:
+                        self.target = item
+                        min_target_count = item.is_target
+            if self.target != None:
+                self.target.is_target += 1
+
+
+        if self.target != None:
+            target_pos = self.target.center[0] + 1j * self.target.center[1]
+            rel_pos = target_pos - pos
+
+            # perfect targeting
+            # pos += rel_pos/abs(rel_pos) * self.mobile.speed * interval
+
+            # restrain max rotate angle
+            optimal_speed = rel_pos / abs(rel_pos) * abs(self.speed)
+            phi = cmath.phase(optimal_speed) - cmath.phase(self.speed)  # phase difference
+            if abs(phi) < self.max_rotate_speed / 360 * 2 * math.pi * interval:
+                rot_angle = phi
+            else:
+                rot_angle = phi / abs(phi) * self.max_rotate_speed * interval
+            self.speed *= cmath.rect(1, rot_angle)  # rotate speed vector
+
+        pos += self.speed * interval
+
+        return pos.real, pos.imag
+

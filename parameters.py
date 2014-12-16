@@ -202,6 +202,16 @@ BLAST = {'name' : 'blast',
 'collision_type' : 'rectangle'
 }
 
+MISSILE = {'name': 'o',
+           'type': 'Missile',
+           'trajectory': 'Targeted',
+           'effect' : {'add_life' : -5},
+           'layer': BELOWSHIPLAY,
+           'speed': 0.3,
+           'cooldown': 300,
+           'collision_type': 'pixel',
+           }
+
 #weapons
 #################################
 SPREADER0 = {'name' : 'spreader0',
@@ -215,6 +225,10 @@ BLASTER = {'name' : 'blaster', 'levels' : [[BLAST]]
 CANON = {'name' : 'canon', 'levels' : [[BULLET]]
 }
 
+MISSILE = {'name':'missile',
+           'levels':[[MISSILE]]
+}
+
 
 #entities
 #################################
@@ -226,6 +240,16 @@ SHIP = {'name' : 'ship',
 'charge_rate' : 0.001,
 'life' : 10,
 'weapons' : [SPREADER0, BLASTER]
+}
+
+STALKER = {'name':'ship',
+          'type':'Ship',
+          'has_shadow':True,
+          'ally':True,
+          'speed':0.1,
+          'charge_rate' : 0.001,
+          'life':20,
+          'weapons':[MISSILE, BLASTER]
 }
 
 
@@ -293,6 +317,10 @@ ALTPLAYER = {'name' : 'Bloody Barron',
 'ship' : INVINCIBLE
 }
 
+DERVAL = {'name' : 'derval',
+'ship' : STALKER
+}
+
 #The reference playable level used to complete others
 ##############################################
 DEFAULTLEVEL = {'name':'default',
@@ -317,7 +345,8 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 20
+'nb_enemies' : 6,
+'player': DERVAL
 }
 
 LEVEL = CLEBLEVEL

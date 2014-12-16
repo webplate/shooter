@@ -191,7 +191,7 @@ class Mobile(Visible) :
             self._pos = self.movement.next_pos(self._pos, interval, time)
         
     def center_on(self, target) :
-        """center self on amother mobile or on x, y coordinates"""
+        """center self on another mobile or on x, y coordinates"""
         if hasattr(target, 'pos') :
             x, y = target._pos
             w, h = target.surface.get_width()/2., target.surface.get_height()/2.
@@ -372,6 +372,9 @@ class Projectile(Mobile) :
         return self.add_life
 
 class Bullet(Projectile):
+    pass
+
+class Missile(Projectile):
     pass
 
 class Blast(Projectile) :
