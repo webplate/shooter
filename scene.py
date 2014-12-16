@@ -3,9 +3,9 @@
 import entity, tools, parameters
 import numpy
 
-class Player() :
+class Player():
     """class for player settings, controls, ships"""
-    def __init__(self, scene, index) :
+    def __init__(self, scene, index):
         self.scene = scene
         self.index = index
         self.settings = self.scene.level['player']
@@ -24,7 +24,7 @@ class Player() :
         self.life = 0
         self.max_life = 1
 
-    def load_ship(self, parameters) :
+    def load_ship(self, parameters):
         #instantiate according to specified type
         targetClass = getattr(entity, parameters['type'])
         ship = targetClass(self.scene, self, parameters)
@@ -38,67 +38,67 @@ class Player() :
         self.weapon_level = ship.weapon_level
         return ship
 
-    def command(self, interval, time) :
+    def command(self, interval, time):
         """command ship !!"""
-        if self.go_right :
+        if self.go_right:
             self.ship.fly('right', interval)
-        elif self.go_left :
+        elif self.go_left:
             self.ship.fly('left', interval)
-        if self.go_up :
+        if self.go_up:
             self.ship.fly('up', interval)
-        elif self.go_down :
+        elif self.go_down:
             self.ship.fly('down', interval)
         #is the ship charging ?
-        if self.keys['shoot'] :
+        if self.keys['shoot']:
             offset = self.ship.charge_rate * interval
-            if self.ship.charge + offset > 1 :
+            if self.ship.charge + offset > 1:
                 self.ship.charge = 1.
-            else :
+            else:
                 self.ship.charge += offset
-        else :
+        else:
             #charged shot
-            if self.ship.charge > 0.5 :
+            if self.ship.charge > 0.5:
                 self.ship.shoot(time, 'Blast', self.ship.charge)
             self.ship.charge = 0.
 
-    def update(self, interval, time) :
+    def update(self, interval, time):
         #where is going the ship ?
-        if self.keys['right'] and not self.go_right and not self.keys['left'] :
+        if self.keys['right'] and not self.go_right and not self.keys['left']:
             self.go_right = True
             self.stop = False
-        elif not self.keys['right'] and self.go_right :
+        elif not self.keys['right'] and self.go_right:
             self.go_right = False
-        if self.keys['left'] and not self.go_left and not self.keys['right'] :
+        if self.keys['left'] and not self.go_left and not self.keys['right']:
             self.go_left = True
             self.stop = False
-        elif not self.keys['left'] and self.go_left :
+        elif not self.keys['left'] and self.go_left:
             self.go_left = False
 
-        if self.keys['up'] and not self.go_up and not self.keys['down'] :
+        if self.keys['up'] and not self.go_up and not self.keys['down']:
             self.go_up = True
             self.stop = False
-        elif not self.keys['up'] and self.go_up :
+        elif not self.keys['up'] and self.go_up:
             self.go_up = False
-        if self.keys['down'] and not self.go_down and not self.keys['up'] :
+        if self.keys['down'] and not self.go_down and not self.keys['up']:
             self.go_down = True
             self.stop = False
-        elif not self.keys['down'] and self.go_down :
+        elif not self.keys['down'] and self.go_down:
             self.go_down = False
 
         if ( not self.keys['up'] and not self.keys['down'] 
-        and not self.keys['right'] and not self.keys['left'] ) :
+        and not self.keys['right'] and not self.keys['left'] ):
             self.stop = True
 
         #shoot to join game !!
-        if (self.ship == None and self.keys['shoot']) :
+        if (self.ship == None and self.keys['shoot']):
             self.alive = True
             self.ship = self.latent
             #summon in scene
             self.ship.add()
-        if self.alive :
+        if self.alive:
             self.command(interval, time)
         #update info from ship if it exists
-        if self.ship != None :
+        if self.ship != None:
             self.life = self.ship.life
             self.max_life = self.ship.max_life
             self.score = self.ship.score
@@ -107,7 +107,7 @@ class Container():
     """stock surfaces and projectiles maps to prevent duplicates
     stock sounds also
     """
-    def __init__(self, scene) :
+    def __init__(self, scene):
         self.scene = scene
         self.theme = self.scene.theme['name']
         self.surfaces = {}
@@ -123,36 +123,36 @@ class Container():
         '''generate surface and alternative maps
         and reference them'''
         surface = tools.load_image(name, self.theme, self.scene, alpha)
-        self.surfaces.update({name : surface})
+        self.surfaces.update({name: surface})
         hit = tools.make_white(surface)
         shadow = tools.make_shadow(surface, parameters.SHADOWSCALE)
         array = tools.make_array(surface)
-        self.hit.update({name : hit})
-        self.shadow.update({name : shadow})
-        self.array.update({name : array})
+        self.hit.update({name: hit})
+        self.shadow.update({name: shadow})
+        self.array.update({name: array})
     
     def create_surf(self, name, alpha=True):
         '''generate only pygame surface '''
         surface = tools.load_image(name, self.theme, self.scene, alpha)
-        self.surfaces.update({name : surface})
+        self.surfaces.update({name: surface})
 
-    def surf(self, name) :
+    def surf(self, name):
         """avoid duplicate loading"""
         #None is the empty surface
-        if name == None :
+        if name == None:
             name = ''
-        if name not in self.surfaces :
+        if name not in self.surfaces:
             #generate also variants of image
             self.create_all(name)
         surface = self.surfaces[name]
         return surface
     
-    def surf_alt(self, name, alpha=True) :
+    def surf_alt(self, name, alpha=True):
         """return alt maps too"""
         #None is the empty surface
-        if name == None :
+        if name == None:
             name = ''
-        if name not in self.surfaces :
+        if name not in self.surfaces:
             self.create_all(name, alpha)
         surface = self.surfaces[name]
         array = self.array[name]
@@ -160,77 +160,77 @@ class Container():
         shadow = self.shadow[name]
         return surface, array, hit, shadow
         
-    def surf_noalt(self, name, alpha=True) :
+    def surf_noalt(self, name, alpha=True):
         """generate and return only pygame surface"""
         #None is the empty surface
-        if name == None :
+        if name == None:
             name = ''
-        if name not in self.surfaces :
+        if name not in self.surfaces:
             self.create_surf(name, alpha)
         surface = self.surfaces[name]
         return surface
 
-    def snd(self, name) :
+    def snd(self, name):
         """load sounds"""
-        if name in self.snds :
+        if name in self.snds:
             sound = self.snds[name]
-        else :
+        else:
             sound = tools.load_sound(name, self.scene)
-            self.snds.update({name : sound})
+            self.snds.update({name: sound})
         return sound
 
-    def play(self, sound, xpos) :
+    def play(self, sound, xpos):
         p = (self.scene.limits[0] - abs(xpos)) / float(self.scene.limits[0])
         #adjust volume
         p = p * self.scene.snd_pack['effect_volume']
-        if not self.scene.mute :
+        if not self.scene.mute:
             sound = self.snd(sound)
-            if sound != None :
+            if sound != None:
                 channel = sound.play()
                 channel.set_volume(p, 1-p)
 
     def load_music(self, track=None, loops=-1):
-        if not self.scene.game.no_sound :
-            if track != None :
+        if not self.scene.game.no_sound:
+            if track != None:
                 music = tools.load_stream(track, self.scene)
                 #check if file is nicely loaded
-                if music :
+                if music:
                     self.scene.game.music.play(loops)
                     self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
 
-    def music(self) :
+    def music(self):
         """control game mixer for streaming large music files"""
         if (not self.scene.mute and not self.scene.paused
-        and not self.scene.game.no_sound) :
+        and not self.scene.game.no_sound):
             self.scene.game.music.unpause()
-        else :
+        else:
             self.scene.game.music.pause()
 
 class Ordered():
     """stock objects of scene in layered priority
     """
-    def __init__(self) :
+    def __init__(self):
         self.content = [[]]
 
-    def __iter__(self) :
+    def __iter__(self):
         """a generator to emit content in right order"""
-        for group in self.content :
-            for item in group :
+        for group in self.content:
+            for item in group:
                 yield item
 
-    def append(self, item, priority=0) :
+    def append(self, item, priority=0):
         """update size of container dynamically"""
-        while len(self.content) <= priority :
+        while len(self.content) <= priority:
             self.content.append([])
         self.content[priority].append(item)
 
-    def remove(self, item) :
+    def remove(self, item):
         """remove item from content"""
-        for group in self.content :
-            if item in group :
+        for group in self.content:
+            if item in group:
                 group.remove(item)
 
-    def prioritize(self, item, priority) :
+    def prioritize(self, item, priority):
         """reorder an item in a specific layer of priority
         or add a new item"""
         #eliminate prior version
@@ -238,8 +238,8 @@ class Ordered():
         #insert with new priority
         self.append(item, priority)
 
-class Scene() :
-    def __init__(self, game) :
+class Scene():
+    def __init__(self, game):
         self.game = game
         #delay between scene and game (scene can be paused)
         self.paused = False
@@ -268,7 +268,7 @@ class Scene() :
         entity.Landscape(self, parameters.CLOUD).add()
         self.update()
 
-    def load_interface(self) :
+    def load_interface(self):
         #interface
         self.interface = [
         entity.Life(self, 0, ['bottom', 'left']),
@@ -283,42 +283,42 @@ class Scene() :
         ]
         
         #add in scene
-        for item in self.interface :
+        for item in self.interface:
             item.add()
 
-    def collide(self, proj_map, target_map, time) :
+    def collide(self, proj_map, target_map, time):
         """repercute collisions projectiles and alpha maps of sprites
         dealing with projectiles as entities (entity.Mobile)"""
-        for xP, yP, xPe, yPe, itemP in proj_map :
+        for xP, yP, xPe, yPe, itemP in proj_map:
             #one pixel projectile
-            if itemP.collision_type == 'pixel' :
+            if itemP.collision_type == 'pixel':
                 #focus on center_pixel
                 xP, yP = itemP.center
-                for xT, yT, xTe, yTe, itemT in target_map :
+                for xT, yT, xTe, yTe, itemT in target_map:
                     #is in range ?
-                    if xP < xTe and xP > xT and yP < yTe and yP > yT :
+                    if xP < xTe and xP > xT and yP < yTe and yP > yT:
                         #per pixel collision
-                        if self.cont.array[itemT.name][xP - xT, yP - yT] :
+                        if self.cont.array[itemT.name][xP - xT, yP - yT]:
                             #hurt or not, entity
                             itemT.collided(itemP, time)
                             #remove or not, colliding projectile
                             itemP.collided(itemT, time)
             #rectangular projectile
-            elif itemP.collision_type == 'rectangle' :
-                for xT, yT, xTe, yTe, itemT in target_map :
-                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+            elif itemP.collision_type == 'rectangle':
+                for xT, yT, xTe, yTe, itemT in target_map:
+                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
                         #(minx,miny), (maxx, maxy) are the intersection
                         #coordinate between target map and proj map
                         #coordinate are target map relative
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
-                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy] :
+                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy]:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
             #pixel perfect projectile
-            else :
-                for xT, yT, xTe, yTe, itemT in target_map :
-                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT :
+            else:
+                for xT, yT, xTe, yTe, itemT in target_map:
+                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
@@ -326,19 +326,19 @@ class Scene() :
                         touch = numpy.logical_and(
                         self.cont.array[itemT.name][minx:maxx, miny:maxy],
                         self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
-                        if True in touch :
+                        if True in touch:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
 
-    def update_paused(self, interval=0, time=0) :
+    def update_paused(self, interval=0, time=0):
         #stop background music
         self.cont.music()
         #check for resuming
-        if not self.paused :
+        if not self.paused:
             self.delay += time - self.pause_time
             self.update = self.orig_update
 
-    def pause(self, time) :
+    def pause(self, time):
         self.pause_time = time
         self.paused = True
         #if paused bypass classic update
@@ -347,12 +347,12 @@ class Scene() :
     
     def add_sprite(self, x, y, item):
         """update sprite container only for visible objects"""
-        if item.visible :
+        if item.visible:
             identifier = ((x, y), item.surface)
             self.lst_sprites.append(identifier, item.layer)
         
 
-    def update(self, interval = 0, time = 0) :
+    def update(self, interval = 0, time = 0):
         self.now = time - self.delay
         #collision maps
         ship_map = []
@@ -366,42 +366,42 @@ class Scene() :
         self.nb_fighters = 0
         #explore scene
         #update individuals
-        for item in self.content :
+        for item in self.content:
             #shoot and stuff
             item.update(interval, self.now)
         #create collision maps and sprite composition
-        for item in self.content :
-            if isinstance(item, entity.Mobile) :
+        for item in self.content:
+            if isinstance(item, entity.Mobile):
                 x, y = item.pos
                 #prepare sprite list for drawing
                 self.add_sprite(x, y, item)
-                if isinstance(item, entity.Fragile) :
+                if isinstance(item, entity.Fragile):
                     #populate collision maps
                     #precompute for faster detection
                     width, height = self.cont.array[item.name].shape
                     identifier = (x, y, x+width, y+height, item)
-                    if item.ally :
+                    if item.ally:
                         ship_map.append(identifier)
-                    else :
-                        if isinstance(item, entity.Fighter) :
+                    else:
+                        if isinstance(item, entity.Fighter):
                             self.nb_fighters += 1
                         target_map.append(identifier)
-                elif isinstance(item, entity.Catchable) :
+                elif isinstance(item, entity.Catchable):
                     identifier = (x, y, x+item.width, y+item.height, item)
                     bonus_map.append(identifier)
-                elif isinstance(item, entity.Projectile) :
+                elif isinstance(item, entity.Projectile):
                         identifier = (x, y, x+item.width, y+item.height, item)
-                        if item.ally :
+                        if item.ally:
                             ship_proj_map.append(identifier)
-                            if isinstance(item, entity.Blast) :
+                            if isinstance(item, entity.Blast):
                                 ship_blast_map.append(identifier)
-                        else :
+                        else:
                             target_proj_map.append(identifier)
-            elif isinstance(item, entity.Landscape) :
+            elif isinstance(item, entity.Landscape):
                 #prepare sprite list for drawing
                 self.add_sprite(0, 0, item)
         #update player status
-        for player in self.players :
+        for player in self.players:
             player.update(interval, self.now)
         #detect collisions and update accordingly
         #catch bonuses, hurray !! \o/
@@ -415,7 +415,7 @@ class Scene() :
         #enemies can hit us
         self.collide(target_proj_map, ship_map, self.now)
         #evolution of scenery
-        if self.nb_fighters < self.level['nb_enemies'] :
+        if self.nb_fighters < self.level['nb_enemies']:
             fighter = entity.Fighter(self, parameters.SAUCER)
             #add in scene
             fighter.add()
