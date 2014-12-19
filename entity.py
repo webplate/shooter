@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import random
 import movement, tools, parameters
@@ -17,18 +17,18 @@ class Actor(object):
     """
     def __init__(self, scene, params={}):
         self.scene = scene
-        #set attributes from params
+        # set attributes from params
         self.set_param(params)
-        #must have a name
+        # must have a name
         if not hasattr(self, 'name'):
             self.name = ' '
-        #default is not ally
+        # default is not ally
         if not hasattr(self, 'ally'):
             self.ally = False
-        #layer for drawing on screen
+        # layer for drawing on screen
         if not hasattr(self, 'layer'):
             self.layer = parameters.ACTORLAY
-        #priority of update
+        # priority of update
         self.priority = 0
 
     def set_param(self, params):
@@ -77,7 +77,7 @@ class Visible(Actor):
     def __init__(self, scene, params={}):
         Actor.__init__(self, scene, params)
         self.visible = True
-        #load image of appropriate type (with collisions if has alpha)
+        # load image of appropriate type (with collisions if has alpha)
         if not hasattr(self, 'has_alpha'):
             self.has_alpha = True
         if not hasattr(self, 'opacity'):
@@ -85,14 +85,14 @@ class Visible(Actor):
         if not hasattr(self, 'can_collide'):
             self.can_collide = True
         self.init_surface()
-        #a list of childrens (following scene state changes)
+        # a list of childrens (following scene state changes)
         self.children = []
-        #animation controler ?
+        # animation controler ?
         if not hasattr(self, 'animations'):
             self.animations = []
         else:
             for ani in self.animations:
-                #a animation object to control surface
+                # a animation object to control surface
                 targClass = globals()[ani['type']]
                 self.children.append(targClass(self.scene, self, ani))
         if  not hasattr(self,'has_shadow'):
@@ -111,7 +111,7 @@ class Visible(Actor):
         if isinstance(new_surface, str) or new_surface == None:
             if self.can_collide:
                 maps = self.scene.cont.surf_alt(new_surface, self.has_alpha)
-                #with alpha channel and collision array
+                # with alpha channel and collision array
                 self._surface = maps[0]
                 self.array = maps[1]
                 self.hit = maps[2]
@@ -119,12 +119,12 @@ class Visible(Actor):
             else:
                 surf = self.scene.cont.surf_noalt(new_surface, self.has_alpha)
                 self._surface = surf
-            #remember alpha colorkey
+            # remember alpha colorkey
             self.alpha_key = self._surface.get_colorkey()
         else:
-            #modify actual surface
+            # modify actual surface
             self._surface = new_surface
-        #remember opacity
+        # remember opacity
         self._surface.set_alpha(self.opacity)
     surface = property(_get_surface, _set_surface)
     
@@ -148,18 +148,18 @@ class Visible(Actor):
         self.visible = True
 
 class Mobile(Visible):
-    """a mobile sprite
-    """
+    """a mobile sprite"""
     def __init__(self, scene, params={}):
         self._pos = (0, 0)
         Visible.__init__(self, scene, params)
         if not hasattr(self, 'speed'):
             self.speed = 0
-        #the proportion of outside screen where mobile can subsist
+        # the proportion of outside screen where mobile can subsist
         if not hasattr(self, 'margin_proportion'):
             self.margin_proportion = 1
         if not hasattr(self, 'trajectory'):
             self.trajectory = None
+            self.movement = None
         else:
             # a trajectory object to control position
             trajClass = getattr(movement, self.trajectory)
@@ -172,7 +172,15 @@ class Mobile(Visible):
         
         self.base_surface = self.surface
         self.update_frame()
-        
+
+    def remove(self):
+        """remove from scene"""
+        Visible.remove(self)
+        try:
+            del self.movement
+        except AttributeError:
+            pass
+
     def _get_pos(self):
         """world wants exact position"""
         position = int(self._pos[0]), int(self._pos[1])
@@ -204,7 +212,7 @@ class Mobile(Visible):
             self._pos = x - sw, y - sh 
 
     def in_boundaries(self, pos, margin_proportion=0):
-        #bad if outside screen and too far
+        # bad if outside screen and too far
         left_limit = - self.scene.limits[0] * margin_proportion
         right_limit = self.scene.limits[0] + self.scene.limits[0] * margin_proportion
         up_limit = - self.scene.limits[1] * margin_proportion
@@ -221,7 +229,7 @@ class Mobile(Visible):
     def update(self, interval, time):
         self.update_frame()
         self.move(interval, time)
-        #delete if outside screen
+        # delete if outside screen
         if not self.in_boundaries(self.pos, self.margin_proportion):
             self.remove()
             del self
@@ -247,7 +255,7 @@ class Film(Anim):
 
     def update(self, interval, time):
         still_up = False
-        #accordin to time select right sprite or remove
+        # accordin to time select right sprite or remove
         for i in range(self.nb_frames):
             if (time >= self.init_time + i * self.pulse
             and time < self.init_time + (i+1) * self.pulse):
@@ -267,12 +275,12 @@ class Loop(Film):
         self.cumul = 0
 
     def update(self, interval, time):
-        #select next sprite ?
+        # select next sprite ?
         if self.cumul + interval > self.durations[self.state]:
             self.cumul = 0
-            #change appearance of animated parent
+            # change appearance of animated parent
             self.parent.surface = self.sprites[self.state]
-            #if reaching last frame, restart
+            # if reaching last frame, restart
             if self.state + 1 > self.nb_frames-1:
                 self.state = 0
             else:
@@ -292,10 +300,10 @@ class SyncLoop(Film):
         self.cumul_dur = self.cumul_dur[:-1]
 
     def update(self, interval, time):
-        #sync durations of anim and time
+        # sync durations of anim and time
         repeat = int(time / self.total_dur)
         sync_time = time - repeat * self.total_dur
-        #select right sprite
+        # select right sprite
         for i in range(self.nb_frames-1, -1, -1):
             if sync_time > self.cumul_dur[i]:
                 self.parent.surface = self.sprites[i]
@@ -303,7 +311,7 @@ class SyncLoop(Film):
 
 class Blank(Anim):
     def update(self, interval, time):
-        #accordin to time select blank sprite
+        # accordin to time select blank sprite
         if time <= self.init_time + self.duration:
             self.parent.surface = self.parent.hit
         else:
@@ -317,16 +325,16 @@ class Orient(Anim):
         self.parent = parent
         self.player = self.parent.player
         self.base_name = self.parent.name
-        #preload oriented sprites
+        # preload oriented sprites
         self.scene.cont.surf(self.id_char + self.base_name)
         self.scene.cont.surf(self.base_name + self.id_char)
-        #ref for animation of ship movements
+        # ref for animation of ship movements
         self.last_bend = 0
         self.righto = False
         self.lefto = False
         
     def update(self, interval, time):
-        #detect change of direction
+        # detect change of direction
         if self.player.go_right and not self.righto:
             self.righto = True
             self.lefto = False
@@ -335,7 +343,7 @@ class Orient(Anim):
             self.lefto = True
             self.righto = False
             self.last_bend = time
-        #show orientation of ship
+        # show orientation of ship
         if self.player.go_right and time > self.last_bend + self.delay:
             self.parent.surface = self.id_char + self.base_name
         elif self.player.go_left  and time > self.last_bend + self.delay:
@@ -348,16 +356,16 @@ class Projectile(Mobile):
     damage
     """
     def __init__(self, scene, parent, params={}):
-        #projectiles shouldn't exist outside screen
+        # projectiles shouldn't exist outside screen
         self.margin_proportion = 0
-        Mobile.__init__(self, scene, params)
         self.parent = parent
+        Mobile.__init__(self, scene, params)
         self.ally = parent.ally
         self.center_offset = self.width/2, self.height/2
-        #how a projectile can be collided
+        # how a projectile can be collided
         if not hasattr(self, 'collision_type'):
             self.collision_type = 'pixel_perfect'
-        #how does it affect life
+        # how does it affect life
         if not hasattr(self, 'effect'):
             self.add_life = -1
         else:
@@ -376,7 +384,47 @@ class Bullet(Projectile):
     pass
 
 class Missile(Projectile):
-    pass
+    def __init__(self, scene, parent, params={}):
+        # define missile target
+        self.target = None
+        min_target_count = 10000000
+        for item in scene.content:
+            if not item.ally and hasattr(item, 'life'):
+                # add actor to the targeting system
+                if not hasattr(item, 'is_target'):
+                    item.is_target = 0
+                # target the actor if not already targeted
+                if item.is_target == 0:
+                    self.target = item
+                    break
+                # otherwise, target the least targeted actor
+                elif item.is_target < min_target_count:
+                    self.target = item
+                    min_target_count = item.is_target
+        if self.target is not None:
+            self.target.is_target += 1
+
+        # initialize projectile
+        Projectile.__init__(self, scene, parent, params)
+
+        # add crosshair
+        if hasattr(self.target, 'life'):
+            self.crosshair = Follower(scene, self.target, {'name': 'crosshair'})
+            self.crosshair.add()
+
+    def __del__(self):
+        try:
+            self.crosshair.remove()
+        except AttributeError:
+            pass
+
+    def update(self, interval, time):
+        Projectile.update(self, interval, time)
+        if (self.target is None) or self.target.life <= 0:
+            try:
+                self.crosshair.remove()
+            except AttributeError:
+                pass
 
 class Blast(Projectile):
     """charged shots
@@ -390,7 +438,7 @@ class Blast(Projectile):
         pass
 
     def get_damage(self):
-        #get power of charged shot
+        # get power of charged shot
         amount = self.charge * self.power
         return amount
 
@@ -408,13 +456,13 @@ class Landscape(Visible):
         self.offset = self.height
     
     def update(self, interval, time):
-        #move down the displayed area of landscape
+        # move down the displayed area of landscape
         self.offset -= self.speed * interval
         
         w, h = self.width, parameters.GAMESIZE[1]
-        #do not loop if smaller than screen background
+        # do not loop if smaller than screen background
         if self.height >= h:
-            #loop background
+            # loop background
             if self.offset < 0:
                 self.offset = self.height
             if self.offset + h > self.height:
@@ -451,23 +499,23 @@ class Catchable(Mobile):
         Mobile.__init__(self, scene, params)
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
-        #how does it affect life
+        # how does it affect life
         if 'add_life' not in self.effect:
             self.add_life = 0
         else:
             self.add_life = self.effect['add_life']
-        #how does it affect weapons
+        # how does it affect weapons
         if 'upgrade_weapon' not in self.effect:
             self.weapon_bonus = 0
         else:
             self.weapon_bonus = self.effect['upgrade_weapon']
-    #what happens when it collides with another object
+    # what happens when it collides with another object
     def collided(self, projectile, time):
         self.remove()
-    #return quantity of heal (or damage)
+    # return quantity of heal (or damage)
     def get_damage(self):
         return self.add_life
-    #return upgrade power
+    # return upgrade power
     def upgrade_weapon(self):
         return self.weapon_bonus
 
@@ -481,20 +529,20 @@ class Fragile(Mobile):
         self.killer = None
         self.last_hit = 0
         self.time_of_death = None
-        #cannot leave bonus when death by default
+        # cannot leave bonus when death by default
         if not hasattr(self,'bonus_rate'):
             self.bonus_rate = 0
-        #reward for killing
+        # reward for killing
         if not hasattr(self,'reward'):
             self.reward = 0
-        #how a fragile can be collided
+        # how a fragile can be collided
         if not hasattr(self, 'collision_type'):
             self.collision_type = 'pixel_perfect'
-        #fragile has hit_anim
+        # fragile has hit_anim
         self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
-        #fragile can explode
+        # fragile can explode
         self.end = Mobile(self.scene, parameters.EXPLOSION)
-        #fragiles can give bonuses depending on their bonus rate
+        # fragiles can give bonuses depending on their bonus rate
         if random.random() < self.bonus_rate:
             self.has_bonus = True
             if random.random() < parameters.DEFAULTPLAY['ratio_life_upgrade']:
@@ -503,53 +551,53 @@ class Fragile(Mobile):
                 self.bonus = Catchable(self.scene, parameters.BONUSLIFE)
         else:
             self.has_bonus = False
-        #prepare score show if significant
+        # prepare score show if significant
         if self.reward > 0 and not self.ally:
             self.rew = Desc(self.scene, self, str(self.reward))
 
     def collided(self, projectile, time):
-        #persistent projectiles have damage pulse
+        # persistent projectiles have damage pulse
         if time - self.last_hit > self.scene.gameplay['hit_pulse']:
             self.last_hit = time
-            #heal or take damage
+            # heal or take damage
             self.life += projectile.get_damage()
             if self.life <= 0:
                 self.time_of_death = time
-                #recognize killer in the distance
+                # recognize killer in the distance
                 if hasattr(projectile, 'parent'): 
                     self.killer = projectile.parent
-                #close combat killing
+                # close combat killing
                 else:
                     self.killer = projectile
     def get_damage(self):
         return parameters.COLLISIONDAMAGE
     
     def die(self):
-        #remove of scene
+        # remove of scene
         self.remove()
-        #reward shooter
+        # reward shooter
         self.killer.score += self.reward
         
         if self.has_bonus:
-            #the bonus will appear where the non ally died
+            # the bonus will appear where the non ally died
             self.bonus.center_on(self)
-            #add a bonus in scene
+            # add a bonus in scene
             self.bonus.add()
         if self.reward > 0:
-            #show reward
+            # show reward
             self.rew.add()
-        #explode
+        # explode
         self.end.center_on(self)
         self.end.add()
-        #play explosion sound at correct stereo position
+        # play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
         
     def update(self, interval, time):
         Mobile.update(self, interval, time)
-        #change color for some time if hit recently
+        # change color for some time if hit recently
         if time < self.last_hit + self.hit_anim.duration:
             self.hit_anim.add()
-            #~ self.surface = self.scene.cont.hit[self.name]
+            # ~ self.surface = self.scene.cont.hit[self.name]
         if self.life <= 0:
             self.die()
 
@@ -559,20 +607,20 @@ class Fighter(Fragile):
         Fragile.__init__(self, scene, params)
         self.last_shoot = 0
         self.arms = {}
-        #instantiate weaponz
+        # instantiate weaponz
         if 'weapons' in params:
             for weapon in params['weapons']:
                 self.new_weapon(weapon)
         self.score = 0
-        #ref to upgrade_weapon
+        # ref to upgrade_weapon
         self.weapon_level = 0
 
     def new_weapon(self, params):
-        #instanciate weapon
+        # instanciate weapon
         w = Weapon(self.scene, self, params)
-        #set map allied status
+        # set map allied status
         w.ally = self.ally
-        #keep trace of weapon
+        # keep trace of weapon
         self.arms.update({params['name']: w})
 
     def shoot(self, time, x, y):
@@ -581,7 +629,7 @@ class Fighter(Fragile):
 
     def update(self, interval, time):
         Fragile.update(self, interval, time)
-        #autofire
+        # autofire
         x, y = (self.center[0], self.center[1])
         self.shoot(time, x, y)
         
@@ -591,47 +639,47 @@ class ChargeFighter(Fighter):
     def __init__(self, scene, params):
         Fighter.__init__(self, scene, params)
         self.charge = 0.
-        #can have a charge display following fighter
-        #~ self.aura = Charge(self.scene, self)
+        # can have a charge display following fighter
+        # ~ self.aura = Charge(self.scene, self)
 
     def add(self):
         Fighter.add(self)
-        #~ self.aura.add()
+        # ~ self.aura.add()
 
-    #~ def shoot(self, time, weapon, power=None):
-        #~ w = self.arms[weapon]
-        #~ #most projectiles aren't charged
-        #~ if weapon == 'Bullet':
-            #~ #limit fire rate and stop when charging
-            #~ if (time > self.last_shoot + w.cooldown
-            #~ and self.charge == 0 ):
-                #~ x, y = (self.center[0], self.center[1])
-                #~ w.shoot(x, y)
-                #~ self.scene.cont.play('shoot', self.pos[0])
-                #~ self.last_shoot = time
-        #~ #blast shot
-        #~ elif weapon == 'Blast':
-            #~ x, y = (self.center[0], self.center[1])
-            #~ w.shoot(x, y, power)
+    # ~ def shoot(self, time, weapon, power=None):
+        # ~ w = self.arms[weapon]
+        # ~ # most projectiles aren't charged
+        # ~ if weapon == 'Bullet':
+            # ~ # limit fire rate and stop when charging
+            # ~ if (time > self.last_shoot + w.cooldown
+            # ~ and self.charge == 0 ):
+                # ~ x, y = (self.center[0], self.center[1])
+                # ~ w.shoot(x, y)
+                # ~ self.scene.cont.play('shoot', self.pos[0])
+                # ~ self.last_shoot = time
+        # ~ # blast shot
+        # ~ elif weapon == 'Blast':
+            # ~ x, y = (self.center[0], self.center[1])
+            # ~ w.shoot(x, y, power)
 
     def die(self):
         Fighter.die(self)
-        #remove also charge display
-        #~ self.aura.remove()
+        # remove also charge display
+        # ~ self.aura.remove()
 
 class Ship(ChargeFighter):
     """A ship controlled by player and shooting"""
     def __init__(self, scene, player, params):
         ChargeFighter.__init__(self, scene, params)
         self.player = player
-        #keep ref of maximum life
+        # keep ref of maximum life
         self.max_life = self.life
-        #ship has orientation_anim
+        # ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
         
     def fly(self, direction, interval):
-        #should consider time passed
+        # should consider time passed
         offset = self.speed * interval
         if direction == 'right':
             new_pos = self._pos[0]+offset, self._pos[1]
@@ -642,12 +690,12 @@ class Ship(ChargeFighter):
         elif direction == 'down':
             new_pos = self._pos[0], self._pos[1]+offset
         new_center = tools.get_center(new_pos, self.width, self.height)
-        #do not step outside screen
+        # do not step outside screen
         if (new_center[0] <= self.scene.limits[0] and new_center[0] >= 0
         and new_center[1] <= self.scene.limits[1] and new_center[1] >= 0):
             self._pos = new_pos
         else:
-            #stick on border
+            # stick on border
             new_center = list(new_center)
             if new_center[0] > self.scene.limits[0]:
                 new_center[0] = self.scene.limits[0]
@@ -662,13 +710,13 @@ class Ship(ChargeFighter):
 
     def collided(self, projectile, time):
         ChargeFighter.collided(self, projectile, time)
-        #can upgrade weapon when catching bonuses
+        # can upgrade weapon when catching bonuses
         if isinstance(projectile, Catchable):
             self.weapon_level += projectile.upgrade_weapon()
 
     def die(self):
         ChargeFighter.die(self)
-        #player is dead
+        # player is dead
         self.player.alive = False
 
 class Follower(Mobile):
@@ -679,7 +727,7 @@ class Follower(Mobile):
             self.offset = 0, 0
         self.parent = parent
         self.center_on(self.parent)
-        #should be updated after parents
+        # should be updated after parents
         self.priority = 1
 
     def move(self, interval, time):
@@ -699,13 +747,13 @@ class Shadow(Follower):
 class Charge(Follower):
     """showing the charge of ship"""
     def __init__(self, scene, parent, offset=(0, 0)):
-        #offset to show over ship
+        # offset to show over ship
         Follower.__init__(self, scene, parent, offset)
         self.levels = [self.scene.cont.surf(' '),
         self.scene.cont.surf('B'),
         self.scene.cont.surf('BB'),
         self.scene.cont.surf('BBB')]
-        #draw over background but under ship
+        # draw over background but under ship
         self.layer = parameters.BELOWSHIPLAY
 
     def update(self, interval, time):
@@ -717,7 +765,7 @@ class Charge(Follower):
             self.surface = self.levels[1]
         elif self.parent.charge == 0:
             self.surface = self.levels[0]
-        #center on parent at the end of update
+        # center on parent at the end of update
         Follower.update(self, interval, time)
 
 class Desc(Mobile):
@@ -737,7 +785,7 @@ class Desc(Mobile):
 class Widget(Mobile):
     def __init__(self, scene, path, params, offset=(0, 0)):
         Mobile.__init__(self, scene)
-        #the widget shows content of object defined by path
+        # the widget shows content of object defined by path
         self.path = path
         self.params = params
         self.offset = offset
@@ -746,13 +794,13 @@ class Widget(Mobile):
         self.shape = self.surface.get_width(), self.surface.get_height()
         self.pos = (0, 0)
         self.align()
-        #support delayed updates
+        # support delayed updates
         if 'low_flip' in self.params:
             self.low = True
             self.last_flip = 0
         else:
             self.low = False
-        #draw interface over rest of scene
+        # draw interface over rest of scene
         self.layer = parameters.INTERFACELAY
 
     def new_value(self):
@@ -760,7 +808,7 @@ class Widget(Mobile):
         return getattr_deep(self.scene, self.path)
         
     def align(self):
-        #recompute coordinates
+        # recompute coordinates
         if 'center' in self.params:
             self.pos = (self.scene.limits[0]/2-self.shape[0]/2+self.offset[0],
             self.scene.limits[1]/2-self.shape[1]/2+self.offset[1])
@@ -781,7 +829,7 @@ class Widget(Mobile):
         return surface
         
     def update(self, interval, time):
-        #recompute surface
+        # recompute surface
         new_value = self.new_value()
         if not self.low:
             if self.value != new_value:
@@ -805,7 +853,7 @@ class Score(Widget):
     """shows score of player (id given by path)"""
     def new_value(self):
         player = self.scene.players[self.path]
-        #complete with leading zeros
+        # complete with leading zeros
         score = int(player.score)
         return score
 
@@ -822,12 +870,12 @@ class Life(Widget):
         return float(player.life) / player.max_life
 
     def skin(self, value):
-        #load back sprite of life bar
+        # load back sprite of life bar
         back = self.scene.cont.surf('_____')
         front = self.scene.cont.surf('+++++')
         w = front.get_width()
         h = front.get_height()
         size = int(w * value)
-        #blit only a portion of life bar
+        # blit only a portion of life bar
         surf = tools.blit_clip(front, back, (0, 0, size, h))
         return surf

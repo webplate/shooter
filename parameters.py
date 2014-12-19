@@ -233,8 +233,8 @@ MISSILE = {
     'trajectory': 'Targeted',
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
-    'speed': 0.3,
-    'cooldown': 300,
+    'speed': 0.4,
+    'cooldown': 200,
     'collision_type': 'pixel'
 }
 
@@ -390,7 +390,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 6,
+    'nb_enemies': 10,
     'player': DERVAL
 }
 
