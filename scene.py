@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import entity, tools, parameters
 import numpy
@@ -25,14 +25,14 @@ class Player():
         self.max_life = 1
 
     def load_ship(self, parameters):
-        #instantiate according to specified type
+        # instantiate according to specified type
         targetClass = getattr(entity, parameters['type'])
         ship = targetClass(self.scene, self, parameters)
-        #init position
+        # init position
         coord = (self.scene.limits[0]/2,
         self.scene.limits[1]-self.scene.limits[1]/6)
         ship.pos = coord
-        #link to ship attributes
+        # link to ship attributes
         self.life = ship.life
         self.score = ship.score
         self.weapon_level = ship.weapon_level
@@ -48,7 +48,7 @@ class Player():
             self.ship.fly('up', interval)
         elif self.go_down:
             self.ship.fly('down', interval)
-        #is the ship charging ?
+        # is the ship charging ?
         if self.keys['shoot']:
             offset = self.ship.charge_rate * interval
             if self.ship.charge + offset > 1:
@@ -56,13 +56,13 @@ class Player():
             else:
                 self.ship.charge += offset
         else:
-            #charged shot
+            # charged shot
             if self.ship.charge > 0.5:
                 self.ship.shoot(time, 'Blast', self.ship.charge)
             self.ship.charge = 0.
 
     def update(self, interval, time):
-        #where is going the ship ?
+        # where is going the ship ?
         if self.keys['right'] and not self.go_right and not self.keys['left']:
             self.go_right = True
             self.stop = False
@@ -89,15 +89,15 @@ class Player():
         and not self.keys['right'] and not self.keys['left'] ):
             self.stop = True
 
-        #shoot to join game !!
+        # shoot to join game !!
         if (self.ship == None and self.keys['shoot']):
             self.alive = True
             self.ship = self.latent
-            #summon in scene
+            # summon in scene
             self.ship.add()
         if self.alive:
             self.command(interval, time)
-        #update info from ship if it exists
+        # update info from ship if it exists
         if self.ship != None:
             self.life = self.ship.life
             self.max_life = self.ship.max_life
@@ -138,18 +138,18 @@ class Container():
 
     def surf(self, name):
         """avoid duplicate loading"""
-        #None is the empty surface
+        # None is the empty surface
         if name == None:
             name = ''
         if name not in self.surfaces:
-            #generate also variants of image
+            # generate also variants of image
             self.create_all(name)
         surface = self.surfaces[name]
         return surface
     
     def surf_alt(self, name, alpha=True):
         """return alt maps too"""
-        #None is the empty surface
+        # None is the empty surface
         if name == None:
             name = ''
         if name not in self.surfaces:
@@ -162,7 +162,7 @@ class Container():
         
     def surf_noalt(self, name, alpha=True):
         """generate and return only pygame surface"""
-        #None is the empty surface
+        # None is the empty surface
         if name == None:
             name = ''
         if name not in self.surfaces:
@@ -181,7 +181,7 @@ class Container():
 
     def play(self, sound, xpos):
         p = (self.scene.limits[0] - abs(xpos)) / float(self.scene.limits[0])
-        #adjust volume
+        # adjust volume
         p = p * self.scene.snd_pack['effect_volume']
         if not self.scene.mute:
             sound = self.snd(sound)
@@ -193,7 +193,7 @@ class Container():
         if not self.scene.game.no_sound:
             if track != None:
                 music = tools.load_stream(track, self.scene)
-                #check if file is nicely loaded
+                # check if file is nicely loaded
                 if music:
                     self.scene.game.music.play(loops)
                     self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
@@ -233,15 +233,15 @@ class Ordered():
     def prioritize(self, item, priority):
         """reorder an item in a specific layer of priority
         or add a new item"""
-        #eliminate prior version
+        # eliminate prior version
         self.remove(item)
-        #insert with new priority
+        # insert with new priority
         self.append(item, priority)
 
 class Scene():
     def __init__(self, game):
         self.game = game
-        #delay between scene and game (scene can be paused)
+        # delay between scene and game (scene can be paused)
         self.paused = False
         self.delay = 0
         self.now = 0
@@ -254,22 +254,22 @@ class Scene():
         self.snd_pack = self.level['sound_pack']
         self.mute = True
         self.gameplay = self.level['gameplay']
-        #an object for efficient loading
+        # an object for efficient loading
         self.cont = Container(self)
-        #content in priority update order
+        # content in priority update order
         self.content = Ordered()
         self.players = [Player(self, i) for i in range(4)]
         self.player1 = self.players[0]
         self.load_interface()
-        #launch background music
+        # launch background music
         self.cont.load_music(self.level['music'])
-        #launch landscape
+        # launch landscape
         entity.Landscape(self, self.level['background']).add()
         entity.Landscape(self, parameters.CLOUD).add()
         self.update()
 
     def load_interface(self):
-        #interface
+        # interface
         self.interface = [
         entity.Life(self, 0, ['bottom', 'left']),
         entity.Score(self, 0, ['bottom', 'left'], (0, -10)),
@@ -282,7 +282,7 @@ class Scene():
         entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'], (0, -30))
         ]
         
-        #add in scene
+        # add in scene
         for item in self.interface:
             item.add()
 
@@ -290,32 +290,32 @@ class Scene():
         """repercute collisions projectiles and alpha maps of sprites
         dealing with projectiles as entities (entity.Mobile)"""
         for xP, yP, xPe, yPe, itemP in proj_map:
-            #one pixel projectile
+            # one pixel projectile
             if itemP.collision_type == 'pixel':
-                #focus on center_pixel
+                # focus on center_pixel
                 xP, yP = itemP.center
                 for xT, yT, xTe, yTe, itemT in target_map:
-                    #is in range ?
+                    # is in range ?
                     if xP < xTe and xP > xT and yP < yTe and yP > yT:
-                        #per pixel collision
+                        # per pixel collision
                         if self.cont.array[itemT.name][xP - xT, yP - yT]:
-                            #hurt or not, entity
+                            # hurt or not, entity
                             itemT.collided(itemP, time)
-                            #remove or not, colliding projectile
+                            # remove or not, colliding projectile
                             itemP.collided(itemT, time)
-            #rectangular projectile
+            # rectangular projectile
             elif itemP.collision_type == 'rectangle':
                 for xT, yT, xTe, yTe, itemT in target_map:
                     if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
-                        #(minx,miny), (maxx, maxy) are the intersection
-                        #coordinate between target map and proj map
-                        #coordinate are target map relative
+                        # (minx,miny), (maxx, maxy) are the intersection
+                        # coordinate between target map and proj map
+                        # coordinate are target map relative
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         if True in self.cont.array[itemT.name][minx:maxx, miny:maxy]:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
-            #pixel perfect projectile
+            # pixel perfect projectile
             else:
                 for xT, yT, xTe, yTe, itemT in target_map:
                     if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
@@ -331,9 +331,9 @@ class Scene():
                             itemP.collided(itemT, time)
 
     def update_paused(self, interval=0, time=0):
-        #stop background music
+        # stop background music
         self.cont.music()
-        #check for resuming
+        # check for resuming
         if not self.paused:
             self.delay += time - self.pause_time
             self.update = self.orig_update
@@ -341,7 +341,7 @@ class Scene():
     def pause(self, time):
         self.pause_time = time
         self.paused = True
-        #if paused bypass classic update
+        # if paused bypass classic update
         self.orig_update = self.update
         self.update = self.update_paused
     
@@ -354,30 +354,30 @@ class Scene():
 
     def update(self, interval = 0, time = 0):
         self.now = time - self.delay
-        #collision maps
+        # collision maps
         ship_map = []
         target_map = []
         ship_proj_map = []
         ship_blast_map = []
         target_proj_map = []
         bonus_map = []
-        #reset sprite list for drawing
+        # reset sprite list for drawing
         self.lst_sprites = Ordered()
         self.nb_fighters = 0
-        #explore scene
-        #update individuals
+        # explore scene
+        # update individuals
         for item in self.content:
-            #shoot and stuff
+            # shoot and stuff
             item.update(interval, self.now)
-        #create collision maps and sprite composition
+        # create collision maps and sprite composition
         for item in self.content:
             if isinstance(item, entity.Mobile):
                 x, y = item.pos
-                #prepare sprite list for drawing
+                # prepare sprite list for drawing
                 self.add_sprite(x, y, item)
                 if isinstance(item, entity.Fragile):
-                    #populate collision maps
-                    #precompute for faster detection
+                    # populate collision maps
+                    # precompute for faster detection
                     width, height = self.cont.array[item.name].shape
                     identifier = (x, y, x+width, y+height, item)
                     if item.ally:
@@ -398,26 +398,26 @@ class Scene():
                         else:
                             target_proj_map.append(identifier)
             elif isinstance(item, entity.Landscape):
-                #prepare sprite list for drawing
+                # prepare sprite list for drawing
                 self.add_sprite(0, 0, item)
-        #update player status
+        # update player status
         for player in self.players:
             player.update(interval, self.now)
-        #detect collisions and update accordingly
-        #catch bonuses, hurray !! \o/
+        # detect collisions and update accordingly
+        # catch bonuses, hurray !! \o/
         self.collide(bonus_map, ship_map, self.now)
-        #for projectiles against enemies
+        # for projectiles against enemies
         self.collide(ship_proj_map, target_map, self.now)
-        #between projectiles
+        # between projectiles
         self.collide(target_proj_map, ship_blast_map, self.now)
-        #between allies and enemies ships
+        # between allies and enemies ships
         self.collide(target_map, ship_map, self.now)
-        #enemies can hit us
+        # enemies can hit us
         self.collide(target_proj_map, ship_map, self.now)
-        #evolution of scenery
+        # evolution of scenery
         if self.nb_fighters < self.level['nb_enemies']:
             fighter = entity.Fighter(self, parameters.SAUCER)
-            #add in scene
+            # add in scene
             fighter.add()
-        #update music playback
+        # update music playback
         self.cont.music()

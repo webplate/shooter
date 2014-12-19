@@ -1,21 +1,21 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
-#  
+#
 
 import platform, os, pygame
 import pygame.locals as p_l
@@ -41,34 +41,34 @@ class Shooter():
     def __init__(self):
         """initialize game"""
         self.running = True
-        #Set graphic driver according to platform
+        # Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
             os.environ['SDL_VIDEODRIVER'] = 'directx'
         elif system == 'Darwin':   # tested with MacOS 10.5 and 10.6
             os.environ['SDL_VIDEODRIVER'] = 'Quartz'
-        #Initialize pygame
-        #only necessary modules
-        #try to init sound mixer
+        # Initialize pygame
+        # only necessary modules
+        # try to init sound mixer
         try:
-            #small buffer for low latency sound (speedy gameplay)
+            # small buffer for low latency sound (speedy gameplay)
             pygame.mixer.init(buffer=64)
-        #support systems with no sound card
+        # support systems with no sound card
         except pygame.error:
             self.no_sound = True
         else:
-            #large number of channels for many sounds
+            # large number of channels for many sounds
             pygame.mixer.set_num_channels(256)
-            #a music mixer for background music
+            # a music mixer for background music
             self.music = pygame.mixer.music
             self.no_sound = False
-        #an object to keep track of time
-        #necessary to launch pygame passing time
+        # an object to keep track of time
+        # necessary to launch pygame passing time
         self.clock = pygame.time.Clock()
         self.interval = 0
         self.speed = parameters.DEFAULTPLAY['game_speed']
         self.flip_rate = parameters.DEFAULTPLAY['flip_rate']
-        self.frame_limit = 1000. / self.flip_rate   #max time for a scene update
+        self.frame_limit = 1000. / self.flip_rate   # max time for a scene update
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x']:
@@ -79,10 +79,10 @@ class Shooter():
         self.screen = pygame.Surface(self.limits)
         self.fullscreen = False
         self.fps = 0
-        #load content from file
+        # load content from file
         self.level = load_level(parameters.LEVEL)
         self.theme = self.level['theme']
-        #load fonts
+        # load fonts
         pygame.font.init()
         self.font = tools.load_font(self.theme['font'],
         self.theme['txt_size'])
@@ -90,17 +90,20 @@ class Shooter():
         self.theme['txt_size'])
         self.sfont = tools.load_font(self.theme['small_font'],
         self.theme['small_size'])
-        #joysticks
+        # joysticks
         pygame.joystick.init()
         joysticks = [pygame.joystick.Joystick(x)
         for x in range(pygame.joystick.get_count())]
         for joy in joysticks:
             joy.init()
-        #time reference
+            # disable joystick used by Virtual Box (for mouse integration)
+            if 'VirtualBox' in joy.get_name() :
+                joy.quit()
+        # time reference
         self.now = 0
-        #Initialize scene
+        # Initialize scene
         self.scene = scene.Scene(self)
-        #Players
+        # Players
         self.players = self.scene.players
 
     def on_event(self, event):
@@ -111,18 +114,18 @@ class Shooter():
         elif event.type == p_l.KEYDOWN:
             for i, keymap in enumerate(parameters.KEYMAPS):
                 if event.key in keymap:
-                    #update player key status
+                    # update player key status
                     key = keymap[event.key]
                     if key in self.players[i].keys:
                         self.players[i].keys[key] = True
-                    #switch to fullscreen
+                    # switch to fullscreen
                     if key == 'fullscreen':
                         if self.fullscreen:
                             self.display = pygame.display.set_mode(self.winsize)
                         else:
                             self.display = pygame.display.set_mode(self.winsize,
                             p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
-                            pygame.mouse.set_visible(False)     #hide cursor
+                            pygame.mouse.set_visible(False)     # hide cursor
                     elif key == 'pause':
                         if not self.scene.paused:
                             self.scene.pause(self.now*self.speed)
@@ -136,11 +139,11 @@ class Shooter():
         elif event.type == p_l.KEYUP:
             for i, keymap in enumerate(parameters.KEYMAPS):
                 if event.key in keymap:
-                    #update player key status
+                    # update player key status
                     key = keymap[event.key]
                     if key in self.players[i].keys:
                         self.players[i].keys[key] = False
-        #Joystick events
+        # Joystick events
         elif event.type == p_l.JOYAXISMOTION:
             tol = 0.8
             if event.axis == 0:
@@ -175,23 +178,23 @@ class Shooter():
         if self.interval > self.frame_limit:
             self.interval = self.frame_limit
         self.now = self.now + self.interval
-        #recompute scene status
+        # recompute scene status
         self.scene.update(self.interval*self.speed, self.now*self.speed)
 
     def on_render(self):
         """create screen frames"""
-        #compute low res game screen
+        # compute low res game screen
         self.screen.fill(self.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites:
             self.screen.blit(surf, pos)
-        #rescale for display on hd hardware
+        # rescale for display on hd hardware
         if self.scale == 'mame':
             pygame.transform.scale2x(self.screen, self.display)
         elif self.scale == '2x':
             pygame.transform.scale(self.screen, self.winsize, self.display)
         else:
             self.display.blit(self.screen, (0, 0))
-        #limit flipping rate
+        # limit flipping rate
         self.interval = self.clock.tick_busy_loop(self.flip_rate)
         self.fps = self.clock.get_fps()
         pygame.display.flip()
@@ -202,16 +205,16 @@ class Shooter():
 
     def on_execute(self):
         """launch mainloop"""
-        #Main loop
+        # Main loop
         self.frame = 0
         while self.running:
-            #EVENTS
+            # EVENTS
             evts = pygame.event.get()
             for event in evts:
                 self.on_event(event)
-            #EVOLUTION
+            # EVOLUTION
             self.on_loop()
-            #RENDER
+            # RENDER
             self.on_render()
         self.on_cleanup()
 

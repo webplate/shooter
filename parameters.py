@@ -1,23 +1,23 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pygame.locals as p_l
 
 
-GAMESIZE = (320, 240) #~neo geo
-#~ GAMESIZE = (1024, 500)
-COLORDEPTH = 16 #set to 8 for speedier game with low color resolution !
-RESCALE = '2x' #set to 2x or mame or None
+GAMESIZE = (320, 240) # ~neo geo
+# GAMESIZE = (1024, 500)
+COLORDEPTH = 16  # set to 8 for speedier game with low color resolution !
+RESCALE = '2x'  # set to 2x or mame or None
 
 DEFAULTPLAY = {
     'name': 'default',
-    'flip_rate': 70, #fps cap
-    'hit_pulse': 50, #ms between two hits on ship
-    'blast_hit_pulse': 20, #ms between two blast hits
+    'flip_rate': 70,  # fps cap
+    'hit_pulse': 50,  # ms between two hits on ship
+    'blast_hit_pulse': 20,  # ms between two blast hits
     'game_speed': 1,
     'ratio_life_upgrade': 0.1
 }
 
-#control settings
+# control settings
 KEYMAP1 = {
     p_l.K_f: 'fullscreen',
     p_l.K_m: 'mute',
@@ -40,7 +40,7 @@ KEYMAP2 = {
 KEYMAPS = [KEYMAP1, KEYMAP2]
 
 
-#Theme packs
+# Theme packs
 DEFAULTTHEME = {
     'name': None,
     'bg_color': (50, 50, 50),
@@ -80,9 +80,9 @@ IRONBRAIN = {
     'txt_inter': 16
 }
 
-#Various....
+# Various....
 COLLISIONDAMAGE = -1
-#set layers of sprites
+# set layers of sprites
 INTERFACELAY = 25
 FRONTLAY = 20
 OVERLAY = 18
@@ -94,8 +94,8 @@ CLOUDLAY = 4
 BGLAY = 1
 
 #
-#Animations
-########################
+# Animations
+#
 
 TARGETBLINK = {
     'type': 'Loop',
@@ -111,7 +111,7 @@ BULLETBLINK = {
 
 HITBLINK = {
     'type': 'Blank',
-    'duration': 25     #ms for white flash when collision
+    'duration': 25     # ms for white flash when collision
 }
 
 SHIPORIENTATION = {
@@ -132,8 +132,8 @@ CHARGEANIM = {
     'sprites': ['B', 'BB', 'BBB']
 }
 
-#Special Effects
-#######################
+# Special Effects
+#
 
 EXPLOSION = {
     'name': 'OOO',
@@ -156,8 +156,8 @@ CHARGE = {
     'layer': BELOWSHIPLAY
 }
 
-#projectiles
-########################################
+# projectiles
+#
 SPREADER0_0 = {
     'name': 'spreader_0',
     'type': 'Bullet',
@@ -238,8 +238,8 @@ MISSILE = {
     'collision_type': 'pixel'
 }
 
-#weapons
-#################################
+# weapons
+#
 SPREADER0 = {
     'name': 'spreader0',
     'levels': [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
@@ -261,8 +261,8 @@ MISSILE = {'name': 'missile',
 }
 
 
-#entities
-#################################
+# entities
+#
 SHIP = {
     'name': 'ship',
     'type': 'Ship',
@@ -346,8 +346,8 @@ BONUSWEAPON = {
     'effect': {'upgrade_weapon': 1},
     }
 
-#Player settings
-######################################"
+# Player settings
+# "
 PLAYER = {
     'name': 'player1',
     'ship': SHIP
@@ -363,8 +363,8 @@ DERVAL = {
     'ship': STALKER
 }
 
-#The reference playable level used to complete others
-##############################################
+# The reference playable level used to complete others
+#
 DEFAULTLEVEL = {
     'name': 'default',
     'theme': DEFAULTTHEME,
