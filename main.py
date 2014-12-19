@@ -143,6 +143,7 @@ class Shooter():
                     key = keymap[event.key]
                     if key in self.players[i].keys:
                         self.players[i].keys[key] = False
+
         # Joystick events
         elif event.type == p_l.JOYAXISMOTION:
             tol = 0.8
@@ -177,7 +178,7 @@ class Shooter():
         """alter and move objects according to altitude, movement..."""
         if self.interval > self.frame_limit:
             self.interval = self.frame_limit
-        self.now = self.now + self.interval
+        self.now += self.interval
         # recompute scene status
         self.scene.update(self.interval*self.speed, self.now*self.speed)
 
