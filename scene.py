@@ -280,15 +280,15 @@ class Scene():
     def load_interface(self):
         # interface
         self.interface = [
-        entity.Life(self, 0, ['bottom', 'left']),
-        entity.Score(self, 0, ['bottom', 'left'], (0, -10)),
-        entity.Life(self, 1, ['bottom', 'right']),
-        entity.Score(self, 1, ['bottom', 'right'], (0, -10)),
-        entity.Life(self, 2, ['bottom', 'left'], (30, 0)),
-        entity.Score(self, 2, ['bottom', 'left'], (30, -10)),
-        entity.Life(self, 3, ['bottom', 'right'], (-30, 0)),
-        entity.Score(self, 3, ['bottom', 'right'], (-30, -10)),
-        entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'], (0, -30))
+            entity.Life(self, 0, ['bottom', 'left']),
+            entity.Score(self, 0, ['bottom', 'left'], (0, -10)),
+            entity.Life(self, 1, ['bottom', 'right']),
+            entity.Score(self, 1, ['bottom', 'right'], (0, -10)),
+            entity.Life(self, 2, ['bottom', 'left'], (30, 0)),
+            entity.Score(self, 2, ['bottom', 'left'], (30, -10)),
+            entity.Life(self, 3, ['bottom', 'right'], (-30, 0)),
+            entity.Score(self, 3, ['bottom', 'right'], (-30, -10)),
+            entity.Widget(self, 'game.fps', ['bottom', 'right', 'low_flip'], (0, -30))
         ]
         
         # add in scene
@@ -333,8 +333,8 @@ class Scene():
                         minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
                         minyP, maxyP = max(yP, yT)-yP, min(yPe, yTe)-yP
                         touch = numpy.logical_and(
-                        self.cont.array[itemT.name][minx:maxx, miny:maxy],
-                        self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
+                            self.cont.array[itemT.name][minx:maxx, miny:maxy],
+                            self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
                         if True in touch:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
@@ -359,7 +359,6 @@ class Scene():
         if item.visible:
             identifier = ((x, y), item.surface)
             self.lst_sprites.append(identifier, item.layer)
-        
 
     def update(self, interval = 0, time = 0):
         self.now = time - self.delay

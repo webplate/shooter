@@ -87,19 +87,19 @@ class Shooter():
         # load fonts
         pygame.font.init()
         self.font = tools.load_font(self.theme['font'],
-        self.theme['txt_size'])
+                                    self.theme['txt_size'])
         self.mfont = tools.load_font(self.theme['monospace_font'],
-        self.theme['txt_size'])
+                                     self.theme['txt_size'])
         self.sfont = tools.load_font(self.theme['small_font'],
-        self.theme['small_size'])
+                                     self.theme['small_size'])
         # joysticks
         pygame.joystick.init()
         joysticks = [pygame.joystick.Joystick(x)
-        for x in range(pygame.joystick.get_count())]
+                     for x in range(pygame.joystick.get_count())]
         for joy in joysticks:
             joy.init()
             # disable joystick used by Virtual Box (for mouse integration)
-            if 'VirtualBox' in joy.get_name() :
+            if 'VirtualBox' in joy.get_name():
                 joy.quit()
         # time reference
         self.now = 0

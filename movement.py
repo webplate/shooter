@@ -1,11 +1,13 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-import random, math, cmath
+import random
+import math
+import cmath
 
 
 def random_up(limits):
     """a position in upper screen"""
-    return (random.randint(0, limits[0]), random.randint(-limits[1]/6, 0))
+    return random.randint(0, limits[0]), random.randint(-limits[1]/6, 0)
 
 
 def pol2cart(radius, angle):
@@ -37,7 +39,7 @@ class Up(Trajectory):
     def next_pos(self, pos, interval, time):
         """compute new position from floats"""
         offset = self.mobile.speed * interval
-        pos = pos[0] , pos[1] - offset
+        pos = pos[0], pos[1] - offset
         return pos
 
 
@@ -56,7 +58,7 @@ class Line(Trajectory):
     def next_pos(self, pos, interval, time):
         """compute new position from floats"""
         offset = self.mobile.speed * interval
-        pos = pos[0] + offset*math.cos(self.angle) , pos[1] + offset*math.sin(self.angle)
+        pos = pos[0] + offset*math.cos(self.angle), pos[1] + offset*math.sin(self.angle)
         return pos
 
 
@@ -83,7 +85,7 @@ class Align(Trajectory):
     def next_pos(self, pos, interval, time):
         """move only if has a target"""
         self.search(time)
-        if self.target != None:
+        if self.target is not None:
             return self.new_pos(pos, interval)
         else:
             return pos
@@ -98,7 +100,7 @@ class AlignV(Align):
 
     def new_pos(self, pos, interval):
         """compute new position from floats"""
-        offset =  self.mobile.speed * interval
+        offset = self.mobile.speed * interval
         # move only if far enough
         distance = abs(self.mobile.center[0] - self.target.center[0])
         if distance > offset:
@@ -118,12 +120,12 @@ class AlignH(Align):
 
     def new_pos(self, pos, interval):
         """compute new position from floats"""
-        offset =  self.mobile.speed * interval
+        offset = self.mobile.speed * interval
         # move only if far enough
         distance = abs(self.mobile.center[1] - self.target.center[1])
         if distance > offset:
             if self.target.center[1] > self.mobile.center[1]:
-                pos = pos[0] , pos[1] + offset
+                pos = pos[0], pos[1] + offset
             elif self.target.center[1] < self.mobile.center[1]:
                 pos = pos[0], pos[1] - offset
         return pos
@@ -192,12 +194,11 @@ class OscillationDown(Trajectory):
             
     def rel_pos(self, pos, interval, time):
         """falling line position (we compute an absolute position relative from this one"""
-        if self.ref_pos == None:
-            self.ref_pos = (pos[0],
-            pos[1] + self.mobile.speed * interval + self.randomV)
+        if self.ref_pos is None:
+            self.ref_pos = (pos[0], pos[1] + self.mobile.speed * interval + self.randomV)
         else:
-            self.ref_pos = (self.ref_pos[0],
-            self.ref_pos[1] + self.mobile.speed * interval + self.randomV)
+            self.ref_pos = (self.ref_pos[0], self.ref_pos[1]
+                            + self.mobile.speed * interval + self.randomV)
         return self.ref_pos
             
     def abs_pos(self, interval, time):
