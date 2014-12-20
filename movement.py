@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 import random, math, cmath
 
+
 def random_up(limits):
     """a position in upper screen"""
     return (random.randint(0, limits[0]), random.randint(-limits[1]/6, 0))
+
 
 def pol2cart(radius, angle):
     x = radius * math.cos(angle)
     y = radius * math.sin(angle)
     return x, y
+
 
 class Trajectory():
     """a general position modifier"""
@@ -19,6 +22,7 @@ class Trajectory():
         # set init position of mobile
         self.mobile.pos = (0, 0)
 
+
 class Down(Trajectory):
     """go downward"""
     def next_pos(self, pos, interval, time):
@@ -26,7 +30,8 @@ class Down(Trajectory):
         offset = self.mobile.speed * interval
         pos = pos[0] , pos[1] + offset
         return pos
-        
+
+
 class Up(Trajectory):
     """go upward"""
     def next_pos(self, pos, interval, time):
@@ -34,7 +39,8 @@ class Up(Trajectory):
         offset = self.mobile.speed * interval
         pos = pos[0] , pos[1] - offset
         return pos
-        
+
+
 class Line(Trajectory):
     """advance in a line with the given angle"""
     def __init__(self, scene, mobile, params={}):
@@ -52,6 +58,7 @@ class Line(Trajectory):
         offset = self.mobile.speed * interval
         pos = pos[0] + offset*math.cos(self.angle) , pos[1] + offset*math.sin(self.angle)
         return pos
+
 
 class Align(Trajectory):
     """can focus on a target"""
@@ -81,6 +88,7 @@ class Align(Trajectory):
         else:
             return pos
 
+
 class AlignV(Align):
     """align vertically with ship"""
     def __init__(self, scene, mobile):
@@ -99,6 +107,7 @@ class AlignV(Align):
             elif self.target.center[0] < self.mobile.center[0]:
                 pos = pos[0] - offset, pos[1]
         return pos
+
 
 class AlignH(Align):
     """align horizontally with ship"""
@@ -119,6 +128,7 @@ class AlignH(Align):
                 pos = pos[0], pos[1] - offset
         return pos
 
+
 class GoFront(AlignV):
     """try to be in front of ship"""
     def new_pos(self, pos, interval):
@@ -136,6 +146,7 @@ class GoFront(AlignV):
                 if pos[1] - offset > 0:
                     pos = pos[0], pos[1] - offset
         return pos
+
 
 class Circular(GoFront):
     """orbit around"""
@@ -165,7 +176,8 @@ class Circular(GoFront):
         xrel, yrel = self.rel_pos(interval, time)
         xabs, yabs = self.abs_pos(interval, time)
         return xrel+xabs, yrel+yabs
-        
+
+
 class OscillationDown(Trajectory):
     """go down while oscillating"""
     def __init__(self, scene, mobile, params={}):
@@ -199,6 +211,7 @@ class OscillationDown(Trajectory):
         xrel, yrel = self.rel_pos(pos, interval, time)
         xabs, yabs = self.abs_pos(interval, time)
         return xrel+xabs, yrel+yabs
+
 
 class Targeted(Trajectory):
     """trajectory for guided missiles"""

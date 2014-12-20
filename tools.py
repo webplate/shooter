@@ -3,13 +3,16 @@
 import os, sys, pygame
 import parameters
 
+
 def get_center(pos, w, h):
     center = (pos[0]+w/2., pos[1]+h/2.)
     return center
 
-def get_pos_from_center(center,w, h):
+
+def get_pos_from_center(center, w, h):
     pos = (center[0]-w/2., center[1]-h/2.)
     return pos
+
 
 def resource_path(relative):
     """path translator for pyinstaller
@@ -18,16 +21,19 @@ def resource_path(relative):
         return os.path.join(sys._MEIPASS, relative)
     return os.path.join(relative)
 
+
 def get_path(a1, a2, a3):
     return resource_path(os.path.join(a1, a2, a3))
+
 
 def load_font(filename, size):
     myfontfile = resource_path(os.path.join('fonts', filename))
     return pygame.font.Font(myfontfile, size)
-    
+
+
 def load_sound(filename, scene):
     """load sound or not"""
-    if scene.snd_pack['name'] != None:
+    if scene.snd_pack['name'] is not None:
         path = get_path('sounds', scene.snd_pack['name'], filename + '.ogg')
         try:
             sound = pygame.mixer.Sound(path)
@@ -37,15 +43,17 @@ def load_sound(filename, scene):
         sound = None
     return sound
 
+
 def load_stream(filename, scene):
     """load music track or not"""
-    if scene.snd_pack['name'] != None:
+    if scene.snd_pack['name'] is not None:
         path = get_path('sounds', scene.snd_pack['name'], filename + '.ogg')
         try:
             sound = pygame.mixer.music.load(path)
         except pygame.error:
             return False
         return True
+
 
 def uniformize_surf(surface):
     """try to convert surface if necessary
@@ -56,29 +64,31 @@ def uniformize_surf(surface):
 def load_image(filename, theme, scene, alpha=True):
     """loads an image, prepares it for play
     or create a label if image absent"""
-    if theme != None:
+    if theme is not None:
         path = get_path('imgs', theme, filename + '.png')
         try:
             surface = pygame.image.load(path)
         except pygame.error:
-            #if no corresponding png generate from label
+            # if no corresponding png generate from label
             surface = font_skin(scene, filename)
         else:
-            #strip of alpha channel for colorkey transparency and notmuch colors            
+            # strip of alpha channel for colorkey transparency and notmuch colors
             surface = surface.convert(parameters.COLORDEPTH)
             if alpha:
-                #first pixel sets transparent color
+                # first pixel sets transparent color
                 color = surface.get_at((0, 0))
                 surface.set_colorkey(color)
     else:
-        #no themepack: use labels as sprites
+        # no themepack: use labels as sprites
         surface = font_skin(scene, filename)
     return surface
+
 
 def make_rect(w, h, color):
     surface = pygame.Surface((w, h))
     surface.fill(color)
     return surface
+
 
 def make_array(surface):
     array = pygame.surfarray.array2d(surface)
@@ -91,6 +101,7 @@ def make_array(surface):
             else:
                 array[i, j] = False
     return array
+
 
 def make_white(surface):
     white = (255, 255, 255)
@@ -108,6 +119,7 @@ def make_white(surface):
     surface.set_colorkey(black)
     return surface
 
+
 def make_shadow(surface, scale=0.5):
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -117,31 +129,34 @@ def make_shadow(surface, scale=0.5):
     w, h = covered.shape
     for i in range(w):
         for j in range(h):
-            if covered[i,j]:
+            if covered[i, j]:
                 surface.set_at((i, j), black)
             else:
                 surface.set_at((i, j), white)
-    #rescale shadow
+    # rescale shadow
     w, h = int(w*scale), int(h*scale)
     surface = pygame.transform.scale(surface, (w, h))
     surface.set_colorkey(white)
     return surface
+
 
 def compose_surfaces(w, h, s1, s2, back=None):
     """gets two surfaces and blit them on a new one
     of size w,h
     """
     s = pygame.Surface((w, h))
-    if back != None:
-        s.blit(back, (0,0))
+    if back is not None:
+        s.blit(back, (0, 0))
     s.blit(s1, (0, 0))
     s.blit(s2, (0, s1.get_height()))
     return s
+
 
 def font_skin(scene, name):
     """if no pics create from font"""
     surface = scene.font.render(name, False, scene.theme['txt_color'])
     return surface
+
 
 def blit_clip(src, dest, margins=None):
     """blit a portion of src"""

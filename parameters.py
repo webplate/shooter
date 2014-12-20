@@ -282,7 +282,7 @@ STALKER = {
     'speed': 0.1,
     'charge_rate': 0.001,
     'life': 20,
-    'weapons': [MISSILE, BLASTER]
+    'weapons': [SPREADER0, MISSILE, BLASTER]
 }
 
 
@@ -390,7 +390,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 10,
+    'nb_enemies': 40,
     'player': DERVAL
 }
 

@@ -3,14 +3,20 @@
 import entity, tools, parameters
 import numpy
 
+
 class Player():
     """class for player settings, controls, ships"""
     def __init__(self, scene, index):
         self.scene = scene
         self.index = index
         self.settings = self.scene.level['player']
-        self.keys = {'up':False, 'down':False, 'right':False, 'left':False,
-        'shoot':False}
+        self.keys = {
+            'up': False,
+            'down': False,
+            'right': False,
+            'left': False,
+            'shoot': False
+        }
         self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
         self.go_right = False
         self.go_left = False
@@ -90,7 +96,7 @@ class Player():
             self.stop = True
 
         # shoot to join game !!
-        if (self.ship == None and self.keys['shoot']):
+        if self.ship is None and self.keys['shoot']:
             self.alive = True
             self.ship = self.latent
             # summon in scene
@@ -98,10 +104,11 @@ class Player():
         if self.alive:
             self.command(interval, time)
         # update info from ship if it exists
-        if self.ship != None:
+        if self.ship is not None:
             self.life = self.ship.life
             self.max_life = self.ship.max_life
             self.score = self.ship.score
+
 
 class Container():
     """stock surfaces and projectiles maps to prevent duplicates
@@ -120,8 +127,8 @@ class Container():
         self.snds = {}
 
     def create_all(self, name, alpha=True):
-        '''generate surface and alternative maps
-        and reference them'''
+        """generate surface and alternative maps
+        and reference them"""
         surface = tools.load_image(name, self.theme, self.scene, alpha)
         self.surfaces.update({name: surface})
         hit = tools.make_white(surface)
@@ -132,14 +139,14 @@ class Container():
         self.array.update({name: array})
     
     def create_surf(self, name, alpha=True):
-        '''generate only pygame surface '''
+        """generate only pygame surface """
         surface = tools.load_image(name, self.theme, self.scene, alpha)
         self.surfaces.update({name: surface})
 
     def surf(self, name):
         """avoid duplicate loading"""
         # None is the empty surface
-        if name == None:
+        if name is None:
             name = ''
         if name not in self.surfaces:
             # generate also variants of image
@@ -150,7 +157,7 @@ class Container():
     def surf_alt(self, name, alpha=True):
         """return alt maps too"""
         # None is the empty surface
-        if name == None:
+        if name is None:
             name = ''
         if name not in self.surfaces:
             self.create_all(name, alpha)
@@ -163,7 +170,7 @@ class Container():
     def surf_noalt(self, name, alpha=True):
         """generate and return only pygame surface"""
         # None is the empty surface
-        if name == None:
+        if name is None:
             name = ''
         if name not in self.surfaces:
             self.create_surf(name, alpha)
@@ -185,13 +192,13 @@ class Container():
         p = p * self.scene.snd_pack['effect_volume']
         if not self.scene.mute:
             sound = self.snd(sound)
-            if sound != None:
+            if sound is not None:
                 channel = sound.play()
                 channel.set_volume(p, 1-p)
 
     def load_music(self, track=None, loops=-1):
         if not self.scene.game.no_sound:
-            if track != None:
+            if track is not None:
                 music = tools.load_stream(track, self.scene)
                 # check if file is nicely loaded
                 if music:
@@ -201,10 +208,11 @@ class Container():
     def music(self):
         """control game mixer for streaming large music files"""
         if (not self.scene.mute and not self.scene.paused
-        and not self.scene.game.no_sound):
+                and not self.scene.game.no_sound):
             self.scene.game.music.unpause()
         else:
             self.scene.game.music.pause()
+
 
 class Ordered():
     """stock objects of scene in layered priority
@@ -237,6 +245,7 @@ class Ordered():
         self.remove(item)
         # insert with new priority
         self.append(item, priority)
+
 
 class Scene():
     def __init__(self, game):
@@ -296,7 +305,7 @@ class Scene():
                 xP, yP = itemP.center
                 for xT, yT, xTe, yTe, itemT in target_map:
                     # is in range ?
-                    if xP < xTe and xP > xT and yP < yTe and yP > yT:
+                    if xT < xP < xTe and yT < yP < yTe:
                         # per pixel collision
                         if self.cont.array[itemT.name][xP - xT, yP - yT]:
                             # hurt or not, entity

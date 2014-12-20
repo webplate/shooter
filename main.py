@@ -21,8 +21,9 @@ import platform, os, pygame
 import pygame.locals as p_l
 import scene, parameters, tools
 
+
 def load_level(level):
-    
+
     """make sure the loaded level is playable"""
     ref = parameters.DEFAULTLEVEL
     for key in ref:
@@ -34,6 +35,7 @@ def load_level(level):
                 if key2 not in level[key]:
                     level[key].update({key2: ref2[key2]})
     return level
+
 
 class Shooter():
     """a pygame shooter
@@ -148,7 +150,7 @@ class Shooter():
         elif event.type == p_l.JOYAXISMOTION:
             tol = 0.8
             if event.axis == 0:
-                if event.value < tol and event.value > -tol:
+                if abs(event.value) < tol:
                     self.players[event.joy].keys['right'] = False
                     self.players[event.joy].keys['left'] = False
                 elif event.value < tol:
@@ -158,7 +160,7 @@ class Shooter():
                     self.players[event.joy].keys['right'] = True
                     self.players[event.joy].keys['left'] = False
             elif event.axis == 1:
-                if event.value < tol and event.value > -tol:
+                if abs(event.value) < tol:
                     self.players[event.joy].keys['up'] = False
                     self.players[event.joy].keys['down'] = False
                 elif event.value < tol:

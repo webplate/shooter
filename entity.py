@@ -45,6 +45,7 @@ class Actor(object):
         """remove from scene"""
         self.scene.content.remove(self)
 
+
 class Weapon(Actor):
     """generic weapon"""
     def __init__(self, scene, parent, params):
@@ -72,6 +73,7 @@ class Weapon(Actor):
         if has_shot:
             self.last_shoot = time
 
+
 class Visible(Actor):
     """actor with a surface"""
     def __init__(self, scene, params={}):
@@ -95,20 +97,21 @@ class Visible(Actor):
                 # a animation object to control surface
                 targClass = globals()[ani['type']]
                 self.children.append(targClass(self.scene, self, ani))
-        if  not hasattr(self,'has_shadow'):
+        if not hasattr(self, 'has_shadow'):
             self.has_shadow = False
         else:
             if self.has_shadow:
                 self.children.append(Shadow(self.scene, self, parameters.SHADOW))
 
     def _get_surface(self):
-        '''surface is exported as pygame surface
-        BUT set with an str in next function'''
+        """surface is exported as pygame surface
+        BUT set with an str in next function"""
         return self._surface
+
     def _set_surface(self, new_surface):
-        '''set pygame surface, collision array and hitmap
-        according to newsurface (string of name or pygame surf)'''
-        if isinstance(new_surface, str) or new_surface == None:
+        """set pygame surface, collision array and hitmap
+        according to newsurface (string of name or pygame surf)"""
+        if isinstance(new_surface, str) or new_surface is None:
             if self.can_collide:
                 maps = self.scene.cont.surf_alt(new_surface, self.has_alpha)
                 # with alpha channel and collision array
@@ -127,15 +130,15 @@ class Visible(Actor):
         # remember opacity
         self._surface.set_alpha(self.opacity)
     surface = property(_get_surface, _set_surface)
-    
+
     def init_surface(self):
         self.surface = self.name
-    
+
     def add(self):
         Actor.add(self)
         for ani in self.children:
             ani.add()
-        
+
     def remove(self):
         Actor.remove(self)
         for ani in self.children:
@@ -143,9 +146,10 @@ class Visible(Actor):
 
     def hide(self):
         self.visible = False
-    
+
     def show(self):
         self.visible = True
+
 
 class Mobile(Visible):
     """a mobile sprite"""
@@ -169,7 +173,7 @@ class Mobile(Visible):
                 params['trajectory_params'])
             else:
                 self.movement = trajClass(self.scene, self)
-        
+
         self.base_surface = self.surface
         self.update_frame()
 
@@ -189,27 +193,27 @@ class Mobile(Visible):
     def _set_pos(self, new_position):
         self._pos = new_position[0], new_position[1]
     pos = property(_get_pos, _set_pos)
-    
+
     def update_frame(self):
         self.width = self.surface.get_width()
         self.height = self.surface.get_height()
         self.center = tools.get_center(self.pos, self.width, self.height)
-    
+
     def move(self, interval, time):
-        if self.trajectory != None:
+        if self.trajectory is not None:
             self._pos = self.movement.next_pos(self._pos, interval, time)
-        
+
     def center_on(self, target):
         """center self on another mobile or on x, y coordinates"""
         if hasattr(target, 'pos'):
             x, y = target._pos
             w, h = target.surface.get_width()/2., target.surface.get_height()/2.
             sw, sh = self.width/2., self.height/2.
-            self._pos = x + w - sw, y + h - sh 
+            self._pos = x + w - sw, y + h - sh
         else:
             x, y = target
             sw, sh = self.width/2., self.height/2.
-            self._pos = x - sw, y - sh 
+            self._pos = x - sw, y - sh
 
     def in_boundaries(self, pos, margin_proportion=0):
         # bad if outside screen and too far
@@ -217,7 +221,7 @@ class Mobile(Visible):
         right_limit = self.scene.limits[0] + self.scene.limits[0] * margin_proportion
         up_limit = - self.scene.limits[1] * margin_proportion
         down_limit = self.scene.limits[1] + self.scene.limits[1] * margin_proportion
-        
+
         if (pos[0] > right_limit
         or pos[1] > down_limit
         or pos[0] + self.width < left_limit
@@ -234,12 +238,14 @@ class Mobile(Visible):
             self.remove()
             del self
 
+
 class Anim(Actor):
     """basic animation actor
     when added in scene it changes its parent surface"""
     def __init__(self, scene, parent, params={}):
         Actor.__init__(self, scene, params)
         self.parent = parent
+
 
 class Film(Anim):
     """when added launches serie of sprites 
@@ -250,15 +256,14 @@ class Film(Anim):
         Anim.__init__(self, scene, parent, params)
         self.nb_frames = len(self.sprites)
         self.parent = parent
-        if  not hasattr(self,'to_nothing'):
+        if  not hasattr(self, 'to_nothing'):
             self.to_nothing = False
 
     def update(self, interval, time):
         still_up = False
         # accordin to time select right sprite or remove
         for i in range(self.nb_frames):
-            if (time >= self.init_time + i * self.pulse
-            and time < self.init_time + (i+1) * self.pulse):
+            if self.init_time + i * self.pulse <= time < self.init_time + (i+1) * self.pulse:
                 self.parent.surface = self.sprites[i]
                 still_up = True
                 break
@@ -267,6 +272,7 @@ class Film(Anim):
                     self.parent.init_surface()
                     self.parent.remove()
                 self.remove()
+
 
 class Loop(Film):
     def __init__(self, scene, parent, params):
@@ -288,9 +294,10 @@ class Loop(Film):
         else:
             self.cumul += interval
 
+
 class SyncLoop(Film):
-    '''This looping anim is relative to the time of the scene
-    so that anims with same durations are in sync'''
+    """This looping anim is relative to the time of the scene
+    so that anims with same durations are in sync"""
     def __init__(self, scene, parent, params):
         Film.__init__(self, scene, parent, params)
         self.cumul_dur = [0]
@@ -309,6 +316,7 @@ class SyncLoop(Film):
                 self.parent.surface = self.sprites[i]
                 break
 
+
 class Blank(Anim):
     def update(self, interval, time):
         # accordin to time select blank sprite
@@ -318,8 +326,9 @@ class Blank(Anim):
             self.parent.init_surface()
             self.remove()
 
+
 class Orient(Anim):
-    '''change surface according to direction'''
+    """change surface according to direction"""
     def __init__(self, scene, parent, params={}):
         Anim.__init__(self, scene, parent, params)
         self.parent = parent
@@ -332,7 +341,7 @@ class Orient(Anim):
         self.last_bend = 0
         self.righto = False
         self.lefto = False
-        
+
     def update(self, interval, time):
         # detect change of direction
         if self.player.go_right and not self.righto:
@@ -350,6 +359,7 @@ class Orient(Anim):
             self.parent.surface = self.base_name + self.id_char
         else:
             self.parent.init_surface()
+
 
 class Projectile(Mobile):
     """projectile positions should be accessed with position(index)
@@ -380,8 +390,10 @@ class Projectile(Mobile):
     def get_damage(self):
         return self.add_life
 
+
 class Bullet(Projectile):
     pass
+
 
 class Missile(Projectile):
     def __init__(self, scene, parent, params={}):
@@ -426,6 +438,7 @@ class Missile(Projectile):
             except AttributeError:
                 pass
 
+
 class Blast(Projectile):
     """charged shots
     power
@@ -442,6 +455,7 @@ class Blast(Projectile):
         amount = self.charge * self.power
         return amount
 
+
 class Landscape(Visible):
     """a scrolling background
     (not moving but looping)
@@ -454,11 +468,11 @@ class Landscape(Visible):
         self.full = self.surface
         self.width, self.height = self.full.get_size()
         self.offset = self.height
-    
+
     def update(self, interval, time):
         # move down the displayed area of landscape
         self.offset -= self.speed * interval
-        
+
         w, h = self.width, parameters.GAMESIZE[1]
         # do not loop if smaller than screen background
         if self.height >= h:
@@ -471,24 +485,25 @@ class Landscape(Visible):
                 h2 = h - (self.height - self.offset)
                 if self.has_alpha:
                     back = tools.make_rect(w, h, self.alpha_key)
-                    s1 = self.full.subsurface(0, t1,w,h1)
-                    s2 = self.full.subsurface(0, 0,w,h2)
+                    s1 = self.full.subsurface(0, t1, w, h1)
+                    s2 = self.full.subsurface(0, 0, w, h2)
                     s1.set_alpha(255)
                     s2.set_alpha(255)
                     s = tools.compose_surfaces(w, h, s1, s2, back)
-                    
+
                     s.set_colorkey(self.alpha_key)
                     s.set_alpha(self.opacity)
                 else:
-                    s1 = self.full.subsurface(0, t1,w,h1)
-                    s2 = self.full.subsurface(0, 0,w,h2)
-                    
+                    s1 = self.full.subsurface(0, t1, w, h1)
+                    s2 = self.full.subsurface(0, 0, w, h2)
+
                     s = tools.compose_surfaces(w, h, s1, s2)
             else:
-                s = self.full.subsurface(0, self.offset,w,h)
+                s = self.full.subsurface(0, self.offset, w, h)
         else:
             s = self.full
         self.surface = s
+
 
 class Catchable(Mobile):
     """this one you can catch
@@ -509,15 +524,19 @@ class Catchable(Mobile):
             self.weapon_bonus = 0
         else:
             self.weapon_bonus = self.effect['upgrade_weapon']
+
     # what happens when it collides with another object
     def collided(self, projectile, time):
         self.remove()
+
     # return quantity of heal (or damage)
     def get_damage(self):
         return self.add_life
+
     # return upgrade power
     def upgrade_weapon(self):
         return self.weapon_bonus
+
 
 class Fragile(Mobile):
     """this one can be hurt
@@ -564,20 +583,21 @@ class Fragile(Mobile):
             if self.life <= 0:
                 self.time_of_death = time
                 # recognize killer in the distance
-                if hasattr(projectile, 'parent'): 
+                if hasattr(projectile, 'parent'):
                     self.killer = projectile.parent
                 # close combat killing
                 else:
                     self.killer = projectile
+
     def get_damage(self):
         return parameters.COLLISIONDAMAGE
-    
+
     def die(self):
         # remove of scene
         self.remove()
         # reward shooter
         self.killer.score += self.reward
-        
+
         if self.has_bonus:
             # the bonus will appear where the non ally died
             self.bonus.center_on(self)
@@ -591,7 +611,7 @@ class Fragile(Mobile):
         self.end.add()
         # play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
-        
+
     def update(self, interval, time):
         Mobile.update(self, interval, time)
         # change color for some time if hit recently
@@ -600,6 +620,7 @@ class Fragile(Mobile):
             # ~ self.surface = self.scene.cont.hit[self.name]
         if self.life <= 0:
             self.die()
+
 
 class Fighter(Fragile):
     """a shooting mobile sprite"""
@@ -632,7 +653,8 @@ class Fighter(Fragile):
         # autofire
         x, y = (self.center[0], self.center[1])
         self.shoot(time, x, y)
-        
+
+
 class ChargeFighter(Fighter):
     """a charging mobile sprite
     charge_rate"""
@@ -667,6 +689,7 @@ class ChargeFighter(Fighter):
         # remove also charge display
         # ~ self.aura.remove()
 
+
 class Ship(ChargeFighter):
     """A ship controlled by player and shooting"""
     def __init__(self, scene, player, params):
@@ -677,7 +700,7 @@ class Ship(ChargeFighter):
         # ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
-        
+
     def fly(self, direction, interval):
         # should consider time passed
         offset = self.speed * interval
@@ -691,8 +714,8 @@ class Ship(ChargeFighter):
             new_pos = self._pos[0], self._pos[1]+offset
         new_center = tools.get_center(new_pos, self.width, self.height)
         # do not step outside screen
-        if (new_center[0] <= self.scene.limits[0] and new_center[0] >= 0
-        and new_center[1] <= self.scene.limits[1] and new_center[1] >= 0):
+        if (0 <= new_center[0] <= self.scene.limits[0]
+                and 0 <= new_center[1] <= self.scene.limits[1]):
             self._pos = new_pos
         else:
             # stick on border
@@ -719,11 +742,12 @@ class Ship(ChargeFighter):
         # player is dead
         self.player.alive = False
 
+
 class Follower(Mobile):
     """a sprite following another"""
     def __init__(self, scene, parent, params):
         Mobile.__init__(self, scene, params)
-        if  not hasattr(self,'offset'):
+        if  not hasattr(self, 'offset'):
             self.offset = 0, 0
         self.parent = parent
         self.center_on(self.parent)
@@ -735,14 +759,16 @@ class Follower(Mobile):
         self.center_on(self.parent)
         self._pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
 
+
 class Shadow(Follower):
     def __init__(self, scene, parent, params):
         Follower.__init__(self, scene, parent, params)
         self.surface = self.parent.shadow
-    
+
     def update(self, interval, time):
         Follower.update(self, interval, time)
         self.surface = self.parent.shadow
+
 
 class Charge(Follower):
     """showing the charge of ship"""
@@ -768,6 +794,7 @@ class Charge(Follower):
         # center on parent at the end of update
         Follower.update(self, interval, time)
 
+
 class Desc(Mobile):
     """showing descriptor on item"""
     def __init__(self, scene, parent, text='100', duration=500):
@@ -781,6 +808,7 @@ class Desc(Mobile):
         if time > self.parent.time_of_death + self.duration:
             self.remove()
         self.center_on(self.parent)
+
 
 class Widget(Mobile):
     def __init__(self, scene, path, params, offset=(0, 0)):
@@ -806,28 +834,28 @@ class Widget(Mobile):
     def new_value(self):
         """gets a value deep in scene"""
         return getattr_deep(self.scene, self.path)
-        
+
     def align(self):
         # recompute coordinates
         if 'center' in self.params:
             self.pos = (self.scene.limits[0]/2-self.shape[0]/2+self.offset[0],
-            self.scene.limits[1]/2-self.shape[1]/2+self.offset[1])
+                        self.scene.limits[1]/2-self.shape[1]/2+self.offset[1])
         if 'left' in self.params:
             self.pos = (self.offset[0], self.pos[1]+self.offset[1])
         if 'right' in self.params:
             self.pos = (self.scene.limits[0]-self.shape[0]+self.offset[0],
-            self.pos[1]+self.offset[1])
+                        self.pos[1]+self.offset[1])
         if 'top' in self.params:
             self.pos = (self.pos[0]+self.offset[0], self.offset[1])
         if 'bottom' in self.params:
             self.pos = (self.pos[0]+self.offset[0],
-            self.scene.limits[1]-self.shape[1]+self.offset[1])
+                        self.scene.limits[1]-self.shape[1]+self.offset[1])
 
     def skin(self, value):
         surface = self.scene.sfont.render(str(int(value)), False,
-        self.scene.theme['txt_color'])
+                                          self.scene.theme['txt_color'])
         return surface
-        
+
     def update(self, interval, time):
         # recompute surface
         new_value = self.new_value()
@@ -849,6 +877,7 @@ class Widget(Mobile):
                     self.shape = new_shape
                     self.align()
 
+
 class Score(Widget):
     """shows score of player (id given by path)"""
     def new_value(self):
@@ -862,6 +891,7 @@ class Score(Widget):
         surface = self.scene.sfont.render(value, False,
         self.scene.theme['txt_color'])
         return surface
+
 
 class Life(Widget):
     """shows life bar of player (id given by path)"""
