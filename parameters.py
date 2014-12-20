@@ -156,17 +156,18 @@ CHARGE = {
     'layer': BELOWSHIPLAY
 }
 
-# projectiles
-#
+#projectiles
+########################################
+
 SPREADER0_0 = {
     'name': 'spreader_0',
     'type': 'Bullet',
     'trajectory': 'Up',
     'speed': 0.3,
     'cooldown': 100,
-    'damage': 1,
-    'layer': BELOWSHIPLAY,
-    }
+    'effect': {'add_life': -1},
+    'layer': BELOWSHIPLAY
+}
 
 SPREADER0_22_5 = {
     'name': 'spreader_0_22.5',
@@ -174,7 +175,9 @@ SPREADER0_22_5 = {
     'trajectory': 'Line',
     'trajectory_params': {'angle': 22.5},
     'speed': SPREADER0_0['speed'],
-    'cooldown': SPREADER0_0['cooldown']
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER0_0['effect'],
+    'layer': BELOWSHIPLAY
 }
 
 SPREADER0_MINUS22_5 = {
@@ -183,7 +186,9 @@ SPREADER0_MINUS22_5 = {
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
     'speed': SPREADER0_0['speed'],
-    'cooldown': SPREADER0_0['cooldown']
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER0_0['effect'],
+    'layer': BELOWSHIPLAY
 }
 
 SPREADER0_45 = {
@@ -192,7 +197,9 @@ SPREADER0_45 = {
     'trajectory': 'Line',
     'trajectory_params': {'angle': 45},
     'speed': SPREADER0_0['speed'],
-    'cooldown': SPREADER0_0['cooldown']
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER0_0['effect'],
+    'layer': BELOWSHIPLAY
 }
 
 SPREADER0_MINUS45 = {
@@ -201,8 +208,173 @@ SPREADER0_MINUS45 = {
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
     'speed': SPREADER0_0['speed'],
-    'cooldown': SPREADER0_0['cooldown']
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER0_0['effect'],
+    'layer': BELOWSHIPLAY
 }
+
+SPREADER1_0 = {
+    'name': 'spreader_1',
+    'type': 'Bullet',
+    'trajectory': 'Up',
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': {'add_life': -2},
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER1_22_5 = {
+    'name': 'spreader_1_22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER1_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER1_MINUS22_5 = {
+    'name': 'spreader_1_-22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER1_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER1_45 = {
+    'name': 'spreader_1_45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER1_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER1_MINUS45 = {
+    'name': 'spreader_1_-45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER1_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER2_0 = {
+    'name': 'spreader_2',
+    'type': 'Bullet',
+    'trajectory': 'Up',
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': {'add_life': -3},
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER2_22_5 = {
+    'name': 'spreader_2_22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER2_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER2_MINUS22_5 = {
+    'name': 'spreader_2_-22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER2_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER2_45 = {
+    'name': 'spreader_2_45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER2_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER2_MINUS45 = {
+    'name': 'spreader_2_-45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER2_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER3_0 = {
+    'name': 'spreader_3',
+    'type': 'Bullet',
+    'trajectory': 'Up',
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': {'add_life': -5},
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER3_22_5 = {
+    'name': 'spreader_3_22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER3_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER3_MINUS22_5 = {
+    'name': 'spreader_3_-22.5',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -22.5},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER3_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER3_45 = {
+    'name': 'spreader_3_45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': 45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER3_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
+SPREADER3_MINUS45 = {
+    'name': 'spreader_3_-45',
+    'type': 'Bullet',
+    'trajectory': 'Line',
+    'trajectory_params': {'angle': -45},
+    'speed': SPREADER0_0['speed'],
+    'cooldown': SPREADER0_0['cooldown'],
+    'effect': SPREADER3_0['effect'],
+    'layer': BELOWSHIPLAY
+}
+
 
 BULLET = {
     'name': 'o',
@@ -234,17 +406,12 @@ MISSILE = {
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
     'speed': 0.4,
-    'cooldown': 200,
+    'cooldown': 50,
     'collision_type': 'pixel'
 }
 
-# weapons
-#
-SPREADER0 = {
-    'name': 'spreader0',
-    'levels': [[SPREADER0_0],[SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5],
-               [SPREADER0_MINUS45, SPREADER0_MINUS22_5, SPREADER0_0, SPREADER0_22_5, SPREADER0_45]]
-}
+#weapons
+#################################
 
 BLASTER = {
     'name': 'blaster',
@@ -260,9 +427,24 @@ MISSILE = {'name': 'missile',
            'levels': [[MISSILE]]
 }
 
+SPREADER = {'name': 'spreader0',
+            'levels': [[SPREADER0_0],
+                        [SPREADER1_0],
+                        [SPREADER0_MINUS22_5, SPREADER1_0, SPREADER0_22_5],
+                        [SPREADER1_MINUS22_5, SPREADER1_0, SPREADER1_22_5],
+                        [SPREADER0_MINUS45, SPREADER1_MINUS22_5, SPREADER1_0, SPREADER1_22_5, SPREADER0_45],
+                        [SPREADER0_MINUS45, SPREADER1_MINUS22_5, SPREADER2_0, SPREADER1_22_5, SPREADER0_45],
+                        [SPREADER1_MINUS45, SPREADER1_MINUS22_5, SPREADER2_0, SPREADER1_22_5, SPREADER1_45],
+                        [SPREADER1_MINUS45, SPREADER2_MINUS22_5, SPREADER2_0, SPREADER2_22_5, SPREADER1_45],
+                        [SPREADER1_MINUS45, SPREADER2_MINUS22_5, SPREADER3_0, SPREADER2_22_5, SPREADER1_45],
+                        [SPREADER2_MINUS45, SPREADER2_MINUS22_5, SPREADER3_0, SPREADER2_22_5, SPREADER2_45],
+                        [SPREADER2_MINUS45, SPREADER3_MINUS22_5, SPREADER3_0, SPREADER3_22_5, SPREADER2_45],
+                        [SPREADER3_MINUS45, SPREADER3_MINUS22_5, SPREADER3_0, SPREADER3_22_5, SPREADER3_45]]
+}
+
 
 # entities
-#
+#################################
 SHIP = {
     'name': 'ship',
     'type': 'Ship',
@@ -271,7 +453,7 @@ SHIP = {
     'speed': 0.2,
     'charge_rate': 0.001,
     'life': 10,
-    'weapons': [SPREADER0, BLASTER]
+    'weapons': [SPREADER]
 }
 
 STALKER = {
@@ -282,9 +464,8 @@ STALKER = {
     'speed': 0.1,
     'charge_rate': 0.001,
     'life': 20,
-    'weapons': [SPREADER0, MISSILE, BLASTER]
+    'weapons': [SPREADER, MISSILE, BLASTER]
 }
-
 
 INVINCIBLE = SHIP.copy()
 INVINCIBLE.update({'life': 10000})
