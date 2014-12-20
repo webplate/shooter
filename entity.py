@@ -65,8 +65,8 @@ class Weapon(Actor):
         for projectile in self.levels[i]:
             if time > self.last_shoot + projectile['cooldown']:
                 proj = globals()[projectile['type']]
+                projectile['initial_pos'] = (x, y)
                 p = proj(self.scene, self.parent, projectile)
-                p.center_on((x, y))
                 p.charge = power
                 p.add()
                 has_shot = True
@@ -170,12 +170,14 @@ class Mobile(Visible):
             # does it have special parameters ?
             if 'trajectory_params' in params:
                 self.movement = trajClass(self.scene, self,
-                params['trajectory_params'])
+                                          params['trajectory_params'])
             else:
                 self.movement = trajClass(self.scene, self)
 
         self.base_surface = self.surface
         self.update_frame()
+        if 'initial_pos' in params:
+            self.center_on(params['initial_pos'])
 
     def remove(self):
         """remove from scene"""
@@ -223,9 +225,9 @@ class Mobile(Visible):
         down_limit = self.scene.limits[1] + self.scene.limits[1] * margin_proportion
 
         if (pos[0] > right_limit
-        or pos[1] > down_limit
-        or pos[0] + self.width < left_limit
-        or pos[1] + self.height < up_limit):
+            or pos[1] > down_limit
+            or pos[0] + self.width < left_limit
+            or pos[1] + self.height < up_limit):
             return False
         else:
             return True
@@ -415,6 +417,7 @@ class Missile(Projectile):
                     min_target_count = item.is_target
         if self.target is not None:
             self.target.is_target += 1
+        params['initial_pos'] = (params['initial_pos'][0]+10, params['initial_pos'][1])
 
         # initialize projectile
         Projectile.__init__(self, scene, parent, params)

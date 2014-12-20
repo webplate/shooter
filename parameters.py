@@ -461,7 +461,7 @@ STALKER = {
     'type': 'Ship',
     'has_shadow': True,
     'ally': True,
-    'speed': 0.1,
+    'speed': 0.2,
     'charge_rate': 0.001,
     'life': 20,
     'weapons': [SPREADER, MISSILE, BLASTER]
