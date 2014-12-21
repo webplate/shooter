@@ -6,6 +6,8 @@ import pygame.locals as p_l
 # [ command name, player concerned, event type, event parameters ]
 # objects in the program can bind themselves to a control using the Shooter.bind_control method
 # (this method can usually be accessed throug scene.game.bind_control)
+# Shooter.bind_control_switch is used to bind both 'KEYDOWN' and 'KEYUP' at the same time
+# (this method should be used when the program needs the state of the key continuously and not only the event)
 # 'main.py' imports this list and handle pygame events by comparing them with bound controls
 # if all goes well, this is the only place in the program where the keys used to trigger events will be mentionned
 

@@ -707,7 +707,7 @@ class Ship(ChargeFighter):
 
     def trigger(self, control):
         if control[0] == 'shield':
-            if self.player.keys['shield'] == 0:
+            if self.player.keys['shield'] == 1:
                 print 'Shield On ( player', self.player.index, ')'
             else:
                 print 'Shield Off ( player', self.player.index, ')'

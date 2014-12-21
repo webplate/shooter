@@ -139,16 +139,18 @@ class Shooter():
                 pygame.mouse.set_visible(False)     # hide cursor
 
     def bind_control(self, control_name, player, target):
-        """bind a control event to a target
-        target.trigger will be called using adequate arguments
-        """
+        """bind a control event to a target"""
         for control in self.controls:
             if control[0] == control_name and control[1] == player:
                 control.append(target)
                 self.bound_controls.append(control)
-                print control, '( player', player, ') bound'
+                break
 
     def bind_control_switch(self, control_name, player, target):
+        """bind a keyboard input state (on/off) to a target
+        this function is used when the program needs to monitor the state of
+        a keyboard input continuously and not only the press/release events
+        """
         for control in self.controls:
             if (control[0] == control_name and control[1] == player
                     and (control[2] == p_l.KEYUP or control[2] == p_l.KEYDOWN)):
@@ -157,7 +159,13 @@ class Shooter():
                 control = [control[0], control[1], p_l.KEYDOWN, control[3], target]
                 self.bound_controls.append(control)
                 self.controls_state[player].update({control[0]: False})
-                print control, '( player', player, ') bound (switch)'
+                break
+
+    def unbind_control(self, control_name, player, target):
+        """unbind a control event from a target"""
+        for control in list(self.bound_controls):
+            if control[0] == control_name and control[1] == player and control[4] == target:
+                self.bound_controls.remove(control)
 
     def on_event(self, event):
         """propagate and interpret events"""
