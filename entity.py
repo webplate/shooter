@@ -552,10 +552,10 @@ class Fragile(Mobile):
         self.last_hit = 0
         self.time_of_death = None
         # cannot leave bonus when death by default
-        if not hasattr(self,'bonus_rate'):
+        if not hasattr(self, 'bonus_rate'):
             self.bonus_rate = 0
         # reward for killing
-        if not hasattr(self,'reward'):
+        if not hasattr(self, 'reward'):
             self.reward = 0
         # how a fragile can be collided
         if not hasattr(self, 'collision_type'):
@@ -703,14 +703,9 @@ class Ship(ChargeFighter):
         # ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
-        scene.game.bind_control_switch('shield', player.index, self)
 
     def trigger(self, control):
-        if control[0] == 'shield':
-            if self.player.keys['shield'] == 1:
-                print 'Shield On ( player', self.player.index, ')'
-            else:
-                print 'Shield Off ( player', self.player.index, ')'
+        pass
 
     def fly(self, direction, interval):
         # should consider time passed

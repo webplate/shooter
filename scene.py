@@ -371,7 +371,7 @@ class Scene():
             identifier = ((x, y), item.surface)
             self.lst_sprites.append(identifier, item.layer)
 
-    def update(self, interval = 0, time = 0):
+    def update(self, interval=0, time=0):
         self.now = time - self.delay
         # collision maps
         ship_map = []

@@ -39,8 +39,6 @@ content = [
     ['left', 0, p_l.KEYDOWN, p_l.K_LEFT],
     ['right', 0, p_l.KEYDOWN, p_l.K_RIGHT],
     ['shoot', 0, p_l.KEYDOWN, p_l.K_SPACE],
-    ['shield', 0, p_l.KEYDOWN, p_l.K_v],            # Shield player 0 (test command)
-
 
     # Player 2 (1)
     ['up', 1, p_l.KEYDOWN, p_l.K_w],
@@ -48,8 +46,6 @@ content = [
     ['left', 1, p_l.KEYDOWN, p_l.K_a],
     ['right', 1, p_l.KEYDOWN, p_l.K_d],
     ['shoot', 1, p_l.KEYDOWN, p_l.K_LSHIFT],
-    ['shield', 1, p_l.KEYDOWN, p_l.K_b],            # Shield player 1 (test command)
-
 
     # Player 3 (2)
 
