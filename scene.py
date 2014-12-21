@@ -3,32 +3,72 @@
 import entity, tools, parameters
 import numpy
 
-
 class Player():
     """class for player settings, controls, ships"""
     def __init__(self, scene, index):
         self.scene = scene
         self.index = index
         self.settings = self.scene.level['player']
-        self.keys = {
-            'up': False,
-            'down': False,
-            'right': False,
-            'left': False,
-            'shoot': False
-        }
-        self.key_lst = ['right', 'left', 'up', 'down', 'shoot']
+
+        # bind key events
+        self.keys = self.scene.game.controls_state[index]
+        self.scene.game.bind_control_switch('up', index, self)
+        self.scene.game.bind_control_switch('down', index, self)
+        self.scene.game.bind_control_switch('left', index, self)
+        self.scene.game.bind_control_switch('right', index, self)
+        self.scene.game.bind_control_switch('shoot', index, self)
+
         self.go_right = False
         self.go_left = False
         self.go_up = False
         self.go_down = False
         self.stop = True
+
         self.ship = None
         self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
         self.score = 0
         self.life = 0
         self.max_life = 1
+
+    def trigger(self, control):
+        # ship control events
+        if control[0] == 'up' or control[0] == 'down':
+            if self.keys['up'] and not self.go_up and not self.keys['down']:
+                self.go_up = True
+                self.stop = False
+            elif not self.keys['up'] and self.go_up:
+                self.go_up = False
+            if self.keys['down'] and not self.go_down and not self.keys['up']:
+                self.go_down = True
+                self.stop = False
+            elif not self.keys['down'] and self.go_down:
+                self.go_down = False
+
+        if control[0] == 'left' or control[0] == 'right':
+            if self.keys['right'] and not self.go_right and not self.keys['left']:
+                self.go_right = True
+                self.stop = False
+            elif not self.keys['right'] and self.go_right:
+                self.go_right = False
+            if self.keys['left'] and not self.go_left and not self.keys['right']:
+                self.go_left = True
+                self.stop = False
+            elif not self.keys['left'] and self.go_left:
+                self.go_left = False
+
+        if (not self.keys['up'] and not self.keys['down']
+                and not self.keys['right'] and not self.keys['left']):
+            self.stop = True
+
+        # shoot to join game !!
+        if control[0] == 'shoot':
+            if self.ship is None and self.keys['shoot']:
+                self.alive = True
+                self.ship = self.latent
+                # summon in scene
+                self.ship.add()
+
 
     def load_ship(self, parameters):
         # instantiate according to specified type
@@ -68,39 +108,7 @@ class Player():
             self.ship.charge = 0.
 
     def update(self, interval, time):
-        # where is going the ship ?
-        if self.keys['right'] and not self.go_right and not self.keys['left']:
-            self.go_right = True
-            self.stop = False
-        elif not self.keys['right'] and self.go_right:
-            self.go_right = False
-        if self.keys['left'] and not self.go_left and not self.keys['right']:
-            self.go_left = True
-            self.stop = False
-        elif not self.keys['left'] and self.go_left:
-            self.go_left = False
 
-        if self.keys['up'] and not self.go_up and not self.keys['down']:
-            self.go_up = True
-            self.stop = False
-        elif not self.keys['up'] and self.go_up:
-            self.go_up = False
-        if self.keys['down'] and not self.go_down and not self.keys['up']:
-            self.go_down = True
-            self.stop = False
-        elif not self.keys['down'] and self.go_down:
-            self.go_down = False
-
-        if ( not self.keys['up'] and not self.keys['down'] 
-        and not self.keys['right'] and not self.keys['left'] ):
-            self.stop = True
-
-        # shoot to join game !!
-        if self.ship is None and self.keys['shoot']:
-            self.alive = True
-            self.ship = self.latent
-            # summon in scene
-            self.ship.add()
         if self.alive:
             self.command(interval, time)
         # update info from ship if it exists

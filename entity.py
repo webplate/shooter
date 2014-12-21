@@ -703,10 +703,14 @@ class Ship(ChargeFighter):
         # ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
-        scene.game.bind_control('Shield', player.index, self)
+        scene.game.bind_control_switch('shield', player.index, self)
 
     def trigger(self, control):
-        print control[0], '- ship', self.player.index
+        if control[0] == 'shield':
+            if self.player.keys['shield'] == 0:
+                print 'Shield On ( player', self.player.index, ')'
+            else:
+                print 'Shield Off ( player', self.player.index, ')'
 
     def fly(self, direction, interval):
         # should consider time passed

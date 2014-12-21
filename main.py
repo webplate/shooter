@@ -104,16 +104,39 @@ class Shooter():
         # time reference
         self.now = 0
         # Load Controls
-        # self.controls = [
-        #     ['Missile', 0, p_l.KEYDOWN, 118],
-        #     ['Shield', 0, p_l.KEYUP, 118]
-        # ]
         self.controls = controls.content
+        self.controls_state = [{}, {}, {}, {}, {}]
         self.bound_controls = []
+        # Initial control binding
+        self.bind_control('quit', -1, self)
+        self.bind_control('pause', -1, self)
+        self.bind_control('mute', -1, self)
+        self.bind_control('fullscreen', -1, self)
         # Initialize scene
         self.scene = scene.Scene(self)
         # Players
         self.players = self.scene.players
+
+    def trigger(self, control):
+        if control[0] == 'quit':
+            self.running = False
+        if control[0] == 'pause':
+            if not self.scene.paused:
+                self.scene.pause(self.now*self.speed)
+            else:
+                self.scene.paused = False
+        if control[0] == 'mute':
+            if not self.scene.mute:
+                self.scene.mute = True
+            else:
+                self.scene.mute = False
+        if control[0] == 'fullscreen':
+            if self.fullscreen:
+                self.display = pygame.display.set_mode(self.winsize)
+            else:
+                self.display = pygame.display.set_mode(self.winsize,
+                    p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
+                pygame.mouse.set_visible(False)     # hide cursor
 
     def bind_control(self, control_name, player, target):
         """bind a control event to a target
@@ -123,10 +146,24 @@ class Shooter():
             if control[0] == control_name and control[1] == player:
                 control.append(target)
                 self.bound_controls.append(control)
-                print control, '( player', player, ') bound to', target
+                print control, '( player', player, ') bound'
+
+    def bind_control_switch(self, control_name, player, target):
+        for control in self.controls:
+            if (control[0] == control_name and control[1] == player
+                    and (control[2] == p_l.KEYUP or control[2] == p_l.KEYDOWN)):
+                control = [control[0], control[1], p_l.KEYUP, control[3], target]
+                self.bound_controls.append(control)
+                control = [control[0], control[1], p_l.KEYDOWN, control[3], target]
+                self.bound_controls.append(control)
+                self.controls_state[player].update({control[0]: False})
+                print control, '( player', player, ') bound (switch)'
 
     def on_event(self, event):
         """propagate and interpret events"""
+
+        if event.type == p_l.QUIT:
+            self.trigger(['quit'])
 
         for control in self.bound_controls:
             if control[2] == event.type:
@@ -134,51 +171,17 @@ class Shooter():
                 if event.type == p_l.KEYDOWN:
                     if event.key == control[3]:
                         if control[4] is not None:
+                            self.controls_state[control[1]].update({control[0]: True})
                             control[4].trigger(control)
                 # key released
                 elif control[2] == p_l.KEYUP:
                     if event.key == control[3]:
                         if control[4] is not None:
+                            self.controls_state[control[1]].update({control[0]: False})
                             control[4].trigger(control)
 
-        if (event.type == p_l.QUIT or
-        (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)):
-            self.running = False
-        elif event.type == p_l.KEYDOWN:
-            for i, keymap in enumerate(parameters.KEYMAPS):
-                if event.key in keymap:
-                    # update player key status
-                    key = keymap[event.key]
-                    if key in self.players[i].keys:
-                        self.players[i].keys[key] = True
-                    # switch to fullscreen
-                    if key == 'fullscreen':
-                        if self.fullscreen:
-                            self.display = pygame.display.set_mode(self.winsize)
-                        else:
-                            self.display = pygame.display.set_mode(self.winsize,
-                            p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
-                            pygame.mouse.set_visible(False)     # hide cursor
-                    elif key == 'pause':
-                        if not self.scene.paused:
-                            self.scene.pause(self.now*self.speed)
-                        else:
-                            self.scene.paused = False
-                    elif key == 'mute':
-                        if not self.scene.mute:
-                            self.scene.mute = True
-                        else:
-                            self.scene.mute = False
-        elif event.type == p_l.KEYUP:
-            for i, keymap in enumerate(parameters.KEYMAPS):
-                if event.key in keymap:
-                    # update player key status
-                    key = keymap[event.key]
-                    if key in self.players[i].keys:
-                        self.players[i].keys[key] = False
-
         # Joystick events
-        elif event.type == p_l.JOYAXISMOTION:
+        if event.type == p_l.JOYAXISMOTION:
             tol = 0.8
             if event.axis == 0:
                 if abs(event.value) < tol:
@@ -246,7 +249,6 @@ class Shooter():
             evts = pygame.event.get()
             for event in evts:
                 self.on_event(event)
-                print event
             # EVOLUTION
             self.on_loop()
             # RENDER

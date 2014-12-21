@@ -26,14 +26,27 @@ import pygame.locals as p_l
 
 content = [
     # Environment (-1)
+    ['quit', -1, p_l.KEYDOWN, p_l.K_ESCAPE],  # Quit game
+    ['pause', -1, p_l.KEYDOWN, p_l.K_p],  # Pause game
+    ['mute', -1, p_l.KEYDOWN, p_l.K_m],  # Sound on/off
+    ['fullscreen', -1, p_l.KEYDOWN, p_l.K_f],  # Fullscreen on/off
 
     # Player 1 (0)
-    ['Up',  0, p_l.KEYDOWN, p_l.K_v],
-    ['Shield', 0, p_l.KEYDOWN, p_l.K_v],        # Shield player 0 (test command)
+    ['up', 0, p_l.KEYDOWN, p_l.K_UP],
+    ['down', 0, p_l.KEYDOWN, p_l.K_DOWN],
+    ['left', 0, p_l.KEYDOWN, p_l.K_LEFT],
+    ['right', 0, p_l.KEYDOWN, p_l.K_RIGHT],
+    ['shoot', 0, p_l.KEYDOWN, p_l.K_SPACE],
+    ['shield', 0, p_l.KEYDOWN, p_l.K_v],            # Shield player 0 (test command)
 
 
     # Player 2 (1)
-    ['Shield', 1, p_l.KEYDOWN, p_l.K_b],            # Shield player 1 (test command)
+    ['up', 1, p_l.KEYDOWN, p_l.K_w],
+    ['down', 1, p_l.KEYDOWN, p_l.K_s],
+    ['left', 1, p_l.KEYDOWN, p_l.K_a],
+    ['right', 1, p_l.KEYDOWN, p_l.K_d],
+    ['shoot', 1, p_l.KEYDOWN, p_l.K_LSHIFT],
+    ['shield', 1, p_l.KEYDOWN, p_l.K_b],            # Shield player 1 (test command)
 
 
     # Player 3 (2)
