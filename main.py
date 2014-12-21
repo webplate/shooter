@@ -19,7 +19,7 @@
 
 import platform, os, pygame
 import pygame.locals as p_l
-import scene, parameters, tools
+import scene, parameters, tools, controls
 
 
 def load_level(level):
@@ -103,13 +103,44 @@ class Shooter():
                 joy.quit()
         # time reference
         self.now = 0
+        # Load Controls
+        # self.controls = [
+        #     ['Missile', 0, p_l.KEYDOWN, 118],
+        #     ['Shield', 0, p_l.KEYUP, 118]
+        # ]
+        self.controls = controls.content
+        self.bound_controls = []
         # Initialize scene
         self.scene = scene.Scene(self)
         # Players
         self.players = self.scene.players
 
+    def bind_control(self, control_name, player, target):
+        """bind a control event to a target
+        target.trigger will be called using adequate arguments
+        """
+        for control in self.controls:
+            if control[0] == control_name and control[1] == player:
+                control.append(target)
+                self.bound_controls.append(control)
+                print control, '( player', player, ') bound to', target
+
     def on_event(self, event):
         """propagate and interpret events"""
+
+        for control in self.bound_controls:
+            if control[2] == event.type:
+                # key pressed
+                if event.type == p_l.KEYDOWN:
+                    if event.key == control[3]:
+                        if control[4] is not None:
+                            control[4].trigger(control)
+                # key released
+                elif control[2] == p_l.KEYUP:
+                    if event.key == control[3]:
+                        if control[4] is not None:
+                            control[4].trigger(control)
+
         if (event.type == p_l.QUIT or
         (event.type == p_l.KEYDOWN and event.key == p_l.K_ESCAPE)):
             self.running = False
@@ -215,6 +246,7 @@ class Shooter():
             evts = pygame.event.get()
             for event in evts:
                 self.on_event(event)
+                print event
             # EVOLUTION
             self.on_loop()
             # RENDER

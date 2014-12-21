@@ -277,6 +277,9 @@ class Scene():
         entity.Landscape(self, parameters.CLOUD).add()
         self.update()
 
+    def trigger(self, control):
+        print control, 'in scene'
+
     def load_interface(self):
         # interface
         self.interface = [
