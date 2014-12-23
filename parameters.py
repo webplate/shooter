@@ -118,8 +118,8 @@ HITBLINK = {
 }
 
 SHIPORIENTATION = {
-    'type': 'Orient',
-    'id_char': '-',
+    'type': 'Roll',
+    'sprites': ['ship_roll_right', 'ship_roll_left'],
     'delay': 100
 }
 
@@ -184,7 +184,7 @@ SPREADER0_22_5 = {
 }
 
 SPREADER0_MINUS22_5 = {
-    'name': 'spreader_0_-22.5',
+    'name': 'spreader_0_22.5.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -206,7 +206,7 @@ SPREADER0_45 = {
 }
 
 SPREADER0_MINUS45 = {
-    'name': 'spreader_0_-45',
+    'name': 'spreader_0_45.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -238,7 +238,7 @@ SPREADER1_22_5 = {
 }
 
 SPREADER1_MINUS22_5 = {
-    'name': 'spreader_1_-22.5',
+    'name': 'spreader_1_22.5.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -260,7 +260,7 @@ SPREADER1_45 = {
 }
 
 SPREADER1_MINUS45 = {
-    'name': 'spreader_1_-45',
+    'name': 'spreader_1_45.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -292,7 +292,7 @@ SPREADER2_22_5 = {
 }
 
 SPREADER2_MINUS22_5 = {
-    'name': 'spreader_2_-22.5',
+    'name': 'spreader_2_22.5.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -314,7 +314,7 @@ SPREADER2_45 = {
 }
 
 SPREADER2_MINUS45 = {
-    'name': 'spreader_2_-45',
+    'name': 'spreader_2_45.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -346,7 +346,7 @@ SPREADER3_22_5 = {
 }
 
 SPREADER3_MINUS22_5 = {
-    'name': 'spreader_3_-22.5',
+    'name': 'spreader_3_22.5.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -368,7 +368,7 @@ SPREADER3_45 = {
 }
 
 SPREADER3_MINUS45 = {
-    'name': 'spreader_3_-45',
+    'name': 'spreader_3_45.Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},

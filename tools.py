@@ -61,9 +61,27 @@ def uniformize_surf(surface):
     no per pixel transparency"""
     
 
-def load_image(filename, theme, scene, alpha=True):
+def load_image(name, theme, scene, alpha=True):
     """loads an image, prepares it for play
-    or create a label if image absent"""
+    or create a label if image absent
+    or create a symmetry version if Vsym, Hsym or HVsym in name"""
+    if name.endswith('.Vsym'):
+        filename = name.rstrip('.Vsym')
+        Vsym = True
+        Hsym = False
+    elif name.endswith('.Hsym'):
+        filename = name.rstrip('.Hsym')
+        Hsym = True
+        Vsym = False
+    elif name.endswith('.HVsym'):
+        filename = name.rstrip('.HVsym')
+        Vsym = True
+        Hsym = True
+    else:
+        filename = name
+        Vsym = False
+        Hsym = False
+        
     if theme is not None:
         path = get_path('imgs', theme, filename + '.png')
         try:
@@ -78,6 +96,9 @@ def load_image(filename, theme, scene, alpha=True):
                 # first pixel sets transparent color
                 color = surface.get_at((0, 0))
                 surface.set_colorkey(color)
+            if Vsym or Hsym:
+                #create a vertical sym of surface
+                surface = pygame.transform.flip(surface, Vsym, Hsym)
     else:
         # no themepack: use labels as sprites
         surface = font_skin(scene, filename)

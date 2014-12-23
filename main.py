@@ -133,6 +133,8 @@ class Shooter():
         if control['name'] == 'fullscreen':
             if self.fullscreen:
                 self.display = pygame.display.set_mode(self.winsize)
+                pygame.mouse.set_visible(True)     # show cursor
+                self.fullscreen = False
             else:
                 self.display = pygame.display.set_mode(self.winsize,
                     p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
@@ -174,7 +176,7 @@ class Shooter():
         """propagate and interpret events"""
 
         if event.type == p_l.QUIT:
-            self.trigger(['quit'])
+            self.trigger({'name': 'quit'})
 
         for control in self.bound_controls:
             if control['event_type'] == event.type:

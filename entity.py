@@ -329,16 +329,13 @@ class Blank(Anim):
             self.remove()
 
 
-class Orient(Anim):
+class Roll(Anim):
     """change surface according to direction"""
     def __init__(self, scene, parent, params={}):
         Anim.__init__(self, scene, parent, params)
         self.parent = parent
         self.player = self.parent.player
         self.base_name = self.parent.name
-        # preload oriented sprites
-        self.scene.cont.surf(self.id_char + self.base_name)
-        self.scene.cont.surf(self.base_name + self.id_char)
         # ref for animation of ship movements
         self.last_bend = 0
         self.righto = False
@@ -356,9 +353,9 @@ class Orient(Anim):
             self.last_bend = time
         # show orientation of ship
         if self.player.go_right and time > self.last_bend + self.delay:
-            self.parent.surface = self.id_char + self.base_name
+            self.parent.surface = self.sprites[0]
         elif self.player.go_left  and time > self.last_bend + self.delay:
-            self.parent.surface = self.base_name + self.id_char
+            self.parent.surface = self.sprites[1]
         else:
             self.parent.init_surface()
 
@@ -719,7 +716,7 @@ class Ship(ChargeFighter):
         # keep ref of maximum life
         self.max_life = self.life
         # ship has orientation_anim
-        self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
+        self.children.append(Roll(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
         self.scene.game.bind_control_switch('shield', self.player.index, self)
 
