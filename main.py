@@ -23,7 +23,6 @@ import scene, parameters, tools, controls
 
 
 def load_level(level):
-
     """make sure the loaded level is playable"""
     ref = parameters.DEFAULTLEVEL
     for key in ref:
@@ -38,8 +37,7 @@ def load_level(level):
 
 
 class Shooter():
-    """a pygame shooter
-    """
+    """a pygame shooter"""
     def __init__(self):
         """initialize game"""
         self.running = True

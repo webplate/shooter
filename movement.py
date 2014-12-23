@@ -16,13 +16,17 @@ def pol2cart(radius, angle):
     return x, y
 
 
+def accelerate(speed, max_speed, acceleration, interval):
+    return min(speed + acceleration * interval, max_speed)
+
+
 class Trajectory():
     """a general position modifier"""
     def __init__(self, scene, mobile, params={}):
         self.scene = scene
         self.mobile = mobile
         # set init position of mobile
-        self.mobile.pos = (0, 0)
+        # self.mobile.pos = (0, 0)
 
 
 class Down(Trajectory):
@@ -221,16 +225,13 @@ class Targeted(Trajectory):
         Trajectory.__init__(self, scene, mobile, params)
         self.direction = 0.5-1j  # missiles are fired vertically
         self.direction /= abs(self.direction)
-        self.speed = 0  # scalar
-        self.acceleration = 0.0003  # pixels per square millisecond
-        self.max_speed = self.mobile.speed  # scalar
         self.max_rotate_speed = 0.01  # degree per pixel traveled
         self.last_targeting = scene.now
 
     def next_pos(self, pos, interval, time):
         pos = pos[0] + 1j * pos[1]  # make current position complex
 
-        if self.mobile.target is not None and self.mobile.target.life > 0 and (time - self.last_targeting > 50):
+        if self.mobile.target is not None and self.mobile.target.life > 0 and (time - self.last_targeting > 80):
             target_pos = self.mobile.target.center[0] + 1j * self.mobile.target.center[1]
             rel_pos = target_pos - pos
 
@@ -240,13 +241,11 @@ class Targeted(Trajectory):
             if abs(phi) < self.max_rotate_speed / 360 * 2 * math.pi * (time - self.last_targeting):
                 rot_angle = phi
             else:
-                rot_angle = phi / abs(phi) * self.max_rotate_speed * self.speed * (time - self.last_targeting)
+                rot_angle = phi / abs(phi) * self.max_rotate_speed * self.mobile.speed * (time - self.last_targeting)
             self.direction *= cmath.rect(1, rot_angle)  # rotate speed vector
             self.last_targeting = time
 
-        if self.speed < self.max_speed:
-            self.speed += self.acceleration * interval
-        pos += self.direction * self.speed * interval
+        pos += self.direction * self.mobile.speed * interval
 
         return pos.real, pos.imag
 

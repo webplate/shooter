@@ -401,6 +401,7 @@ class Missile(Projectile):
     def __init__(self, scene, parent, params={}):
         # define missile target
         self.target = None
+        self.launch_time = scene.now
         min_target_count = 10000000
         for item in scene.content:
             if not item.ally and hasattr(item, 'life'):
@@ -417,17 +418,28 @@ class Missile(Projectile):
                     min_target_count = item.is_target
         if self.target is not None:
             self.target.is_target += 1
-        params['initial_pos'] = (params['initial_pos'][0]+10, params['initial_pos'][1])
+        params['initial_pos'] = (params['initial_pos'][0]+4, params['initial_pos'][1]+5)
 
         # initialize projectile
         Projectile.__init__(self, scene, parent, params)
+        self.max_speed = self.speed  # missile has to accelerate
+        self.speed = 0.01  # initial speed
+        self.acceleration = 0.0003  # pixels per square millisecond
+
+        # save 'targeted' trajectory for later use
+        self.targeted_trajectory = self.movement
+
+        # set initial
+        self.movement = movement.Line(self.scene, self, {'angle': 90})
+        self.primary_trajectory = True
 
         # add crosshair
         if hasattr(self.target, 'life'):
             self.crosshair = Follower(scene, self.target, {'name': 'crosshair'})
             self.crosshair.add()
 
-    def __del__(self):
+    def remove(self):
+        Projectile.remove(self)
         try:
             self.crosshair.remove()
         except AttributeError:
@@ -435,11 +447,17 @@ class Missile(Projectile):
 
     def update(self, interval, time):
         Projectile.update(self, interval, time)
+        self.speed = movement.accelerate(self.speed, self.max_speed, self.acceleration, interval)
         if (self.target is None) or self.target.life <= 0:
             try:
                 self.crosshair.remove()
             except AttributeError:
                 pass
+        if (hasattr(self, 'movement') and self.primary_trajectory
+                and self.scene.now - self.launch_time > 150):
+            self.movement = self.targeted_trajectory
+            self.primary_trajectory = False
+            del self.targeted_trajectory
 
 
 class Blast(Projectile):
