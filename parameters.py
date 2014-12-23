@@ -405,7 +405,7 @@ MISSILE = {
     'trajectory': 'Targeted',
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
-    'speed': 0.4,
+    'speed': 0.2,
     'cooldown': 50,
     'collision_type': 'pixel'
 }
@@ -423,8 +423,8 @@ CANON = {
     'levels': [[BULLET]]
 }
 
-MISSILE = {'name': 'missile',
-           'levels': [[MISSILE]]
+MISSILE_WEAPON = {'name': 'missile',
+                  'levels': [[MISSILE]]
 }
 
 SPREADER = {'name': 'spreader0',
@@ -464,7 +464,7 @@ STALKER = {
     'speed': 0.2,
     'charge_rate': 0.001,
     'life': 20,
-    'weapons': [SPREADER, MISSILE, BLASTER]
+    'weapons': [SPREADER, MISSILE_WEAPON, BLASTER]
 }
 
 INVINCIBLE = SHIP.copy()

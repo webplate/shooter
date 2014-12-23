@@ -219,7 +219,8 @@ class Targeted(Trajectory):
     # Positions and speeds are complex numbers.
     def __init__(self, scene, mobile, params={}):
         Trajectory.__init__(self, scene, mobile, params)
-        self.direction = -1j  # missiles are fired vertically
+        self.direction = 0.5-1j  # missiles are fired vertically
+        self.direction /= abs(self.direction)
         self.speed = 0  # scalar
         self.acceleration = 0.0003  # pixels per square millisecond
         self.max_speed = self.mobile.speed  # scalar

@@ -33,7 +33,7 @@ class Player():
 
     def trigger(self, control):
         # ship control events
-        if control[0] == 'up' or control[0] == 'down':
+        if control['name'] == 'up' or control['name'] == 'down':
             if self.keys['up'] and not self.go_up and not self.keys['down']:
                 self.go_up = True
                 self.stop = False
@@ -45,7 +45,7 @@ class Player():
             elif not self.keys['down'] and self.go_down:
                 self.go_down = False
 
-        elif control[0] == 'left' or control[0] == 'right':
+        elif control['name'] == 'left' or control['name'] == 'right':
             if self.keys['right'] and not self.go_right and not self.keys['left']:
                 self.go_right = True
                 self.stop = False
@@ -62,7 +62,7 @@ class Player():
         #     self.stop = True
 
         # shoot to join game !!
-        elif control[0] == 'shoot':
+        elif control['name'] == 'shoot':
             if self.ship is None and self.keys['shoot']:
                 self.alive = True
                 self.ship = self.latent

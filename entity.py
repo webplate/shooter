@@ -706,7 +706,7 @@ class Ship(ChargeFighter):
         self.scene.game.bind_control_switch('shield', self.player.index, self)
 
     def trigger(self, control):
-        if control[0] == 'shield':
+        if control['name'] == 'shield':
             if self.player.keys['shield']:
                 print 'Shield Activated'
             if not self.player.keys['shield']:

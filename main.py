@@ -120,19 +120,19 @@ class Shooter():
         self.players = self.scene.players
 
     def trigger(self, control):
-        if control[0] == 'quit':
+        if control['name'] == 'quit':
             self.running = False
-        if control[0] == 'pause':
+        if control['name'] == 'pause':
             if not self.scene.paused:
                 self.scene.pause(self.now*self.speed)
             else:
                 self.scene.paused = False
-        if control[0] == 'mute':
+        if control['name'] == 'mute':
             if not self.scene.mute:
                 self.scene.mute = True
             else:
                 self.scene.mute = False
-        if control[0] == 'fullscreen':
+        if control['name'] == 'fullscreen':
             if self.fullscreen:
                 self.display = pygame.display.set_mode(self.winsize)
             else:
@@ -143,8 +143,8 @@ class Shooter():
     def bind_control(self, control_name, player, target):
         """bind a control event to a target"""
         for control in self.controls:
-            if control[0] == control_name and control[1] == player:
-                control.append(target)
+            if control['name'] == control_name and control['player'] == player:
+                control.update({'target': target})
                 self.bound_controls.append(control)
                 break
 
@@ -154,19 +154,21 @@ class Shooter():
         a keyboard input continuously and not only the press/release events
         """
         for control in self.controls:
-            if (control[0] == control_name and control[1] == player
-                    and (control[2] == p_l.KEYUP or control[2] == p_l.KEYDOWN)):
-                control = [control[0], control[1], p_l.KEYUP, control[3], target]
-                self.bound_controls.append(control)
-                control = [control[0], control[1], p_l.KEYDOWN, control[3], target]
-                self.bound_controls.append(control)
-                self.controls_state[player].update({control[0]: False})
+            if (control['name'] == control_name and control['player'] == player
+                    and (control['event_type'] == 'SWITCH')):
+                control.update({'event_type': p_l.KEYUP})
+                control.update({'target': target})
+                self.bound_controls.append(control.copy())
+                control.update({'event_type': p_l.KEYDOWN})
+                control.update({'target': target})
+                self.bound_controls.append(control.copy())
+                self.controls_state[player].update({control['name']: False})
                 break
 
     def unbind_control(self, control_name, player, target):
         """unbind a control event from a target"""
         for control in list(self.bound_controls):
-            if control[0] == control_name and control[1] == player and control[4] == target:
+            if control['name'] == control_name and control['player'] == player and control['target'] == target:
                 self.bound_controls.remove(control)
 
     def on_event(self, event):
@@ -176,19 +178,19 @@ class Shooter():
             self.trigger(['quit'])
 
         for control in self.bound_controls:
-            if control[2] == event.type:
+            if control['event_type'] == event.type:
                 # key pressed
                 if event.type == p_l.KEYDOWN:
-                    if event.key == control[3]:
-                        if control[4] is not None:
-                            self.controls_state[control[1]].update({control[0]: True})
-                            control[4].trigger(control)
+                    if event.key == control['event_params']:
+                        if control['target'] is not None:
+                            self.controls_state[control['player']].update({control['name']: True})
+                            control['target'].trigger(control)
                 # key released
-                elif control[2] == p_l.KEYUP:
-                    if event.key == control[3]:
-                        if control[4] is not None:
-                            self.controls_state[control[1]].update({control[0]: False})
-                            control[4].trigger(control)
+                elif control['event_type'] == p_l.KEYUP:
+                    if event.key == control['event_params']:
+                        if control['target'] is not None:
+                            self.controls_state[control['player']].update({control['name']: False})
+                            control['target'].trigger(control)
 
         # Joystick events
         if event.type == p_l.JOYAXISMOTION:

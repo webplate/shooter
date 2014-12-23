@@ -26,7 +26,7 @@ import pygame.locals as p_l
 # pygame keys (for keyboard events)
 # http://www.pygame.org/docs/ref/key.html
 
-content = [
+content_list = [
     # Environment (-1)
     ['quit', -1, p_l.KEYDOWN, p_l.K_ESCAPE],  # Quit game
     ['pause', -1, p_l.KEYDOWN, p_l.K_p],  # Pause game
@@ -34,19 +34,19 @@ content = [
     ['fullscreen', -1, p_l.KEYDOWN, p_l.K_f],  # Fullscreen on/off
 
     # Player 1 (0)
-    ['up', 0, p_l.KEYDOWN, p_l.K_UP],
-    ['down', 0, p_l.KEYDOWN, p_l.K_DOWN],
-    ['left', 0, p_l.KEYDOWN, p_l.K_LEFT],
-    ['right', 0, p_l.KEYDOWN, p_l.K_RIGHT],
-    ['shoot', 0, p_l.KEYDOWN, p_l.K_SPACE],
-    ['shield', 0, p_l.KEYDOWN, p_l.K_v],
+    ['up', 0, 'SWITCH', p_l.K_UP],
+    ['down', 0, 'SWITCH', p_l.K_DOWN],
+    ['left', 0, 'SWITCH', p_l.K_LEFT],
+    ['right', 0, 'SWITCH', p_l.K_RIGHT],
+    ['shoot', 0, 'SWITCH', p_l.K_SPACE],
+    ['shield', 0, 'SWITCH', p_l.K_v],
 
     # Player 2 (1)
-    ['up', 1, p_l.KEYDOWN, p_l.K_w],
-    ['down', 1, p_l.KEYDOWN, p_l.K_s],
-    ['left', 1, p_l.KEYDOWN, p_l.K_a],
-    ['right', 1, p_l.KEYDOWN, p_l.K_d],
-    ['shoot', 1, p_l.KEYDOWN, p_l.K_LSHIFT],
+    ['up', 1, 'SWITCH', p_l.K_w],
+    ['down', 1, 'SWITCH', p_l.K_s],
+    ['left', 1, 'SWITCH', p_l.K_a],
+    ['right', 1, 'SWITCH', p_l.K_d],
+    ['shoot', 1, 'SWITCH', p_l.K_LSHIFT],
 
     # Player 3 (2)
 
@@ -54,3 +54,10 @@ content = [
 
 ]
 
+key_list = ['name', 'player', 'event_type', 'event_params']
+content = []
+for control in content_list:
+    content_line = {}
+    for i, key in enumerate(key_list):
+        content_line.update({key_list[i]: control[i]})
+    content.append(content_line)
