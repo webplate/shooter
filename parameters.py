@@ -64,6 +64,10 @@ CLEBARD = {'name':'clebard',
 'txt_color' : (255, 200, 150)
 }
 
+CLEB2 = {'name':'cleb2',
+'txt_color' : (255, 200, 150)
+}
+
 IRONBRAIN = {'name':'ironbrain',
 'bg_color' : (100, 110, 100),
 'font' : "AtariSmall.ttf",
@@ -317,7 +321,8 @@ CLEBLEVEL = {'name':'clebard',
 'theme' : CLEBARD,
 'sound_pack' : MCPACK,
 'background' : DESERT,
-'nb_enemies' : 20
+'nb_enemies' : 6
 }
+
 
 LEVEL = CLEBLEVEL
