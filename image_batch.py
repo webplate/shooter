@@ -15,18 +15,18 @@ def uniformize_format(path, out) :
             # Open the image
             try :
                 img = Image.open(os.path.join(root, f))
-            except IOError :
+            except IOError:
                 continue
             img = img.convert("RGBA")
             color = color_keys[0]
             w, h = img.size
-            for x in range(w) :
-                for y in range(h) :
-                    if img.getpixel((x, y)) == color_keys[0] :
+            for x in range(w):
+                for y in range(h):
+                    if img.getpixel((x, y)) == color_keys[0]:
                         color = color_keys[1]
 
             back = Image.new("RGBA", img.size, color)
-            #paste on opaque background with img alpha map
+            # paste on opaque background with img alpha map
             back.paste(img, (0, 0), img)
             back = back.convert("RGB")
             back.save(os.path.join(out, f))
@@ -77,7 +77,7 @@ def make_description(path) :
         grouped.append(fs)
     
     for l in grouped :
-        print '\'sprites\' : ', sorted(l),','
+        print '\'sprites\' : '+str(sorted(l))+','
                     
 
 path = os.path.join('imgs', 'Shmup')
