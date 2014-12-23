@@ -45,7 +45,7 @@ class Player():
             elif not self.keys['down'] and self.go_down:
                 self.go_down = False
 
-        if control[0] == 'left' or control[0] == 'right':
+        elif control[0] == 'left' or control[0] == 'right':
             if self.keys['right'] and not self.go_right and not self.keys['left']:
                 self.go_right = True
                 self.stop = False
@@ -57,18 +57,17 @@ class Player():
             elif not self.keys['left'] and self.go_left:
                 self.go_left = False
 
-        if (not self.keys['up'] and not self.keys['down']
-                and not self.keys['right'] and not self.keys['left']):
-            self.stop = True
+        # if (not self.keys['up'] and not self.keys['down']
+        #         and not self.keys['right'] and not self.keys['left']):
+        #     self.stop = True
 
         # shoot to join game !!
-        if control[0] == 'shoot':
+        elif control[0] == 'shoot':
             if self.ship is None and self.keys['shoot']:
                 self.alive = True
                 self.ship = self.latent
                 # summon in scene
                 self.ship.add()
-
 
     def load_ship(self, parameters):
         # instantiate according to specified type

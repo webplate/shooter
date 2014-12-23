@@ -103,10 +103,12 @@ class Shooter():
                 joy.quit()
         # time reference
         self.now = 0
-        # Load Controls
+        # Load static sontrols from controls.py
         self.controls = controls.content
-        self.controls_state = [{}, {}, {}, {}, {}]
+        # Create empty lists of bound controls (those who are used)
         self.bound_controls = []
+        # Create a list of dictionaries containing control switches
+        self.controls_state = [{}, {}, {}, {}, {}]
         # Initial control binding
         self.bind_control('quit', -1, self)
         self.bind_control('pause', -1, self)

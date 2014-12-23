@@ -12,7 +12,10 @@ Windows users can download 'shooter_windows' and launch game.exe at :
 https://91.121.141.56/owncloud/public.php?service=files&t=3feddd8c098bb12f54899651417bc6bb
 
 
-Dependencies :
+Dependencies:
 python 2.7, pygame, numpy
 and to pack for windows :
 pyinstaller, pywin32
+
+MacOS:
+    libvorbis

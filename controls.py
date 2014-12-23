@@ -39,6 +39,7 @@ content = [
     ['left', 0, p_l.KEYDOWN, p_l.K_LEFT],
     ['right', 0, p_l.KEYDOWN, p_l.K_RIGHT],
     ['shoot', 0, p_l.KEYDOWN, p_l.K_SPACE],
+    ['shield', 0, p_l.KEYDOWN, p_l.K_v],
 
     # Player 2 (1)
     ['up', 1, p_l.KEYDOWN, p_l.K_w],
@@ -52,3 +53,4 @@ content = [
     # Player 4 (3)]
 
 ]
+
