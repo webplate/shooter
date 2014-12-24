@@ -406,7 +406,7 @@ MISSILE = {
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
     'speed': 0.2,
-    'cooldown': 50,
+    'cooldown': 100,
     'collision_type': 'pixel'
 }
 

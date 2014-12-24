@@ -143,25 +143,35 @@ class Shooter():
         for control in self.controls:
             if control['name'] == control_name and control['player'] == player:
                 control.update({'target': target})
-                self.bound_controls.append(control)
-                break
+                self.bound_controls.append(control.copy())
 
     def bind_control_switch(self, control_name, player, target):
-        """bind a keyboard input state (on/off) to a target
+        """bind a keyboard or joystick input state (on/off) to a target
         this function is used when the program needs to monitor the state of
         a keyboard input continuously and not only the press/release events
         """
         for control in self.controls:
-            if (control['name'] == control_name and control['player'] == player
-                    and (control['event_type'] == 'SWITCH')):
-                control.update({'event_type': p_l.KEYUP})
-                control.update({'target': target})
-                self.bound_controls.append(control.copy())
-                control.update({'event_type': p_l.KEYDOWN})
-                control.update({'target': target})
-                self.bound_controls.append(control.copy())
-                self.controls_state[player].update({control['name']: False})
-                break
+            if control['name'] == control_name and control['player'] == player:
+                if control['event_type'] == 'SWITCH':
+                    control.update({'event_type': p_l.KEYUP})
+                    control.update({'target': target})
+                    self.bound_controls.append(control.copy())
+                    control.update({'event_type': p_l.KEYDOWN})
+                    control.update({'target': target})
+                    self.bound_controls.append(control.copy())
+                    self.controls_state[player].update({control['name']: False})
+                elif control['event_type'] == 'JOY_SWITCH':
+                    control.update({'event_type': p_l.JOYBUTTONUP})
+                    control.update({'target': target})
+                    self.bound_controls.append(control.copy())
+                    control.update({'event_type': p_l.JOYBUTTONDOWN})
+                    control.update({'target': target})
+                    self.bound_controls.append(control.copy())
+                    self.controls_state[player].update({control['name']: False})
+                elif control['event_type'] == p_l.JOYAXISMOTION:
+                    control.update({'target': target})
+                    self.bound_controls.append(control.copy())
+                    self.controls_state[player].update({control['name']: False})
 
     def unbind_control(self, control_name, player, target):
         """unbind a control event from a target"""
@@ -171,7 +181,6 @@ class Shooter():
 
     def on_event(self, event):
         """propagate and interpret events"""
-
         if event.type == p_l.QUIT:
             self.trigger(['quit'])
 
@@ -179,46 +188,29 @@ class Shooter():
             if control['event_type'] == event.type:
                 # key pressed
                 if event.type == p_l.KEYDOWN:
-                    if event.key == control['event_params']:
-                        if control['target'] is not None:
-                            self.controls_state[control['player']].update({control['name']: True})
-                            control['target'].trigger(control)
+                    if event.key == control['event_params'] and control['target'] is not None:
+                        self.controls_state[control['player']].update({control['name']: True})
+                        control['target'].trigger(control)
                 # key released
-                elif control['event_type'] == p_l.KEYUP:
-                    if event.key == control['event_params']:
-                        if control['target'] is not None:
-                            self.controls_state[control['player']].update({control['name']: False})
-                            control['target'].trigger(control)
-
-        # Joystick events
-        if event.type == p_l.JOYAXISMOTION:
-            tol = 0.8
-            if event.axis == 0:
-                if abs(event.value) < tol:
-                    self.players[event.joy].keys['right'] = False
-                    self.players[event.joy].keys['left'] = False
-                elif event.value < tol:
-                    self.players[event.joy].keys['right'] = False
-                    self.players[event.joy].keys['left'] = True
-                elif event.value > -tol:
-                    self.players[event.joy].keys['right'] = True
-                    self.players[event.joy].keys['left'] = False
-            elif event.axis == 1:
-                if abs(event.value) < tol:
-                    self.players[event.joy].keys['up'] = False
-                    self.players[event.joy].keys['down'] = False
-                elif event.value < tol:
-                    self.players[event.joy].keys['up'] = True
-                    self.players[event.joy].keys['down'] = False
-                elif event.value > -tol:
-                    self.players[event.joy].keys['up'] = False
-                    self.players[event.joy].keys['down'] = True
-        elif event.type == p_l.JOYBUTTONDOWN:
-            if event.button == 2:
-                self.players[event.joy].keys['shoot'] = True
-        elif event.type == p_l.JOYBUTTONUP:
-            if event.button == 2:
-                self.players[event.joy].keys['shoot'] = False
+                if event.type == p_l.KEYUP:
+                    if event.key == control['event_params'] and control['target'] is not None:
+                        self.controls_state[control['player']].update({control['name']: False})
+                        control['target'].trigger(control)
+                # gamepad axis motion
+                elif control['event_type'] == p_l.JOYAXISMOTION:
+                    if event.axis == control['event_params']['axis'] and control['target'] is not None:
+                        control['event_params'].update({'value': event.value})
+                        control['target'].trigger(control)
+                # gamepad button pressed
+                if event.type == p_l.JOYBUTTONDOWN:
+                    if event.button == control['event_params'] and control['target'] is not None:
+                        self.controls_state[control['player']].update({control['name']: True})
+                        control['target'].trigger(control)
+                # gamepad button released
+                if event.type == p_l.JOYBUTTONUP:
+                    if event.button == control['event_params'] and control['target'] is not None:
+                        self.controls_state[control['player']].update({control['name']: False})
+                        control['target'].trigger(control)
 
     def on_loop(self):
         """alter and move objects according to altitude, movement..."""

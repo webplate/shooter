@@ -346,18 +346,18 @@ class Orient(Anim):
 
     def update(self, interval, time):
         # detect change of direction
-        if self.player.go_right and not self.righto:
+        if self.player.go['right'] and not self.righto:
             self.righto = True
             self.lefto = False
             self.last_bend = time
-        elif self.player.go_left and not self.lefto:
+        elif self.player.go['left'] and not self.lefto:
             self.lefto = True
             self.righto = False
             self.last_bend = time
         # show orientation of ship
-        if self.player.go_right and time > self.last_bend + self.delay:
+        if self.player.go['right'] and time > self.last_bend + self.delay:
             self.parent.surface = self.id_char + self.base_name
-        elif self.player.go_left  and time > self.last_bend + self.delay:
+        elif self.player.go['left']  and time > self.last_bend + self.delay:
             self.parent.surface = self.base_name + self.id_char
         else:
             self.parent.init_surface()
@@ -402,22 +402,27 @@ class Missile(Projectile):
         # define missile target
         self.target = None
         self.launch_time = scene.now
-        min_target_count = 10000000
+        min_target_count = float('inf')
         for item in scene.content:
             if not item.ally and hasattr(item, 'life'):
                 # add actor to the targeting system
-                if not hasattr(item, 'is_target'):
-                    item.is_target = 0
+                if not hasattr(item, 'targeters'):
+                    item.targeters = []
+                # number of missiles targeting the item
+                nTargeters = 0
+                for targeter in item.targeters:
+                    if targeter.type == 'Missile':
+                        nTargeters += 1
                 # target the actor if not already targeted
-                if item.is_target == 0:
+                if nTargeters == 0:
                     self.target = item
                     break
                 # otherwise, target the least targeted actor
-                elif item.is_target < min_target_count:
+                elif nTargeters < min_target_count:
                     self.target = item
-                    min_target_count = item.is_target
+                    min_target_count = nTargeters
         if self.target is not None:
-            self.target.is_target += 1
+            self.target.targeters.append(self)
         params['initial_pos'] = (params['initial_pos'][0]+4, params['initial_pos'][1]+5)
 
         # initialize projectile
@@ -721,14 +726,9 @@ class Ship(ChargeFighter):
         # ship has orientation_anim
         self.children.append(Orient(self.scene, self, parameters.SHIPORIENTATION))
         self.layer = parameters.SHIPLAY
-        self.scene.game.bind_control_switch('shield', self.player.index, self)
 
     def trigger(self, control):
-        if control['name'] == 'shield':
-            if self.player.keys['shield']:
-                print 'Shield Activated'
-            if not self.player.keys['shield']:
-                print 'Shield Deactivated'
+        pass
 
     def fly(self, direction, interval):
         # should consider time passed
