@@ -12,13 +12,9 @@ class Player():
         self.index = index
         self.settings = self.scene.level['player']
 
-        # bind key events
+        # create control state list and bind 'new_player' control
         self.keys = self.scene.game.controls_state[index]
-        self.scene.game.bind_control_switch('up', index, self)
-        self.scene.game.bind_control_switch('down', index, self)
-        self.scene.game.bind_control_switch('left', index, self)
-        self.scene.game.bind_control_switch('right', index, self)
-        self.scene.game.bind_control_switch('shoot', index, self)
+        self.scene.game.bind_control('new_player', self.index, self)
 
         self.go = {}
         self.go.update({'up': False})
@@ -30,48 +26,56 @@ class Player():
         self.ship = None
         self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
+        self.active = False
         self.score = 0
         self.life = 0
         self.max_life = 1
 
     def trigger(self, control):
+        # join game
+        if control['name'] == 'new_player' and self.ship is None:
+            # summon in scene
+            self.alive = True  # False when ship dies
+            self.active = True  # Remains True !
+            self.ship = self.latent
+            self.ship.add()
+            self.scene.game.unbind_control('new_player', self.index, self)
+            self.scene.game.bind_control_switch('up', self.index, self)
+            self.scene.game.bind_control_switch('down', self.index, self)
+            self.scene.game.bind_control_switch('left', self.index, self)
+            self.scene.game.bind_control_switch('right', self.index, self)
+            self.scene.game.bind_control_switch('shoot', self.index, self)
+
         # ship control events
-        axes = (('up', 'down'), ('left', 'right'))
-        for axis in axes:
-            if control['name'] in axis:
-                # joystick event
-                if control['event_type'] == p_l.JOYAXISMOTION:
-                    value = control['event_params']['value']
-                    tol = control['event_params']['tol']
-                    direction = control['event_params']['direction']
-                    if value > tol:
-                        self.keys[axis[0]] = False
-                    elif value < tol and direction == 'negative':
-                        self.keys[axis[0]] = True
-                    if value < tol:
-                        self.keys[axis[1]] = False
-                    elif value > tol and direction == 'positive':
-                        self.keys[axis[1]] = True
+        elif control['name'] in ['up', 'down', 'left', 'right']:
+            axes = (('up', 'down'), ('left', 'right'))
+            for axis in axes:
+                if control['name'] in axis:
+                    # joystick event
+                    if control['event_type'] == p_l.JOYAXISMOTION:
+                        value = control['event_params']['value']
+                        tol = control['event_params']['tol']
+                        direction = control['event_params']['direction']
+                        if value > tol:
+                            self.keys[axis[0]] = False
+                        elif value < tol and direction == 'negative':
+                            self.keys[axis[0]] = True
+                        if value < tol:
+                            self.keys[axis[1]] = False
+                        elif value > tol and direction == 'positive':
+                            self.keys[axis[1]] = True
 
-                # change movement flags accordingly
-                if self.keys[axis[0]] and not self.go[axis[0]] and not self.keys[axis[1]]:
-                    self.go[axis[0]] = True
-                    self.stop = False
-                elif not self.keys[axis[0]] and self.go[axis[0]]:
-                    self.go[axis[0]] = False
-                if self.keys[axis[1]] and not self.go[axis[1]] and not self.keys[axis[0]]:
-                    self.go[axis[1]] = True
-                    self.stop = False
-                elif not self.keys[axis[1]] and self.go[axis[1]]:
-                    self.go[axis[1]] = False
-
-        # shoot to join game !!
-        if control['name'] == 'shoot':
-            if self.ship is None and self.keys['shoot']:
-                self.alive = True
-                self.ship = self.latent
-                # summon in scene
-                self.ship.add()
+                    # change movement flags accordingly
+                    if self.keys[axis[0]] and not self.go[axis[0]] and not self.keys[axis[1]]:
+                        self.go[axis[0]] = True
+                        self.stop = False
+                    elif not self.keys[axis[0]] and self.go[axis[0]]:
+                        self.go[axis[0]] = False
+                    if self.keys[axis[1]] and not self.go[axis[1]] and not self.keys[axis[0]]:
+                        self.go[axis[1]] = True
+                        self.stop = False
+                    elif not self.keys[axis[1]] and self.go[axis[1]]:
+                        self.go[axis[1]] = False
 
     def load_ship(self, parameters):
         # instantiate according to specified type
