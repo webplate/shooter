@@ -197,17 +197,17 @@ class Shooter():
                         self.controls_state[control['player']].update({control['name']: False})
                         control['target'].trigger(control)
                 # gamepad axis motion
-                elif control['event_type'] == p_l.JOYAXISMOTION:
+                elif control['event_type'] == p_l.JOYAXISMOTION and event.joy == control['player']:
                     if event.axis == control['event_params']['axis'] and control['target'] is not None:
                         control['event_params'].update({'value': event.value})
                         control['target'].trigger(control)
                 # gamepad button pressed
-                if event.type == p_l.JOYBUTTONDOWN:
+                if event.type == p_l.JOYBUTTONDOWN and event.joy == control['player']:
                     if event.button == control['event_params'] and control['target'] is not None:
                         self.controls_state[control['player']].update({control['name']: True})
                         control['target'].trigger(control)
                 # gamepad button released
-                if event.type == p_l.JOYBUTTONUP:
+                if event.type == p_l.JOYBUTTONUP and event.joy == control['player']:
                     if event.button == control['event_params'] and control['target'] is not None:
                         self.controls_state[control['player']].update({control['name']: False})
                         control['target'].trigger(control)
