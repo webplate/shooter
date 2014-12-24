@@ -91,12 +91,13 @@ class Shooter():
         self.sfont = tools.load_font(self.theme['small_font'],
                                      self.theme['small_size'])
         # joysticks
-        self.joysticks = [[], [], [], [], []]  # josticks linked with each player
+        self.joysticks = [[], [], [], [], []]  # josticks linked with each player (1-4 + environment)
         pygame.joystick.init()
         joysticks = [pygame.joystick.Joystick(x)
                      for x in range(pygame.joystick.get_count())]
         for joy in joysticks:
             joy.init()
+            # append unassigned joystick to environment
             self.joysticks[-1].append(joy.get_id())
             # disable joystick used by Virtual Box (for mouse integration)
             if 'VirtualBox' in joy.get_name():
