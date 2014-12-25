@@ -325,7 +325,7 @@ class Scene():
             # rectangular projectile
             elif itemP.collision_type == 'rectangle':
                 for xT, yT, xTe, yTe, itemT in target_map:
-                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
+                    if xP < xTe and xPe > xT and yP < yTe and yPe > yT:
                         # (minx,miny), (maxx, maxy) are the intersection
                         # coordinate between target map and proj map
                         # coordinate are target map relative
@@ -337,7 +337,7 @@ class Scene():
             # pixel perfect projectile
             else:
                 for xT, yT, xTe, yTe, itemT in target_map:
-                    if xP <= xTe and xPe >= xT and yP <= yTe and yPe >= yT:
+                    if xP < xTe and xPe > xT and yP < yTe and yPe > yT:
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
@@ -396,7 +396,7 @@ class Scene():
                 if isinstance(item, entity.Fragile):
                     # populate collision maps
                     # precompute for faster detection
-                    width, height = self.cont.array[item.name].shape
+                    width, height = item.array.shape
                     identifier = (x, y, x+width, y+height, item)
                     if item.ally:
                         ship_map.append(identifier)
