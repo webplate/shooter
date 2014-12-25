@@ -381,8 +381,6 @@ class EightDir(Anim):
             targClass = globals()[ani['type']]
             instance = targClass(self.scene, self.parent, ani)
             self.anim_instances.append(instance)
-        #init appearance
-        self.replace_anim(4)
         self.last_change = 0
     
     def search_enemy(self, time):
@@ -411,15 +409,20 @@ class EightDir(Anim):
     
     def replace_anim(self, new_direction):
         '''replace current animation of parent'''
+        # the parameters
         ani = self.animations[new_direction]
-        for i in self.parent.children:
-            if i.type == ani['type']:
-                self.parent.children.remove(i)
-                del i
-        
+        # the instanciation of the one dir anim
         instance = self.anim_instances[new_direction]
+        # remove precedent anim
+        for i in self.parent.children:
+            if i in self.anim_instances:
+                i.remove()
+                self.parent.children.remove(i)
+        
         self.parent.children.append(instance)
+        
         instance.add()
+        print self.parent.name, self.parent.children
     
     def sprite_from_angle(self, angle):
         """align with sprite order"""
