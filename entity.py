@@ -193,6 +193,13 @@ class Mobile(Visible):
         Visible.__init__(self, scene, params)
         if not hasattr(self, 'speed'):
             self.speed = 0
+        if not hasattr(self, 'followers'):
+            self.followers = []
+        else:
+            for param_list in self.followers:
+                targClass = globals()[param_list['type']]
+                instance = targClass(self.scene, self, param_list)
+                self.children.append(instance)
         # the proportion of outside screen where mobile can subsist
         if not hasattr(self, 'margin_proportion'):
             self.margin_proportion = 1
@@ -201,13 +208,13 @@ class Mobile(Visible):
             self.movement = None
         else:
             # a trajectory object to control position
-            trajClass = getattr(movement, self.trajectory)
+            targClass = getattr(movement, self.trajectory)
             # does it have special parameters ?
             if 'trajectory_params' in params:
-                self.movement = trajClass(self.scene, self,
+                self.movement = targClass(self.scene, self,
                                           params['trajectory_params'])
             else:
-                self.movement = trajClass(self.scene, self)
+                self.movement = targClass(self.scene, self)
 
         self.base_surface = self.surface
         self.update_frame()
@@ -242,7 +249,6 @@ class Mobile(Visible):
 
     def center_on(self, target):
         """center self on another mobile or on x, y coordinates"""
-        self.update_frame()
         if hasattr(target, 'pos'):
             x, y = target._pos
             w, h = target.surface.get_width()/2., target.surface.get_height()/2.

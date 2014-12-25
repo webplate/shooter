@@ -143,6 +143,12 @@ CHARGEANIM = {
     'sprites': ['B', 'BB', 'BBB']
 }
 
+ROTORANIM = {
+    'type': 'SyncLoop',
+    'sprites': ['CopterA rotor1', 'CopterA rotorb'],
+    'durations': [50, 50]
+}
+
 # Special Effects
 #
 
@@ -164,6 +170,13 @@ CHARGE = {
     'type': 'Follower',
     'animations': [CHARGEANIM],
     'layer': BELOWSHIPLAY
+}
+
+ROTOR = {
+    'type': 'Follower',
+    'animations': [ROTORANIM],
+    'layer': OVERLAY,
+    'opacity': 100
 }
 
 #projectiles
@@ -427,8 +440,8 @@ MISSILE = {
     'trajectory': 'Targeted',
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
-    'speed': 0.2,
-    'cooldown': 100,
+    'speed': 0.05,
+    'cooldown': 500,
     'collision_type': 'pixel'
 }
 
@@ -448,6 +461,73 @@ CANON = {
 ANGLECANON = {
     'name': 'angular_canon',
     'levels': [[LINEBULLET]]
+}
+
+MISSILESIXTTDIR = {
+    'type': 'SixtDir',
+    'animations' : [
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 1a', 'RocketA 1b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 2a', 'RocketA 2b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 3a', 'RocketA 3b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 1a', 'RocketA 1b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 2a', 'RocketA 2b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 3a', 'RocketA 3b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 1a', 'RocketA 1b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 2a', 'RocketA 2b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 3a', 'RocketA 3b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 1a', 'RocketA 1b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 2a', 'RocketA 2b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['RocketA 3a', 'RocketA 3b'],
+        'durations': [50, 50]
+        },
+        
+    ]
 }
 
 MISSILE_WEAPON = {'name': 'missile',
@@ -567,6 +647,7 @@ COPTER = {
     'weapons': [ANGLECANON],
     'trajectory': 'GoFront',
     'animations': [COPTEREIGHTDIR],
+    'followers': [ROTOR],
     'reward': 1,
     'bonus_rate': 0.2
 }
@@ -660,7 +741,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 100,
+    'nb_enemies': 2,
     'player': DERVAL
 }
 

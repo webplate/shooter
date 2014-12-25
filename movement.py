@@ -225,7 +225,7 @@ class Targeted(Trajectory):
         Trajectory.__init__(self, scene, mobile, params)
         self.direction = 0.5-1j  # missiles are fired vertically
         self.direction /= abs(self.direction)
-        self.max_rotate_speed = 0.01  # degree per pixel traveled
+        self.max_rotate_speed = 0.1  # degree per pixel traveled
         self.last_targeting = scene.now
 
     def next_pos(self, pos, interval, time):
