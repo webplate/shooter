@@ -384,12 +384,9 @@ class Scene():
         self.nb_fighters = 0
         # explore scene
         # update individuals
-        i=0
         for item in self.content:
             # shoot and stuff
             item.update(interval, self.now)
-            i+=1
-        print i
         # create collision maps and sprite composition
         for item in self.content:
             if isinstance(item, entity.Mobile):

@@ -35,7 +35,6 @@ def load_level(level):
                     level[key].update({key2: ref2[key2]})
     return level
 
-
 class Shooter():
     """a pygame shooter"""
     def __init__(self):
@@ -169,7 +168,9 @@ class Shooter():
     def unbind_control(self, control_name, player, target):
         """unbind a control event from a target"""
         for control in list(self.bound_controls):
-            if control['name'] == control_name and control['player'] == player and control['target'] == target:
+            if (control['name'] == control_name
+                and control['player'] == player 
+                and control['target'] == target):
                 self.bound_controls.remove(control)
 
     def on_event(self, event):

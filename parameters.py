@@ -398,6 +398,18 @@ BULLET = {
     'collision_type': 'pixel'
 }
 
+LINEBULLET = {
+    'name': 'o',
+    'type': 'LineBullet',
+    'trajectory': 'Line',
+    'animations': [BULLETBLINK],
+    'damage': 1,
+    'layer': BELOWSHIPLAY,
+    'speed': 0.1,
+    'cooldown': SPREADER0_0['cooldown'] * 6,
+    'collision_type': 'pixel'
+}
+
 BLAST = {
     'name': 'blast',
     'type': 'Blast',
@@ -431,6 +443,11 @@ BLASTER = {
 CANON = {
     'name': 'canon',
     'levels': [[BULLET]]
+}
+
+ANGLECANON = {
+    'name': 'angular_canon',
+    'levels': [[LINEBULLET]]
 }
 
 MISSILE_WEAPON = {'name': 'missile',
@@ -547,7 +564,7 @@ COPTER = {
     'has_shadow': True,
     'speed': 0.03,
     'life': 9,
-    'weapons': [CANON],
+    'weapons': [ANGLECANON],
     'trajectory': 'GoFront',
     'animations': [COPTEREIGHTDIR],
     'reward': 1,
@@ -643,8 +660,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 50,
-    'player': DERVAL
+    'nb_enemies': 1,
+    'player': PLAYER
 }
 
 

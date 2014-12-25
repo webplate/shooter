@@ -28,6 +28,9 @@ class Actor(object):
         # layer for drawing on screen
         if not hasattr(self, 'layer'):
             self.layer = parameters.ACTORLAY
+        # variables to intermitently check for target
+        self.last_check = 0
+        self.target = None
         # priority of update
         self.priority = parameters.BASEPRIOR
 
@@ -44,6 +47,37 @@ class Actor(object):
     def remove(self):
         """remove from scene"""
         self.scene.content.remove(self)
+    
+    def search_enemy(self, time=None):
+        target = None
+        if time is None:
+            time = self.scene.now
+        # update targets every seconds
+        if time > self.last_check + 1000:
+            self.last_check = time
+            # target healthier player !
+            max_life = 0
+            for item in self.scene.content:
+                #~ print self.ally , item.ally
+                is_enemy = self.ally != item.ally
+                if is_enemy and hasattr(item, 'life'):
+                    if item.life > max_life:
+                        max_life = item.life
+                        target = item
+        return target
+    
+    def aim_angle(self):
+        if self.target is not None:
+            x, y = self.parent.center
+            xT, yT = self.target.center
+            #compute angle to target
+            a = math.degrees(math.atan2((yT - y), (xT - x)))
+            # angle relative to vertical axis
+            a += 90
+        else:
+            a = 0
+        return a
+    
 
 
 class Weapon(Actor):
@@ -372,9 +406,6 @@ class EightDir(Anim):
         Anim.__init__(self, scene, parent, params)
         self.parent = parent
         self.current = 0
-        # variables to intermitently check for target
-        self.last_check = 0
-        self.target = None
         #prepare animations instances
         self.anim_instances = []
         for ani in self.animations:
@@ -382,30 +413,6 @@ class EightDir(Anim):
             instance = targClass(self.scene, self.parent, ani)
             self.anim_instances.append(instance)
         self.last_change = 0
-    
-    def search_enemy(self, time):
-        # update targets every seconds
-        if time > self.last_check + 1000:
-            self.last_check = time
-            # target healthier player !
-            max_life = 0
-            for item in self.scene.content:
-                if item.ally and hasattr(item, 'life'):
-                    if item.life > max_life:
-                        max_life = item.life
-                        self.target = item
-    
-    def aim_angle(self):
-        if self.target is not None:
-            x, y = self.parent.center
-            xT, yT = self.target.center
-            #compute angle to target
-            opposed = (xT - x)
-            adjacent = (yT - y)
-            a = math.degrees(math.atan2(adjacent, opposed))
-        else:
-            a = 90
-        return a
     
     def replace_anim(self, new_direction):
         '''replace current animation of parent'''
@@ -419,20 +426,18 @@ class EightDir(Anim):
                 i.remove()
                 self.parent.children.remove(i)
         
-        self.parent.children.append(instance)
-        
+        self.parent.children.append(instance)        
         instance.add()
-        print self.parent.name, self.parent.children
     
     def sprite_from_angle(self, angle):
         """align with sprite order"""
-        angle = angle + 90
+        angle += 90
         i = angle / 360. * 8
         return int(round(i))
 
     def update(self, interval, time):
         #try to find a target
-        self.search_enemy(time)
+        self.target = self.search_enemy(time)
         #aim at it
         angle = self.aim_angle()
         new_direction = self.sprite_from_angle(angle)
@@ -440,7 +445,6 @@ class EightDir(Anim):
         if time > self.last_change + 100:
             if new_direction != self.current:
                 self.replace_anim(new_direction)
-                #~ print self.parent.children
                 self.current = new_direction
                 self.last_change = time
 
@@ -477,9 +481,20 @@ class Projectile(Mobile):
 class Bullet(Projectile):
     pass
 
+class LineBullet(Projectile):
+    def __init__(self, scene, parent, params={}):
+        Projectile.__init__(self, scene, parent, params)
+        # define target
+        self.target = self.search_enemy()
+        a = self.aim_angle()
+        # move toward enemy position at shooting time
+        self.movement = movement.Line(self.scene, self, {'angle': a})
+
 
 class Missile(Projectile):
     def __init__(self, scene, parent, params={}):
+        # initialize projectile
+        Projectile.__init__(self, scene, parent, params)
         # define missile target
         self.target = None
         self.launch_time = scene.now
@@ -499,10 +514,9 @@ class Missile(Projectile):
                     min_target_count = item.is_target
         if self.target is not None:
             self.target.is_target += 1
+        # custom offset
         params['initial_pos'] = (params['initial_pos'][0]+4, params['initial_pos'][1]+5)
-
-        # initialize projectile
-        Projectile.__init__(self, scene, parent, params)
+        
         self.max_speed = self.speed  # missile has to accelerate
         self.speed = 0.01  # initial speed
         self.acceleration = 0.0003  # pixels per square millisecond
@@ -807,9 +821,9 @@ class Ship(ChargeFighter):
     def trigger(self, control):
         if control['name'] == 'shield':
             if self.player.keys['shield']:
-                print 'Shield Activated'
+                m = 'Shield Activated'
             if not self.player.keys['shield']:
-                print 'Shield Deactivated'
+                m = 'Shield Deactivated'
 
     def fly(self, direction, interval):
         # should consider time passed
