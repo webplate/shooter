@@ -28,30 +28,57 @@ import pygame.locals as p_l
 
 content_list = [
     # Environment (-1)
-    ['quit', -1, p_l.KEYDOWN, p_l.K_ESCAPE],  # Quit game
-    ['pause', -1, p_l.KEYDOWN, p_l.K_p],  # Pause game
-    ['mute', -1, p_l.KEYDOWN, p_l.K_m],  # Sound on/off
-    ['fullscreen', -1, p_l.KEYDOWN, p_l.K_f],  # Fullscreen on/off
+    ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Quit game
+    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause game
+    ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
+    ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
+    ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
 
     # Player 1 (0)
-    ['up', 0, 'SWITCH', p_l.K_UP],
-    ['down', 0, 'SWITCH', p_l.K_DOWN],
-    ['left', 0, 'SWITCH', p_l.K_LEFT],
-    ['right', 0, 'SWITCH', p_l.K_RIGHT],
-    ['shoot', 0, 'SWITCH', p_l.K_SPACE],
-    ['shield', 0, 'SWITCH', p_l.K_v],
+    # Keyboard control
+    ['up', 0, 'SWITCH', {'key': p_l.K_UP}],
+    ['down', 0, 'SWITCH', {'key': p_l.K_DOWN}],
+    ['left', 0, 'SWITCH', {'key': p_l.K_LEFT}],
+    ['right', 0, 'SWITCH', {'key': p_l.K_RIGHT}],
+    ['shoot', 0, 'SWITCH', {'key': p_l.K_SPACE}],
+    ['new_player', 0, p_l.KEYDOWN, {'key': p_l.K_SPACE}],
+    # Joystick control
+    ['up', 0, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'negative',  'tol': -0.8}],
+    ['down', 0, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'positive',  'tol': 0.8}],
+    ['left', 0, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
+    ['right', 0, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
+    ['shoot', 0, 'JOY_SWITCH', {'button': 2}],
 
     # Player 2 (1)
-    ['up', 1, 'SWITCH', p_l.K_w],
-    ['down', 1, 'SWITCH', p_l.K_s],
-    ['left', 1, 'SWITCH', p_l.K_a],
-    ['right', 1, 'SWITCH', p_l.K_d],
-    ['shoot', 1, 'SWITCH', p_l.K_LSHIFT],
+    # Keyboard control
+    ['up', 1, 'SWITCH', {'key': p_l.K_w}],
+    ['down', 1, 'SWITCH', {'key': p_l.K_s}],
+    ['left', 1, 'SWITCH', {'key': p_l.K_a}],
+    ['right', 1, 'SWITCH', {'key': p_l.K_d}],
+    ['shoot', 1, 'SWITCH', {'key': p_l.K_LSHIFT}],
+    ['new_player', 1, p_l.KEYDOWN, {'key': p_l.K_LSHIFT}],
+    # Joystick control
+    ['up', 1, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'negative',  'tol': -0.8}],
+    ['down', 1, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'positive',  'tol': 0.8}],
+    ['left', 1, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
+    ['right', 1, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
+    ['shoot', 1, 'JOY_SWITCH', {'button': 2}],
 
     # Player 3 (2)
+    # Joystick control
+    ['up', 2, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'negative',  'tol': -0.8}],
+    ['down', 2, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'positive',  'tol': 0.8}],
+    ['left', 2, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
+    ['right', 2, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
+    ['shoot', 2, 'JOY_SWITCH', {'button': 2}],
 
     # Player 4 (3)]
-
+    # Joystick control
+    ['up', 3, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'negative',  'tol': -0.8}],
+    ['down', 3, p_l.JOYAXISMOTION, {'axis': 1, 'direction': 'positive',  'tol': 0.8}],
+    ['left', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
+    ['right', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
+    ['shoot', 3, 'JOY_SWITCH', {'button': 2}],
 ]
 
 key_list = ['name', 'player', 'event_type', 'event_params']
