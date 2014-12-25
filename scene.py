@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import entity, tools, parameters
 import numpy
+import pygame.locals as p_l
+
 
 class Player():
     """class for player settings, controls, ships"""
@@ -10,64 +12,70 @@ class Player():
         self.index = index
         self.settings = self.scene.level['player']
 
-        # bind key events
+        # create control state list and bind 'new_player' control
         self.keys = self.scene.game.controls_state[index]
-        self.scene.game.bind_control_switch('up', index, self)
-        self.scene.game.bind_control_switch('down', index, self)
-        self.scene.game.bind_control_switch('left', index, self)
-        self.scene.game.bind_control_switch('right', index, self)
-        self.scene.game.bind_control_switch('shoot', index, self)
+        self.scene.game.bind_control('new_player', self.index, self)
 
-        self.go_right = False
-        self.go_left = False
-        self.go_up = False
-        self.go_down = False
+        self.go = {}
+        self.go.update({'up': False})
+        self.go.update({'down': False})
+        self.go.update({'left': False})
+        self.go.update({'right': False})
         self.stop = True
 
         self.ship = None
         self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
+        self.active = False
         self.score = 0
         self.life = 0
         self.max_life = 1
 
     def trigger(self, control):
+        # join game
+        if control['name'] == 'new_player' and self.ship is None:
+            # summon in scene
+            self.alive = True  # False when ship dies
+            self.active = True  # Remains True !
+            self.ship = self.latent
+            self.ship.add()
+            self.scene.game.unbind_control('new_player', self.index, self)
+            self.scene.game.bind_control_switch('up', self.index, self)
+            self.scene.game.bind_control_switch('down', self.index, self)
+            self.scene.game.bind_control_switch('left', self.index, self)
+            self.scene.game.bind_control_switch('right', self.index, self)
+            self.scene.game.bind_control_switch('shoot', self.index, self)
+
         # ship control events
-        if control['name'] == 'up' or control['name'] == 'down':
-            if self.keys['up'] and not self.go_up and not self.keys['down']:
-                self.go_up = True
-                self.stop = False
-            elif not self.keys['up'] and self.go_up:
-                self.go_up = False
-            if self.keys['down'] and not self.go_down and not self.keys['up']:
-                self.go_down = True
-                self.stop = False
-            elif not self.keys['down'] and self.go_down:
-                self.go_down = False
+        elif control['name'] in ['up', 'down', 'left', 'right']:
+            axes = (('up', 'down'), ('left', 'right'))
+            for axis in axes:
+                if control['name'] in axis:
+                    # joystick event
+                    if control['event_type'] == p_l.JOYAXISMOTION:
+                        value = control['event_params']['value']
+                        tol = control['event_params']['tol']
+                        direction = control['event_params']['direction']
+                        if value > tol:
+                            self.keys[axis[0]] = False
+                        elif value < tol and direction == 'negative':
+                            self.keys[axis[0]] = True
+                        if value < tol:
+                            self.keys[axis[1]] = False
+                        elif value > tol and direction == 'positive':
+                            self.keys[axis[1]] = True
 
-        elif control['name'] == 'left' or control['name'] == 'right':
-            if self.keys['right'] and not self.go_right and not self.keys['left']:
-                self.go_right = True
-                self.stop = False
-            elif not self.keys['right'] and self.go_right:
-                self.go_right = False
-            if self.keys['left'] and not self.go_left and not self.keys['right']:
-                self.go_left = True
-                self.stop = False
-            elif not self.keys['left'] and self.go_left:
-                self.go_left = False
-
-        # if (not self.keys['up'] and not self.keys['down']
-        #         and not self.keys['right'] and not self.keys['left']):
-        #     self.stop = True
-
-        # shoot to join game !!
-        elif control['name'] == 'shoot':
-            if self.ship is None and self.keys['shoot']:
-                self.alive = True
-                self.ship = self.latent
-                # summon in scene
-                self.ship.add()
+                    # change movement flags accordingly
+                    if self.keys[axis[0]] and not self.go[axis[0]] and not self.keys[axis[1]]:
+                        self.go[axis[0]] = True
+                        self.stop = False
+                    elif not self.keys[axis[0]] and self.go[axis[0]]:
+                        self.go[axis[0]] = False
+                    if self.keys[axis[1]] and not self.go[axis[1]] and not self.keys[axis[0]]:
+                        self.go[axis[1]] = True
+                        self.stop = False
+                    elif not self.keys[axis[1]] and self.go[axis[1]]:
+                        self.go[axis[1]] = False
 
     def load_ship(self, parameters):
         # instantiate according to specified type
@@ -85,13 +93,13 @@ class Player():
 
     def command(self, interval, time):
         """command ship !!"""
-        if self.go_right:
+        if self.go['right']:
             self.ship.fly('right', interval)
-        elif self.go_left:
+        elif self.go['left']:
             self.ship.fly('left', interval)
-        if self.go_up:
+        if self.go['up']:
             self.ship.fly('up', interval)
-        elif self.go_down:
+        elif self.go['down']:
             self.ship.fly('down', interval)
         # is the ship charging ?
         if self.keys['shoot']:
@@ -285,7 +293,7 @@ class Scene():
         self.update()
 
     def trigger(self, control):
-        print control, 'in scene'
+        pass
 
     def load_interface(self):
         # interface
