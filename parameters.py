@@ -85,6 +85,13 @@ IRONBRAIN = {'name':'ironbrain',
 
 # Various....
 COLLISIONDAMAGE = -1
+
+#itempriorities
+BASEPRIOR = 0
+FOLLOWPRIOR = 1
+ANIMPRIOR = 10
+BLANKPRIOR = 20
+
 # set layers of sprites
 INTERFACELAY = 25
 FRONTLAY = 20

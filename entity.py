@@ -29,7 +29,7 @@ class Actor(object):
         if not hasattr(self, 'layer'):
             self.layer = parameters.ACTORLAY
         # priority of update
-        self.priority = 0
+        self.priority = parameters.BASEPRIOR
 
     def set_param(self, params):
         self.params = params
@@ -247,6 +247,8 @@ class Anim(Actor):
     def __init__(self, scene, parent, params={}):
         Actor.__init__(self, scene, params)
         self.parent = parent
+        # appearance should be updated late
+        self.priority = parameters.ANIMPRIOR
 
 
 class Film(Anim):
@@ -852,7 +854,7 @@ class Follower(Mobile):
         self.parent = parent
         self.center_on(self.parent)
         # should be updated after parents
-        self.priority = 1
+        self.priority = parameters.FOLLOWPRIOR
 
     def move(self, interval, time):
         """move to be centered on parent"""
