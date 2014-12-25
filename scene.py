@@ -281,9 +281,11 @@ class Scene():
         # content in priority update order
         self.content = Ordered()
 
+        self.update = self.update_menu
+
         level = parameters.LEVEL
         level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
-        self.play_level(level)
+        # self.play_level(level)
 
         self.game.bind_control('change_level', -1, self)
 
@@ -381,14 +383,6 @@ class Scene():
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
 
-    def update_paused(self, interval=0, time=0):
-        # stop background music
-        self.cont.music()
-        # check for resuming
-        if not self.paused:
-            self.delay += time - self.pause_time
-            self.update = self.orig_update
-
     def pause(self, time):
         self.pause_time = time
         self.paused = True
@@ -402,7 +396,18 @@ class Scene():
             identifier = ((x, y), item.surface)
             self.lst_sprites.append(identifier, item.layer)
 
-    def update(self, interval=0, time=0):
+    def update_menu(self, interval=0, time=0):
+        pass
+
+    def update_paused(self, interval=0, time=0):
+        # stop background music
+        self.cont.music()
+        # check for resuming
+        if not self.paused:
+            self.delay += time - self.pause_time
+            self.update = self.orig_update
+
+    def update_level(self, interval=0, time=0):
         self.now = time - self.delay
         # collision maps
         ship_map = []
