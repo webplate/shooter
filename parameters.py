@@ -487,6 +487,66 @@ SAUCER = {
     'bonus_rate': 0.2
 }
 
+
+COPTEREIGHTDIR = {
+    'type': 'EightDir',
+    'animations' : [
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 1a', 'CopterA 1b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 2a', 'CopterA 2b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 3a', 'CopterA 3b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 4a', 'CopterA 4b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 5a', 'CopterA 5b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 6a', 'CopterA 6b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 7a', 'CopterA 7b'],
+        'durations': [50, 50]
+        },
+        {
+        'type': 'SyncLoop',
+        'sprites': ['CopterA 8a', 'CopterA 8b'],
+        'durations': [50, 50]
+        }
+    ]
+}
+
+COPTER = {
+    'name': 'copter',
+    'type': 'Fighter',
+    'has_shadow': True,
+    'speed': 0.03,
+    'life': 9,
+    'weapons': [CANON],
+    'trajectory': 'GoFront',
+    'animations': [COPTEREIGHTDIR],
+    'reward': 1,
+    'bonus_rate': 0.2
+}
+
 DESERT = {
     'name': 'desert',
     'type': 'Landscape',
@@ -558,7 +618,8 @@ DEFAULTLEVEL = {
     'background': DEFAULTBACKGROUND,
     'music': 'background',
     'nb_enemies': 6,
-    'player': PLAYER
+    'player': PLAYER,
+    'enemy': SAUCER
 }
 
 STRESSLEVEL = {
@@ -575,8 +636,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 40,
-    'player': DERVAL
+    'nb_enemies': 1,
+    'player': PLAYER
 }
 
 

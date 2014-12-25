@@ -434,7 +434,7 @@ class Scene():
         self.collide(target_proj_map, ship_map, self.now)
         # evolution of scenery
         if self.nb_fighters < self.level['nb_enemies']:
-            fighter = entity.Fighter(self, parameters.SAUCER)
+            fighter = entity.Fighter(self, self.level['enemy'])
             # add in scene
             fighter.add()
         # update music playback
