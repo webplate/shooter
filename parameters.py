@@ -660,8 +660,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 1,
-    'player': PLAYER
+    'nb_enemies': 40,
+    'player': DERVAL
 }
 
 

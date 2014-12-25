@@ -49,7 +49,6 @@ class Actor(object):
         self.scene.content.remove(self)
     
     def search_enemy(self, time=None):
-        target = None
         if time is None:
             time = self.scene.now
         # update targets every seconds
@@ -58,13 +57,11 @@ class Actor(object):
             # target healthier player !
             max_life = 0
             for item in self.scene.content:
-                #~ print self.ally , item.ally
                 is_enemy = self.ally != item.ally
                 if is_enemy and hasattr(item, 'life'):
                     if item.life > max_life:
                         max_life = item.life
-                        target = item
-        return target
+                        self.target = item
     
     def aim_angle(self):
         if self.target is not None:
@@ -72,10 +69,8 @@ class Actor(object):
             xT, yT = self.target.center
             #compute angle to target
             a = math.degrees(math.atan2((yT - y), (xT - x)))
-            # angle relative to vertical axis
-            a += 90
         else:
-            a = 0
+            a = 90
         return a
     
 
@@ -437,7 +432,7 @@ class EightDir(Anim):
 
     def update(self, interval, time):
         #try to find a target
-        self.target = self.search_enemy(time)
+        self.search_enemy(time)
         #aim at it
         angle = self.aim_angle()
         new_direction = self.sprite_from_angle(angle)
@@ -485,8 +480,8 @@ class LineBullet(Projectile):
     def __init__(self, scene, parent, params={}):
         Projectile.__init__(self, scene, parent, params)
         # define target
-        self.target = self.search_enemy()
-        a = self.aim_angle()
+        self.search_enemy()
+        a = self.aim_angle() + 90
         # move toward enemy position at shooting time
         self.movement = movement.Line(self.scene, self, {'angle': a})
 
