@@ -86,6 +86,8 @@ class Visible(Actor):
             self.opacity = 255
         if not hasattr(self, 'can_collide'):
             self.can_collide = True
+        # start with surface corresponding 
+        self.surface_name = self.name
         self.init_surface()
         # a list of childrens (following scene state changes)
         self.children = []
@@ -124,6 +126,8 @@ class Visible(Actor):
                 self._surface = surf
             # remember alpha colorkey
             self.alpha_key = self._surface.get_colorkey()
+            # keep new name
+            self.surface_name = new_surface
         else:
             # modify actual surface
             self._surface = new_surface
@@ -132,7 +136,7 @@ class Visible(Actor):
     surface = property(_get_surface, _set_surface)
 
     def init_surface(self):
-        self.surface = self.name
+        self.surface = self.surface_name
 
     def add(self):
         Actor.add(self)
@@ -332,7 +336,8 @@ class Blank(Anim):
 
 
 class Roll(Anim):
-    """change surface according to direction"""
+    """change surface according to direction
+    needs 3 sprites"""
     def __init__(self, scene, parent, params={}):
         Anim.__init__(self, scene, parent, params)
         self.parent = parent
@@ -357,9 +362,9 @@ class Roll(Anim):
         if self.player.go_right and time > self.last_bend + self.delay:
             self.parent.surface = self.sprites[0]
         elif self.player.go_left  and time > self.last_bend + self.delay:
-            self.parent.surface = self.sprites[1]
+            self.parent.surface = self.sprites[2]
         else:
-            self.parent.init_surface()
+            self.parent.surface = self.sprites[1]
 
 class EightDir(Anim):
     """change surface according to direction toward target"""

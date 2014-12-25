@@ -126,7 +126,7 @@ HITBLINK = {
 
 SHIPORIENTATION = {
     'type': 'Roll',
-    'sprites': ['ship_roll_right', 'ship_roll_left'],
+    'sprites': ['ship_roll_right', 'ship', 'ship_roll_left'],
     'delay': 100
 }
 
@@ -643,8 +643,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 1,
-    'player': PLAYER
+    'nb_enemies': 50,
+    'player': DERVAL
 }
 
 
