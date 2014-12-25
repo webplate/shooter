@@ -619,7 +619,7 @@ DEFAULTLEVEL = {
     'music': 'background',
     'nb_enemies': 6,
     'player': PLAYER,
-    'enemy': SAUCER
+    'enemy': COPTER
 }
 
 STRESSLEVEL = {

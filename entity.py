@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-import random
+import random, math
 import movement, tools, parameters
 
 
@@ -359,6 +359,80 @@ class Roll(Anim):
         else:
             self.parent.init_surface()
 
+class EightDir(Anim):
+    """change surface according to direction toward target"""
+    def __init__(self, scene, parent, params={}):
+        Anim.__init__(self, scene, parent, params)
+        self.parent = parent
+        self.current = 0
+        # variables to intermitently check for target
+        self.last_check = 0
+        self.target = None
+        #prepare animations instances
+        self.anim_instances = []
+        for ani in self.animations:
+            targClass = globals()[ani['type']]
+            instance = targClass(self.scene, self.parent, ani)
+            self.anim_instances.append(instance)
+        #init appearance
+        self.replace_anim(4)
+        self.last_change = 0
+    
+    def search_enemy(self, time):
+        # update targets every seconds
+        if time > self.last_check + 1000:
+            self.last_check = time
+            # target healthier player !
+            max_life = 0
+            for item in self.scene.content:
+                if item.ally and hasattr(item, 'life'):
+                    if item.life > max_life:
+                        max_life = item.life
+                        self.target = item
+    
+    def aim_angle(self):
+        if self.target is not None:
+            x, y = self.parent.center
+            xT, yT = self.target.center
+            #compute angle to target
+            opposed = (xT - x)
+            adjacent = (yT - y)
+            a = math.degrees(math.atan2(adjacent, opposed))
+        else:
+            a = 90
+        return a
+    
+    def replace_anim(self, new_direction):
+        '''replace current animation of parent'''
+        ani = self.animations[new_direction]
+        for i in self.parent.children:
+            if i.type == ani['type']:
+                self.parent.children.remove(i)
+                del i
+        
+        instance = self.anim_instances[new_direction]
+        self.parent.children.append(instance)
+        instance.add()
+    
+    def sprite_from_angle(self, angle):
+        """align with sprite order"""
+        angle = angle + 90
+        i = angle / 360. * 8
+        return int(round(i))
+
+    def update(self, interval, time):
+        #try to find a target
+        self.search_enemy(time)
+        #aim at it
+        angle = self.aim_angle()
+        new_direction = self.sprite_from_angle(angle)
+        # update appearance every 100ms
+        if time > self.last_change + 100:
+            if new_direction != self.current:
+                self.replace_anim(new_direction)
+                #~ print self.parent.children
+                self.current = new_direction
+                self.last_change = time
 
 class Projectile(Mobile):
     """projectile positions should be accessed with position(index)

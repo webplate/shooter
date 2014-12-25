@@ -317,7 +317,7 @@ class Scene():
                     # is in range ?
                     if xT < xP < xTe and yT < yP < yTe:
                         # per pixel collision
-                        if self.cont.array[itemT.name][xP - xT, yP - yT]:
+                        if itemT.array[xP - xT, yP - yT]:
                             # hurt or not, entity
                             itemT.collided(itemP, time)
                             # remove or not, colliding projectile
@@ -331,7 +331,7 @@ class Scene():
                         # coordinate are target map relative
                         minx, maxx = max(xP, xT)-xT, min(xPe, xTe)-xT
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
-                        if True in self.cont.array[itemT.name][minx:maxx, miny:maxy]:
+                        if True in itemT.array[minx:maxx, miny:maxy]:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
             # pixel perfect projectile
@@ -343,8 +343,8 @@ class Scene():
                         minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
                         minyP, maxyP = max(yP, yT)-yP, min(yPe, yTe)-yP
                         touch = numpy.logical_and(
-                            self.cont.array[itemT.name][minx:maxx, miny:maxy],
-                            self.cont.array[itemP.name][minxP:maxxP, minyP:maxyP])
+                            itemT.array[minx:maxx, miny:maxy],
+                            itemP.array[minxP:maxxP, minyP:maxyP])
                         if True in touch:
                             itemT.collided(itemP, time)
                             itemP.collided(itemT, time)
