@@ -22,20 +22,6 @@ import pygame.locals as p_l
 import scene, parameters, tools, controls, menu
 
 
-def load_level(level):
-    """make sure the loaded level is playable"""
-    ref = parameters.DEFAULTLEVEL
-    for key in ref:
-        if key not in level:
-            level.update({key: ref[key]})
-        elif key in ['theme', 'gameplay', 'sound_pack']:
-            ref2 = ref[key]
-            for key2 in ref2:
-                if key2 not in level[key]:
-                    level[key].update({key2: ref2[key2]})
-    return level
-
-
 class Shooter():
     """a pygame shooter"""
     def __init__(self):
@@ -80,8 +66,7 @@ class Shooter():
         self.fullscreen = False
         self.fps = 0
         # load content from file
-        self.level = load_level(parameters.LEVEL)
-        self.theme = self.level['theme']
+        self.theme = parameters.MAINPARAMS
         # load fonts
         pygame.font.init()
         self.font = tools.load_font(self.theme['font'],
@@ -117,7 +102,6 @@ class Shooter():
         self.bind_control('mute', -1, self)
         self.bind_control('fullscreen', -1, self)
         self.bind_control('new_player', -1, self)
-        self.bind_control('change_level', -1, self)
         # Initialize scene
         self.scene = scene.Scene(self)
         # Players
@@ -150,9 +134,6 @@ class Shooter():
                 self.display = pygame.display.set_mode(self.winsize,
                     p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                 pygame.mouse.set_visible(False)     # hide cursor
-        elif control['name'] == 'change_level':
-            self.level = load_level(parameters.DEFAULTLEVEL)
-            self.theme = self.level['theme']
 
     def bind_control(self, control_name, player, target):
         """bind a control event to a target"""
@@ -242,7 +223,7 @@ class Shooter():
     def on_render(self):
         """create screen frames"""
         # compute low res game screen
-        self.screen.fill(self.theme['bg_color'])
+        self.screen.fill(self.scene.theme['bg_color'])
         for pos, surf in self.scene.lst_sprites:
             self.screen.blit(surf, pos)
         # rescale for display on hd hardware

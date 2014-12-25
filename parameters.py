@@ -41,6 +41,15 @@ KEYMAPS = [KEYMAP1, KEYMAP2]
 
 
 # Theme packs
+MAINPARAMS = {
+    'font': "FIXED_BO.TTF",
+    'monospace_font': "FIXED_BO.TTF",
+    'small_font': "MiniPower.ttf",
+    'txt_size': 8,
+    'txt_inter': 8,
+    'small_size': 16
+}
+
 DEFAULTTHEME = {
     'name': None,
     'bg_color': (50, 50, 50),

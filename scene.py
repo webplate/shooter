@@ -10,7 +10,6 @@ class Player():
     def __init__(self, scene, index):
         self.scene = scene
         self.index = index
-        # self.settings = self.scene.level['player']
 
         # create control state list and bind 'new_player' control
         self.keys = self.scene.game.controls_state[index]
@@ -23,8 +22,9 @@ class Player():
         self.go.update({'right': False})
         self.stop = True
 
+        self.settings = {}
         self.ship = None
-        # self.latent = self.load_ship(self.settings['ship'])
+        self.latent = None
         self.alive = False
         self.active = False
         self.score = 0
@@ -37,6 +37,8 @@ class Player():
             # summon in scene
             self.alive = True  # False when ship dies
             self.active = True  # Remains True !
+            if self.latent is None:
+                self.latent = self.load_ship(self.settings['ship'])
             self.ship = self.latent
             self.ship.add()
             self.scene.game.unbind_control('new_player', self.index, self)
@@ -279,18 +281,33 @@ class Scene():
         # content in priority update order
         self.content = Ordered()
 
+        level = parameters.LEVEL
+        level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
+        self.play_level(level)
+
+        self.game.bind_control('change_level', -1, self)
+
+
+
     def trigger(self, control):
+        if control['name'] == 'change_level':
+            # self.level = {}
+            # tools.fill_dict_with_default(self.level, parameters.DEFAULTLEVEL)
+            # self.theme = self.level['theme']
+            print 'there should be a level change !'
         pass
 
     def play_level(self, level):
         self.level = level
         self.theme = self.level['theme']
-        self.cont.theme = self.scene.theme['name']
+        self.cont.theme = self.theme['name']
         self.snd_pack = self.level['sound_pack']
         self.mute = True
         self.gameplay = self.level['gameplay']
 
-        self.players = [Player(self, i) for i in range(4)]
+        # self.players = [Player(self, i) for i in range(4)]
+        for player in self.players:
+            player.settings.update(self.level['player'])
 
         # load game interface
         self.load_interface()

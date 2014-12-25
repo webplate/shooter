@@ -163,3 +163,11 @@ def blit_clip(src, dest, margins=None):
     surf = dest.copy()
     surf.blit(src, (0, 0), margins)
     return surf
+
+def fill_dict_with_default(item, default):
+    for key in default:
+        if key not in item:
+            item.update({key: default[key]})
+        elif isinstance(item[key], dict) and isinstance(default[key], dict):
+            fill_dict_with_default(item[key], default[key])
+    return item
