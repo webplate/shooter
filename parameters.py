@@ -87,9 +87,9 @@ IRONBRAIN = {'name':'ironbrain',
 COLLISIONDAMAGE = -1
 
 #itempriorities
-BASEPRIOR = 0
-FOLLOWPRIOR = 1
-ANIMPRIOR = 10
+ANIMPRIOR = 1
+BASEPRIOR = 2
+FOLLOWPRIOR = 10
 BLANKPRIOR = 20
 
 # set layers of sprites
@@ -132,8 +132,9 @@ SHIPORIENTATION = {
 
 EXPLOSIONANIM = {
     'type': 'Film',
-    'sprites': ['OOO', 'OOOOO', 'OOOOOOO'],
-    'pulse': 100,
+'sprites' : ['ExplA1', 'ExplA2', 'ExplA3', 'ExplA4', 'ExplA5', 'ExplA6', 'ExplA7', 'ExplA8', 'ExplA9', 'ExplA10', 'ExplA11'],
+#~ 'sprites' : ['OOO', 'OOOOO', 'OOOOOOO'],
+    'pulse': 50,
     'to_nothing': True
 }
 
@@ -146,8 +147,7 @@ CHARGEANIM = {
 #
 
 EXPLOSION = {
-    'name': 'OOO',
-    'type': 'Mobile',
+    'type': 'OnParent',
     'animations': [EXPLOSIONANIM],
     'layer': OVERLAY
 }
@@ -422,7 +422,7 @@ BLAST = {
 }
 
 MISSILE = {
-    'name': 'o',
+    'name': 'A',
     'type': 'Missile',
     'trajectory': 'Targeted',
     'effect': {'add_life': -5},
@@ -660,7 +660,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 40,
+    'nb_enemies': 100,
     'player': DERVAL
 }
 

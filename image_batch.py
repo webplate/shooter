@@ -81,7 +81,7 @@ def make_description(path) :
                     
 
 path = os.path.join('imgs', 'Shmup')
-output_dir = os.path.join('imgs', 'cleb2')
+output_dir = os.path.join('imgs', 'clebard')
 
 #~ uniformize_format(path, output_dir)
 make_description(output_dir)

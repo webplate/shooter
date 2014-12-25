@@ -1,21 +1,22 @@
 First prototype of a scrolling shooter.
 
-Move with arrows and charge shot with space bar.
+Move with arrows
 F key for fullscreen
 P key for pause
 M key for mute
 
 plug in gamepads for up to 4 players
 
-Windows users can download 'shooter_windows' and launch game.exe at :
+Windows users can download data and game.exe at :
 
 https://91.121.141.56/owncloud/public.php?service=files&t=3feddd8c098bb12f54899651417bc6bb
 
 
 Dependencies:
-python 2.7, pygame, numpy
-and to pack for windows :
-pyinstaller, pywin32
+    python 2.7, pygame, numpy
 
-MacOS:
-    libvorbis
+    and to pack for windows :
+        pyinstaller, pywin32
+
+    MacOS:
+        libvorbis

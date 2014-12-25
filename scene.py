@@ -240,6 +240,13 @@ class Ordered():
         for group in self.content:
             for item in group:
                 yield item
+    
+    def __len__(self):
+        l = 0
+        for group in self.content:
+            for item in group:
+                l += 1
+        return l
 
     def append(self, item, priority=0):
         """update size of container dynamically"""

@@ -242,6 +242,7 @@ class Mobile(Visible):
 
     def center_on(self, target):
         """center self on another mobile or on x, y coordinates"""
+        self.update_frame()
         if hasattr(target, 'pos'):
             x, y = target._pos
             w, h = target.surface.get_width()/2., target.surface.get_height()/2.
@@ -284,6 +285,7 @@ class Anim(Actor):
         self.parent = parent
         # appearance should be updated late
         self.priority = parameters.ANIMPRIOR
+
 
 
 class Film(Anim):
@@ -490,6 +492,8 @@ class LineBullet(Projectile):
 
 class Missile(Projectile):
     def __init__(self, scene, parent, params={}):
+        # custom offset
+        params['initial_pos'] = (params['initial_pos'][0]+4, params['initial_pos'][1]+5)
         # initialize projectile
         Projectile.__init__(self, scene, parent, params)
         # define missile target
@@ -517,8 +521,6 @@ class Missile(Projectile):
         if self.target is not None:
             self.target.is_target += 1
             self.target.targeters.append(self)
-        # custom offset
-        params['initial_pos'] = (params['initial_pos'][0]+4, params['initial_pos'][1]+5)
         
         self.max_speed = self.speed  # missile has to accelerate
         self.speed = 0.01  # initial speed
@@ -533,7 +535,8 @@ class Missile(Projectile):
 
         # add crosshair
         if hasattr(self.target, 'life'):
-            self.crosshair = Follower(scene, self.target, {'name': 'crosshair'})
+            self.crosshair = Follower(scene, self.target, {'name': 'crosshair',
+            'layer': parameters.FRONTLAY})
             self.crosshair.add()
 
     def remove(self):
@@ -679,7 +682,7 @@ class Fragile(Mobile):
         # fragile has hit_anim
         self.hit_anim = Blank(self.scene, self, parameters.HITBLINK)
         # fragile can explode
-        self.end = Mobile(self.scene, parameters.EXPLOSION)
+        self.end = Follower(self.scene, self, parameters.EXPLOSION)
         # fragiles can give bonuses depending on their bonus rate
         if random.random() < self.bonus_rate:
             self.has_bonus = True
@@ -726,7 +729,6 @@ class Fragile(Mobile):
             # show reward
             self.rew.add()
         # explode
-        self.end.center_on(self)
         self.end.add()
         # play explosion sound at correct stereo position
         self.scene.cont.play('explosion', self.pos[0])
@@ -872,12 +874,11 @@ class Ship(ChargeFighter):
 
 class Follower(Mobile):
     """a sprite following another"""
-    def __init__(self, scene, parent, params):
+    def __init__(self, scene, parent, params={}):
         Mobile.__init__(self, scene, params)
-        if  not hasattr(self, 'offset'):
+        if not hasattr(self, 'offset'):
             self.offset = 0, 0
         self.parent = parent
-        self.center_on(self.parent)
         # should be updated after parents
         self.priority = parameters.FOLLOWPRIOR
 
@@ -885,7 +886,6 @@ class Follower(Mobile):
         """move to be centered on parent"""
         self.center_on(self.parent)
         self._pos = self._pos[0]+self.offset[0], self._pos[1]+self.offset[1]
-
 
 class Shadow(Follower):
     def __init__(self, scene, parent, params):
@@ -895,7 +895,6 @@ class Shadow(Follower):
     def update(self, interval, time):
         Follower.update(self, interval, time)
         self.surface = self.parent.shadow
-
 
 class Charge(Follower):
     """showing the charge of ship"""
@@ -921,21 +920,18 @@ class Charge(Follower):
         # center on parent at the end of update
         Follower.update(self, interval, time)
 
-
-class Desc(Mobile):
+class Desc(Follower):
     """showing descriptor on item"""
     def __init__(self, scene, parent, text='100', duration=500):
-        Mobile.__init__(self, scene)
-        self.parent = parent
+        Follower.__init__(self, scene, parent)
         self.surface = self.scene.cont.surf(text)
         self.duration = duration
         self.layer = parameters.FRONTLAY
 
     def update(self, interval, time):
+        Follower.update(self, interval, time)
         if time > self.parent.time_of_death + self.duration:
             self.remove()
-        self.center_on(self.parent)
-
 
 class Widget(Mobile):
     def __init__(self, scene, path, params, offset=(0, 0)):
