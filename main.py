@@ -19,7 +19,7 @@
 
 import platform, os, pygame
 import pygame.locals as p_l
-import scene, parameters, tools, controls
+import scene, parameters, tools, controls, menu
 
 
 def load_level(level):
@@ -117,6 +117,7 @@ class Shooter():
         self.bind_control('mute', -1, self)
         self.bind_control('fullscreen', -1, self)
         self.bind_control('new_player', -1, self)
+        self.bind_control('change_level', -1, self)
         # Initialize scene
         self.scene = scene.Scene(self)
         # Players
@@ -149,6 +150,9 @@ class Shooter():
                 self.display = pygame.display.set_mode(self.winsize,
                     p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                 pygame.mouse.set_visible(False)     # hide cursor
+        elif control['name'] == 'change_level':
+            self.level = load_level(parameters.DEFAULTLEVEL)
+            self.theme = self.level['theme']
 
     def bind_control(self, control_name, player, target):
         """bind a control event to a target"""

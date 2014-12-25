@@ -33,6 +33,7 @@ content_list = [
     ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
     ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
     ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
+    ['change_level', -1, p_l.KEYDOWN, {'key': p_l.K_c}],
 
     # Player 1 (0)
     # Keyboard control

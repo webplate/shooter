@@ -10,7 +10,7 @@ class Player():
     def __init__(self, scene, index):
         self.scene = scene
         self.index = index
-        self.settings = self.scene.level['player']
+        # self.settings = self.scene.level['player']
 
         # create control state list and bind 'new_player' control
         self.keys = self.scene.game.controls_state[index]
@@ -24,7 +24,7 @@ class Player():
         self.stop = True
 
         self.ship = None
-        self.latent = self.load_ship(self.settings['ship'])
+        # self.latent = self.load_ship(self.settings['ship'])
         self.alive = False
         self.active = False
         self.score = 0
@@ -131,7 +131,7 @@ class Container():
     """
     def __init__(self, scene):
         self.scene = scene
-        self.theme = self.scene.theme['name']
+        self.theme = {}
         self.surfaces = {}
         self.array = {}
         self.hit = {}
@@ -273,27 +273,34 @@ class Scene():
         self.font = game.font
         self.mfont = game.mfont
         self.sfont = game.sfont
-        self.level = self.game.level
-        self.theme = self.level['theme']
-        self.snd_pack = self.level['sound_pack']
-        self.mute = True
-        self.gameplay = self.level['gameplay']
+        self.players = [Player(self, i) for i in range(4)]
         # an object for efficient loading
         self.cont = Container(self)
         # content in priority update order
         self.content = Ordered()
+
+    def trigger(self, control):
+        pass
+
+    def play_level(self, level):
+        self.level = level
+        self.theme = self.level['theme']
+        self.cont.theme = self.scene.theme['name']
+        self.snd_pack = self.level['sound_pack']
+        self.mute = True
+        self.gameplay = self.level['gameplay']
+
         self.players = [Player(self, i) for i in range(4)]
-        self.player1 = self.players[0]
+
+        # load game interface
         self.load_interface()
+
         # launch background music
         self.cont.load_music(self.level['music'])
         # launch landscape
         entity.Landscape(self, self.level['background']).add()
         entity.Landscape(self, parameters.CLOUD).add()
         self.update()
-
-    def trigger(self, control):
-        pass
 
     def load_interface(self):
         # interface
