@@ -454,7 +454,7 @@ class Directions(Anim):
         new_direction = self.sprite_from_angle(angle)
         # update appearance every 100ms
         if time > self.last_change + 100:
-            if new_direction != self.current:
+            if new_direction != self.current or self.last_change == 0:
                 self.replace_anim(new_direction)
                 self.current = new_direction
                 self.last_change = time

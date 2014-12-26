@@ -439,7 +439,7 @@ MISSILESIXTTDIR = {
     'animations' : param_gen.make_16_films([
         ['Rocket A 1a', 'Rocket A 1b'],
         ['Rocket A 2a', 'Rocket A 2b'],
-        ['Rocket A 3a', 'Rocket A 3b']], 200)
+        ['Rocket A 3a', 'Rocket A 3b']], 50)
 }
 
 MISSILE = {
