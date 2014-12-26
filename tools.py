@@ -68,15 +68,15 @@ def load_image(name, theme, scene, alpha=True):
     split = name.split(':')
     filename = split[0]
     keywords = split[1:]
-    Dsym = False
+    CWrot = False
     Hsym = False
     Vsym = False
     if 'Vsym' in keywords:
         Vsym = True
     if 'Hsym' in keywords:
         Hsym = True
-    if 'Dsym' in keywords:
-        Dsym = True
+    if 'CWrot' in keywords:
+        CWrot = True
         
     if theme is not None:
         path = get_path('imgs', theme, filename + '.png')
@@ -95,6 +95,9 @@ def load_image(name, theme, scene, alpha=True):
             if Vsym or Hsym:
                 #create a vertical sym of surface
                 surface = pygame.transform.flip(surface, Vsym, Hsym)
+            if CWrot:
+                #create clockwise rotation of surface
+                surface = pygame.transform.rotate(surface, -90)
     else:
         # no themepack: use labels as sprites
         surface = font_skin(scene, filename)
