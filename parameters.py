@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pygame.locals as p_l
-
+import param_gen
 
 GAMESIZE = (320, 240) # ~neo geo
 # GAMESIZE = (1024, 500)
@@ -204,7 +204,7 @@ SPREADER0_22_5 = {
 }
 
 SPREADER0_MINUS22_5 = {
-    'name': 'spreader_0_22.5.Vsym',
+    'name': 'spreader_0_22.5:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -226,7 +226,7 @@ SPREADER0_45 = {
 }
 
 SPREADER0_MINUS45 = {
-    'name': 'spreader_0_45.Vsym',
+    'name': 'spreader_0_45:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -258,7 +258,7 @@ SPREADER1_22_5 = {
 }
 
 SPREADER1_MINUS22_5 = {
-    'name': 'spreader_1_22.5.Vsym',
+    'name': 'spreader_1_22.5:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -280,7 +280,7 @@ SPREADER1_45 = {
 }
 
 SPREADER1_MINUS45 = {
-    'name': 'spreader_1_45.Vsym',
+    'name': 'spreader_1_45:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -312,7 +312,7 @@ SPREADER2_22_5 = {
 }
 
 SPREADER2_MINUS22_5 = {
-    'name': 'spreader_2_22.5.Vsym',
+    'name': 'spreader_2_22.5:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -334,7 +334,7 @@ SPREADER2_45 = {
 }
 
 SPREADER2_MINUS45 = {
-    'name': 'spreader_2_45.Vsym',
+    'name': 'spreader_2_45:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -366,7 +366,7 @@ SPREADER3_22_5 = {
 }
 
 SPREADER3_MINUS22_5 = {
-    'name': 'spreader_3_22.5.Vsym',
+    'name': 'spreader_3_22.5:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -22.5},
@@ -388,7 +388,7 @@ SPREADER3_45 = {
 }
 
 SPREADER3_MINUS45 = {
-    'name': 'spreader_3_45.Vsym',
+    'name': 'spreader_3_45:Vsym',
     'type': 'Bullet',
     'trajectory': 'Line',
     'trajectory_params': {'angle': -45},
@@ -465,69 +465,10 @@ ANGLECANON = {
 
 MISSILESIXTTDIR = {
     'type': 'SixtDir',
-    'animations' : [
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 1a', 'RocketA 1b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 2a', 'RocketA 2b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 3a', 'RocketA 3b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 1a', 'RocketA 1b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 2a', 'RocketA 2b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 3a', 'RocketA 3b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 1a', 'RocketA 1b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 2a', 'RocketA 2b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 3a', 'RocketA 3b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 1a', 'RocketA 1b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 2a', 'RocketA 2b'],
-        'durations': [50, 50]
-        },
-        {
-        'type': 'SyncLoop',
-        'sprites': ['RocketA 3a', 'RocketA 3b'],
-        'durations': [50, 50]
-        },
-        
-    ]
+    'animations' : param_gen.make_16_films([
+        ['RocketA 1a', 'RocketA 1b'],
+        ['RocketA 2a', 'RocketA 2b'],
+        ['RocketA 3a', 'RocketA 3b']],200)
 }
 
 MISSILE_WEAPON = {'name': 'missile',
@@ -741,7 +682,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 2,
+    'nb_enemies': 20,
     'player': DERVAL
 }
 

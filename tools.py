@@ -65,22 +65,18 @@ def load_image(name, theme, scene, alpha=True):
     """loads an image, prepares it for play
     or create a label if image absent
     or create a symmetry version if Vsym, Hsym or HVsym in name"""
-    if name.endswith('.Vsym'):
-        filename = name.rstrip('.Vsym')
+    split = name.split(':')
+    filename = split[0]
+    keywords = split[1:]
+    Dsym = False
+    Hsym = False
+    Vsym = False
+    if 'Vsym' in keywords:
         Vsym = True
-        Hsym = False
-    elif name.endswith('.Hsym'):
-        filename = name.rstrip('.Hsym')
+    if 'Hsym' in keywords:
         Hsym = True
-        Vsym = False
-    elif name.endswith('.HVsym'):
-        filename = name.rstrip('.HVsym')
-        Vsym = True
-        Hsym = True
-    else:
-        filename = name
-        Vsym = False
-        Hsym = False
+    if 'Dsym' in keywords:
+        Dsym = True
         
     if theme is not None:
         path = get_path('imgs', theme, filename + '.png')
