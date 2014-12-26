@@ -21,12 +21,16 @@ def accelerate(speed, max_speed, acceleration, interval):
 
 
 class Trajectory():
-    """a general position modifier"""
+    """a generic position modifier to build on"""
     def __init__(self, scene, mobile, params={}):
         self.scene = scene
         self.mobile = mobile
         # set init position of mobile
-        # self.mobile.pos = (0, 0)
+        if 'init_pos' in params:
+            self.mobile.pos = params['init_pos']
+    
+    def next_pos(self, pos, interval, time):
+        return pos
 
 
 class Down(Trajectory):

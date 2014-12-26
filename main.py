@@ -62,8 +62,7 @@ class Shooter():
             self.music = pygame.mixer.music
             self.no_sound = False
         # an object to keep track of time
-        # necessary to launch pygame passing time
-        self.clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()  # necessary to launch pygame passing time
         self.interval = 0
         self.speed = parameters.DEFAULTPLAY['game_speed']
         self.flip_rate = parameters.DEFAULTPLAY['flip_rate']

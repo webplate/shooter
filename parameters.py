@@ -121,7 +121,7 @@ BULLETBLINK = {
 
 HITBLINK = {
     'type': 'Blank',
-    'duration': 25     # ms for white flash when collision
+    'duration': 50     # ms for white flash when collision
 }
 
 SHIPORIENTATION = {
@@ -584,9 +584,10 @@ COPTER = {
     'type': 'Fighter',
     'has_shadow': True,
     'speed': 0.03,
-    'life': 9,
+    'life': 9000,
     'weapons': [ANGLECANON],
-    'trajectory': 'GoFront',
+    'trajectory': 'Trajectory',
+    'trajectory_params': {'init_pos': (100, 110)},
     'animations': [COPTEREIGHTDIR],
     'followers': [ROTOR],
     'reward': 1,

@@ -92,12 +92,12 @@ def load_image(name, theme, scene, alpha=True):
                 # first pixel sets transparent color
                 color = surface.get_at((0, 0))
                 surface.set_colorkey(color)
-            if Vsym or Hsym:
-                #create a vertical sym of surface
-                surface = pygame.transform.flip(surface, Vsym, Hsym)
             if CWrot:
                 #create clockwise rotation of surface
                 surface = pygame.transform.rotate(surface, -90)
+            if Vsym or Hsym:
+                #create a vertical sym of surface
+                surface = pygame.transform.flip(surface, Vsym, Hsym)
     else:
         # no themepack: use labels as sprites
         surface = font_skin(scene, filename)
