@@ -434,15 +434,23 @@ BLAST = {
     'collision_type': 'rectangle'
 }
 
+MISSILESIXTTDIR = {
+    'type': 'TrajectoryDirections',
+    'animations' : param_gen.make_16_films([
+        ['Rocket A 1a', 'Rocket A 1b'],
+        ['Rocket A 2a', 'Rocket A 2b'],
+        ['Rocket A 3a', 'Rocket A 3b']], 200)
+}
+
 MISSILE = {
     'name': 'A',
     'type': 'Missile',
     'trajectory': 'Targeted',
+    'animations': [MISSILESIXTTDIR],
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
     'speed': 0.05,
     'cooldown': 500,
-    'collision_type': 'pixel'
 }
 
 #weapons
@@ -461,14 +469,6 @@ CANON = {
 ANGLECANON = {
     'name': 'angular_canon',
     'levels': [[LINEBULLET]]
-}
-
-MISSILESIXTTDIR = {
-    'type': 'SixtDir',
-    'animations' : param_gen.make_16_films([
-        ['RocketA 1a', 'RocketA 1b'],
-        ['RocketA 2a', 'RocketA 2b'],
-        ['RocketA 3a', 'RocketA 3b']],200)
 }
 
 MISSILE_WEAPON = {'name': 'missile',
@@ -501,7 +501,7 @@ SHIP = {
     'speed': 0.2,
     'charge_rate': 0.001,
     'life': 10,
-    'weapons': [SPREADER]
+    'weapons': [SPREADER, MISSILE_WEAPON]
 }
 
 STALKER = {
@@ -534,7 +534,7 @@ SAUCER = {
 
 
 COPTEREIGHTDIR = {
-    'type': 'EightDir',
+    'type': 'Directions',
     'animations' : [
         {
         'type': 'SyncLoop',
@@ -682,8 +682,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 20,
-    'player': DERVAL
+    'nb_enemies': 1,
+    'player': PLAYER
 }
 
 

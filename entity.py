@@ -65,10 +65,10 @@ class Actor(object):
                         max_life = item.life
                         self.target = item
     
-    def aim_angle(self):
-        if self.target is not None:
+    def aim_angle(self, target):
+        if target is not None:
             x, y = self.parent.center
-            xT, yT = self.target.center
+            xT, yT = target.center
             #compute angle to target
             a = math.degrees(math.atan2((yT - y), (xT - x)))
         else:
@@ -289,7 +289,9 @@ class Anim(Actor):
     def __init__(self, scene, parent, params={}):
         Actor.__init__(self, scene, params)
         self.parent = parent
-        # appearance should be updated late
+        # inherit allied status to search for enemies
+        self.ally = self.parent.ally
+        # appearance should be updated first
         self.priority = parameters.ANIMPRIOR
 
 
@@ -405,7 +407,7 @@ class Roll(Anim):
         else:
             self.parent.surface = self.sprites[1]
 
-class EightDir(Anim):
+class Directions(Anim):
     """change surface according to direction toward target"""
     def __init__(self, scene, parent, params={}):
         Anim.__init__(self, scene, parent, params)
@@ -417,6 +419,7 @@ class EightDir(Anim):
             targClass = globals()[ani['type']]
             instance = targClass(self.scene, self.parent, ani)
             self.anim_instances.append(instance)
+        self.nb_directions = len(self.anim_instances)
         self.last_change = 0
     
     def replace_anim(self, new_direction):
@@ -437,14 +440,17 @@ class EightDir(Anim):
     def sprite_from_angle(self, angle):
         """align with sprite order"""
         angle += 90
-        i = angle / 360. * 8
+        i = angle / 360. * self.nb_directions
         return int(round(i))
 
-    def update(self, interval, time):
+    def get_angle(self, time=0):
         #try to find a target
         self.search_enemy(time)
         #aim at it
-        angle = self.aim_angle()
+        return self.aim_angle(self.target)
+
+    def update(self, interval, time):
+        angle = self.get_angle(time)
         new_direction = self.sprite_from_angle(angle)
         # update appearance every 100ms
         if time > self.last_change + 100:
@@ -452,6 +458,16 @@ class EightDir(Anim):
                 self.replace_anim(new_direction)
                 self.current = new_direction
                 self.last_change = time
+
+class TrajectoryDirections(Directions):
+    """change surface according to direction toward target"""
+    def __init__(self, scene, parent, params={}):
+        Directions.__init__(self, scene, parent, params)
+    
+    def get_angle(self, time):
+        target = self.parent.target
+        #aim at it
+        return self.aim_angle(target)
 
 class Projectile(Mobile):
     """projectile positions should be accessed with position(index)
@@ -491,7 +507,7 @@ class LineBullet(Projectile):
         Projectile.__init__(self, scene, parent, params)
         # define target
         self.search_enemy()
-        a = self.aim_angle() + 90
+        a = self.aim_angle(self.target) + 90
         # move toward enemy position at shooting time
         self.movement = movement.Line(self.scene, self, {'angle': a})
 
