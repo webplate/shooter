@@ -11,9 +11,8 @@ class Player():
         self.scene = scene
         self.index = index
 
-        # create control state list and bind 'new_player' control
-        self.keys = self.scene.game.controls_state[index]
-        self.scene.game.bind_control('new_player', self.index, self)
+        # create control state list
+        self.keys = self.scene.game.controller.controls_state[index]
 
         self.go = {}
         self.go.update({'up': False})
@@ -41,12 +40,12 @@ class Player():
                 self.latent = self.load_ship(self.settings['ship'])
             self.ship = self.latent
             self.ship.add()
-            self.scene.game.unbind_control('new_player', self.index, self)
-            self.scene.game.bind_control_switch('up', self.index, self)
-            self.scene.game.bind_control_switch('down', self.index, self)
-            self.scene.game.bind_control_switch('left', self.index, self)
-            self.scene.game.bind_control_switch('right', self.index, self)
-            self.scene.game.bind_control_switch('shoot', self.index, self)
+            self.scene.game.controller.unbind_control('new_player', self.index, self)
+            self.scene.game.controller.bind_control_switch('up', self.index, self)
+            self.scene.game.controller.bind_control_switch('down', self.index, self)
+            self.scene.game.controller.bind_control_switch('left', self.index, self)
+            self.scene.game.controller.bind_control_switch('right', self.index, self)
+            self.scene.game.controller.bind_control_switch('shoot', self.index, self)
 
         # ship control events
         elif control['name'] in ['up', 'down', 'left', 'right']:
@@ -269,47 +268,57 @@ class Scene():
         self.game = game
         # delay between scene and game (scene can be paused)
         self.paused = False
+        self.mute = True
         self.delay = 0
         self.now = 0
         self.limits = game.limits
         self.font = game.font
         self.mfont = game.mfont
         self.sfont = game.sfont
+        # create four players
         self.players = [Player(self, i) for i in range(4)]
         # an object for efficient loading
         self.cont = Container(self)
         # content in priority update order
         self.content = Ordered()
+        # create en empty sprite container
+        self.lst_sprites = Ordered()
 
         self.update = self.update_menu
 
-        level = parameters.LEVEL
-        level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
-        # self.play_level(level)
-
-        self.game.bind_control('change_level', -1, self)
-
-
+        self.game.controller.bind_control('change_level', -1, self)
 
     def trigger(self, control):
         if control['name'] == 'change_level':
-            # self.level = {}
-            # tools.fill_dict_with_default(self.level, parameters.DEFAULTLEVEL)
-            # self.theme = self.level['theme']
             print 'there should be a level change !'
-        pass
+            level = parameters.LEVEL
+            level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
+            self.play_level(level)
+            self.update = self.update_level
+            self.game.controller.toggle_active_controls('menu')
+            self.game.controller.toggle_active_controls('game')
+
+        # scene can receive 'new_player' from an unassigned joystick
+        elif control['name'] == 'new_player':
+            for player in range(3):
+                if not self.players[player].active:
+                    self.game.joysticks[-1].remove(control['event_params']['joy'])
+                    self.game.joysticks[player].append(control['event_params']['joy'])
+                    self.players[player].trigger(control)
+                    break
 
     def play_level(self, level):
         self.level = level
         self.theme = self.level['theme']
         self.cont.theme = self.theme['name']
         self.snd_pack = self.level['sound_pack']
-        self.mute = True
         self.gameplay = self.level['gameplay']
 
         # self.players = [Player(self, i) for i in range(4)]
         for player in self.players:
             player.settings.update(self.level['player'])
+            self.game.controller.bind_control('new_player', player.index, player)
+        self.game.controller.bind_control('new_player', -1, self)
 
         # load game interface
         self.load_interface()

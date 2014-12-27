@@ -1,3 +1,5 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 import pygame.locals as p_l
 
 # 'content' lists all available commands and their associated triggering events
@@ -26,14 +28,29 @@ import pygame.locals as p_l
 # pygame keys (for keyboard events)
 # http://www.pygame.org/docs/ref/key.html
 
-content_list = [
-    # Environment (-1)
+
+# /!\ controls should be unique
+controls = {}
+# controls that are always active
+controls.update({'global': [
     ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Quit game
-    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause game
     ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
     ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
-    ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
+]})
+
+# controls used in the menu
+controls.update({'menu': [
     ['change_level', -1, p_l.KEYDOWN, {'key': p_l.K_c}],
+    ['up', -1, p_l.KEYDOWN, {'key': p_l.K_UP}],
+    ['down', -1, p_l.KEYDOWN, {'key': p_l.K_DOWN}],
+    ['enter', -1, p_l.KEYDOWN, {'key': p_l.K_RETURN}]
+]})
+
+# controls that are used in game
+controls.update({'game': [
+    # Environment (-1)
+    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause game
+    ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
 
     # Player 1 (0)
     # Keyboard control
@@ -80,12 +97,16 @@ content_list = [
     ['left', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
     ['right', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
     ['shoot', 3, 'JOY_SWITCH', {'button': 2}],
-]
+]})
 
+content = {}
+for control_type in controls:
+    content.update({control_type: []})
+# transform list in dictionaries
 key_list = ['name', 'player', 'event_type', 'event_params']
-content = []
-for control in content_list:
-    content_line = {}
-    for i, key in enumerate(key_list):
-        content_line.update({key_list[i]: control[i]})
-    content.append(content_line)
+for control_type in controls:
+    for control in controls[control_type]:
+        content_line = {}
+        for i, key in enumerate(key_list):
+            content_line.update({key_list[i]: control[i]})
+        content[control_type].append(content_line)
