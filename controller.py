@@ -9,27 +9,45 @@ class Controller():
     def __init__(self, game):
         self.game = game
         # load static controls from controls.py
-        self.controls = controls.content
-        # create empty lists of bound controls (those who are used)
+        self.controls = self.load_controls(controls.controls)
+        # create empty list of bound controls (those bound in the program)
         self.bound_controls = {}
-        self.active_controls_set = {}
+        # create empty list of active controls (those considered in main.on_event)
+        self.active_controls = []
+        # create a list of True/False values for active control sets
+        self.active_control_set = {}
         for key in self.controls:
             self.bound_controls.update({key: []})
-            self.active_controls_set.update({key: False})
-        self.active_controls = []
+            self.active_control_set.update({key: False})
         # create a list of dictionaries containing control switches for each player
         # (last player is environment)
         self.controls_state = [{}, {}, {}, {}, {}]
 
+    def load_controls(self, control_list):
+        """returns a dictionary created from control_list"""
+        content = {}
+        # transform list in dictionaries
+        key_list = ['name', 'player', 'event_type', 'event_params']
+        for control_type in control_list:
+            content.update({control_type: []})
+            for control in control_list[control_type]:
+                content_line = {}
+                for i, key in enumerate(key_list):
+                    content_line.update({key_list[i]: control[i]})
+                content[control_type].append(content_line)
+        return content
+
     def toggle_active_controls(self, controls_set):
-        if controls_set in self.active_controls_set:
-            self.active_controls_set[controls_set] = not self.active_controls_set[controls_set]
+        """toggle (on/off) a set of controls"""
+        if controls_set in self.active_control_set:
+            self.active_control_set[controls_set] = not self.active_control_set[controls_set]
         self.refresh_active_controls()
 
     def refresh_active_controls(self):
+        """refresh the list of active controls"""
         self.active_controls = []
-        for key in self.active_controls_set:
-            if self.active_controls_set[key]:
+        for key in self.active_control_set:
+            if self.active_control_set[key]:
                 for control in self.bound_controls[key]:
                     self.active_controls.append(control)
 
@@ -71,7 +89,6 @@ class Controller():
                         self.bound_controls[key].append(control.copy())
                         self.controls_state[player].update({control['name']: False})
         self.refresh_active_controls()
-
 
     def unbind_control(self, control_name, player, target):
         """unbind a control event from a target"""
