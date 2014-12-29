@@ -53,6 +53,7 @@ controls.update({'global': [
     ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Quit game
     ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
     ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
+    ['menu', -1, p_l.KEYDOWN, {'key': p_l.K_F1}],  # Open menu
 ]})
 
 # menu controls
@@ -63,10 +64,14 @@ controls.update({'menu': [
     ['enter', -1, p_l.KEYDOWN, {'key': p_l.K_RETURN}]
 ]})
 
+# pause controls
+controls.update({'pause': [
+    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause / unpause game
+]})
+
 # game controls
 controls.update({'game': [
     # Environment (-1)
-    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause game
     ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
 
     # Player 1 (0)

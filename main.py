@@ -93,12 +93,8 @@ class Shooter():
         self.now = 0
         # initialize controller
         self.controller = controller.Controller(self)
-        self.controller.toggle_active_controls('global')
-        self.controller.toggle_active_controls('menu')
         # initial control binding
         self.controller.bind_control('quit', -1, self)
-        self.controller.bind_control('pause', -1, self)
-        self.controller.bind_control('mute', -1, self)
         if system != 'Darwin':
             self.controller.bind_control('fullscreen', -1, self)
         # initialize scene
@@ -109,16 +105,6 @@ class Shooter():
     def trigger(self, control):
         if control['name'] == 'quit':
             self.running = False
-        elif control['name'] == 'pause':
-            if not self.scene.paused:
-                self.scene.pause(self.now*self.speed)
-            else:
-                self.scene.paused = False
-        elif control['name'] == 'mute':
-            if not self.scene.mute:
-                self.scene.mute = True
-            else:
-                self.scene.mute = False
         elif control['name'] == 'fullscreen':
             if self.fullscreen:
                 self.display = pygame.display.set_mode(self.winsize)
@@ -131,7 +117,7 @@ class Shooter():
         """propagate and interpret events"""
         # deal with 'QUIT' event
         if event.type == p_l.QUIT:
-            self.trigger(['quit'])
+            self.trigger({'name': 'quit'})
 
         # deal with other events
         for control in self.controller.active_controls:

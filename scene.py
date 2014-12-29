@@ -4,7 +4,6 @@ import entity, tools, parameters
 import numpy
 import pygame.locals as p_l
 
-
 class Player():
     """class for player settings, controls, ships"""
     def __init__(self, scene, index):
@@ -267,10 +266,10 @@ class Scene():
     def __init__(self, game):
         self.game = game
         # delay between scene and game (scene can be paused)
-        self.paused = False
-        self.mute = True
         self.delay = 0
         self.now = 0
+        self.paused = False
+        self.mute = True
         self.limits = game.limits
         self.font = game.font
         self.mfont = game.mfont
@@ -284,20 +283,56 @@ class Scene():
         # create en empty sprite container
         self.lst_sprites = Ordered()
 
+        # show menu at start
         self.update = self.update_menu
+        self.menu = True
 
+        # controller configuration
+        self.game.controller.toggle_active_controls('global', True)
+        self.game.controller.toggle_active_controls('menu', True)
         self.game.controller.bind_control('change_level', -1, self)
+        self.game.controller.bind_control('pause', -1, self)
+        self.game.controller.bind_control('menu', -1, self)
+        self.game.controller.bind_control('mute', -1, self)
 
     def trigger(self, control):
+        # change level command
         if control['name'] == 'change_level':
             print 'there should be a level change !'
             level = parameters.LEVEL
             level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
             self.play_level(level)
-            self.update = self.update_level
-            self.game.controller.toggle_active_controls('menu')
-            self.game.controller.toggle_active_controls('game')
-
+        # pause command
+        elif control['name'] == 'pause':
+            if not self.paused:
+                self.game.controller.toggle_active_controls('game', False)
+                self.pause(self.game.now * self.game.speed)
+                self.update = self.update_paused
+            else:
+                self.game.controller.toggle_active_controls('game', True)
+                self.unpause(self.game.now * self.game.speed)
+                self.update = self.update_level
+        # menu command
+        elif control['name'] == 'menu':
+            if not self.menu:
+                if not self.paused:
+                    self.trigger({'name': 'pause'})
+                self.game.controller.toggle_active_controls('pause', False)
+                self.game.controller.toggle_active_controls('menu', True)
+                self.update = self.update_menu
+                self.menu = True
+            else:
+                if self.paused:
+                    self.trigger({'name': 'pause'})
+                self.game.controller.toggle_active_controls('pause', True)
+                self.game.controller.toggle_active_controls('menu', False)
+                self.menu = False
+        # mute command
+        elif control['name'] == 'mute':
+            if not self.mute:
+                self.mute = True
+            else:
+                self.mute = False
         # scene can receive 'new_player' from an unassigned joystick
         elif control['name'] == 'new_player':
             for player in range(3):
@@ -314,7 +349,7 @@ class Scene():
         self.snd_pack = self.level['sound_pack']
         self.gameplay = self.level['gameplay']
 
-        # self.players = [Player(self, i) for i in range(4)]
+        # player settings from loaded level and bind 'new_player' controls
         for player in self.players:
             player.settings.update(self.level['player'])
             self.game.controller.bind_control('new_player', player.index, player)
@@ -328,6 +363,12 @@ class Scene():
         # launch landscape
         entity.Landscape(self, self.level['background']).add()
         entity.Landscape(self, parameters.CLOUD).add()
+        # change active controls and reroute update function
+        self.update = self.update_level
+        self.menu = False
+        self.game.controller.toggle_active_controls('menu', False)
+        self.game.controller.toggle_active_controls('game', True)
+        self.game.controller.toggle_active_controls('pause', True)
         self.update()
 
     def load_interface(self):
@@ -393,12 +434,13 @@ class Scene():
                             itemP.collided(itemT, time)
 
     def pause(self, time):
-        self.pause_time = time
         self.paused = True
-        # if paused bypass classic update
-        self.orig_update = self.update
-        self.update = self.update_paused
-    
+        self.pause_time = time
+
+    def unpause(self, time):
+        self.paused = False
+        self.delay += time - self.pause_time
+
     def add_sprite(self, x, y, item):
         """update sprite container only for visible objects"""
         if item.visible:
@@ -406,15 +448,21 @@ class Scene():
             self.lst_sprites.append(identifier, item.layer)
 
     def update_menu(self, interval=0, time=0):
-        pass
+        self.game_sprites = self.lst_sprites.content[:parameters.INTERFACELAY+1]
+        self.lst_sprites = Ordered()
+        self.lst_sprites.content = self.game_sprites
+        # stop background music
+        self.cont.music()
+        # add "MENU" string
+        identifier = ((100, 100), self.font.render('MENU', 1, (0, 255, 255)))
+        self.lst_sprites.append(identifier, parameters.MENULAY)
 
     def update_paused(self, interval=0, time=0):
         # stop background music
         self.cont.music()
-        # check for resuming
-        if not self.paused:
-            self.delay += time - self.pause_time
-            self.update = self.orig_update
+        # add "PAUSE" string
+        identifier = ((100, 100), self.font.render('PAUSE', 1, (0, 255, 0)))
+        self.lst_sprites.append(identifier, parameters.MESSAGELAY)
 
     def update_level(self, interval=0, time=0):
         self.now = time - self.delay

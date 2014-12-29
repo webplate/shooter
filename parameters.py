@@ -84,6 +84,8 @@ IRONBRAIN = {
 # Various....
 COLLISIONDAMAGE = -1
 # set layers of sprites
+MENULAY = 30
+MESSAGELAY = 28
 INTERFACELAY = 25
 FRONTLAY = 20
 OVERLAY = 18

@@ -37,10 +37,10 @@ class Controller():
                 content[control_type].append(content_line)
         return content
 
-    def toggle_active_controls(self, controls_set):
+    def toggle_active_controls(self, controls_set, state):
         """toggle (on/off) a set of controls"""
         if controls_set in self.active_control_set:
-            self.active_control_set[controls_set] = not self.active_control_set[controls_set]
+            self.active_control_set[controls_set] = state
         self.refresh_active_controls()
 
     def refresh_active_controls(self):
