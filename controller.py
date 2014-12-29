@@ -56,8 +56,9 @@ class Controller():
         for key in self.controls:
             for control in self.controls[key]:
                 if control['name'] == control_name and control['player'] == player:
-                    control.update({'target': target})
-                    self.bound_controls[key].append(control.copy())
+                    new_ctrl = control.copy()
+                    new_ctrl.update({'target': target})
+                    self.bound_controls[key].append(new_ctrl)
         self.refresh_active_controls()
 
     def bind_control_switch(self, control_name, player, target):
@@ -69,24 +70,29 @@ class Controller():
             for control in self.controls[key]:
                 if control['name'] == control_name and control['player'] == player:
                     if control['event_type'] == 'SWITCH':
-                        control.update({'event_type': p_l.KEYUP})
-                        control.update({'target': target})
-                        self.bound_controls[key].append(control.copy())
-                        control.update({'event_type': p_l.KEYDOWN})
-                        control.update({'target': target})
-                        self.bound_controls[key].append(control.copy())
+                        new_ctrl = control.copy()
+                        new_ctrl.update({'event_type': p_l.KEYUP})
+                        new_ctrl.update({'target': target})
+                        self.bound_controls[key].append(new_ctrl)
+                        new_ctrl = control.copy()
+                        new_ctrl.update({'event_type': p_l.KEYDOWN})
+                        new_ctrl.update({'target': target})
+                        self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
                     elif control['event_type'] == 'JOY_SWITCH':
-                        control.update({'event_type': p_l.JOYBUTTONUP})
-                        control.update({'target': target})
-                        self.bound_controls[key].append(control.copy())
-                        control.update({'event_type': p_l.JOYBUTTONDOWN})
-                        control.update({'target': target})
-                        self.bound_controls[key].append(control.copy())
+                        new_ctrl = control.copy()
+                        new_ctrl.update({'event_type': p_l.JOYBUTTONUP})
+                        new_ctrl.update({'target': target})
+                        self.bound_controls[key].append(new_ctrl)
+                        new_ctrl = control.copy()
+                        new_ctrl.update({'event_type': p_l.JOYBUTTONDOWN})
+                        new_ctrl.update({'target': target})
+                        self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
                     elif control['event_type'] == p_l.JOYAXISMOTION:
-                        control.update({'target': target})
-                        self.bound_controls[key].append(control.copy())
+                        new_ctrl = control.copy()
+                        new_ctrl.update({'target': target})
+                        self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
         self.refresh_active_controls()
 
@@ -95,5 +101,13 @@ class Controller():
         for key in self.bound_controls:
             for control in list(self.bound_controls[key]):
                 if control['name'] == control_name and control['player'] == player and control['target'] == target:
+                    self.bound_controls[key].remove(control)
+            self.refresh_active_controls()
+
+    def unbind_player(self, player):
+        """unbind all controls bound to a given player"""
+        for key in self.bound_controls:
+            for control in list(self.bound_controls[key]):
+                if control['player'] == player:
                     self.bound_controls[key].remove(control)
             self.refresh_active_controls()

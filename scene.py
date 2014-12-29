@@ -349,6 +349,16 @@ class Scene():
         self.snd_pack = self.level['sound_pack']
         self.gameplay = self.level['gameplay']
 
+        # unbind players controls
+        for player in range(4):
+            self.game.controller.unbind_player(player)
+        # reset players
+        self.players = [Player(self, i) for i in range(4)]
+        # reset scene content
+        self.content = Ordered()
+        # reset delay
+        self.delay = 0
+
         # player settings from loaded level and bind 'new_player' controls
         for player in self.players:
             player.settings.update(self.level['player'])
@@ -366,6 +376,7 @@ class Scene():
         # change active controls and reroute update function
         self.update = self.update_level
         self.menu = False
+        self.paused = False
         self.game.controller.toggle_active_controls('menu', False)
         self.game.controller.toggle_active_controls('game', True)
         self.game.controller.toggle_active_controls('pause', True)
@@ -454,14 +465,26 @@ class Scene():
         # stop background music
         self.cont.music()
         # add "MENU" string
-        identifier = ((100, 100), self.font.render('MENU', 1, (0, 255, 255)))
+        surf = self.font.render('MENU', 1, (140, 200, 0))
+        surf2 = self.font.render('MENU', 1, (0, 0, 0))
+        x = parameters.GAMESIZE[0] / 2 - surf.get_width() / 2
+        y = parameters.GAMESIZE[1] / 2 - surf.get_height() / 2
+        identifier = ((x, y), surf)
+        identifier2 = ((x+1, y+1), surf2)
+        self.lst_sprites.append(identifier2, parameters.MENULAY)
         self.lst_sprites.append(identifier, parameters.MENULAY)
 
     def update_paused(self, interval=0, time=0):
         # stop background music
         self.cont.music()
         # add "PAUSE" string
-        identifier = ((100, 100), self.font.render('PAUSE', 1, (0, 255, 0)))
+        surf = self.font.render('PAUSE', 1, (140, 200, 0))
+        surf2 = self.font.render('PAUSE', 1, (0, 0, 0))
+        x = parameters.GAMESIZE[0] / 2 - surf.get_width() / 2
+        y = parameters.GAMESIZE[1] / 2 - surf.get_height() / 2
+        identifier = ((x, y), surf)
+        identifier2 = ((x+1, y+1), surf2)
+        self.lst_sprites.append(identifier2, parameters.MESSAGELAY)
         self.lst_sprites.append(identifier, parameters.MESSAGELAY)
 
     def update_level(self, interval=0, time=0):
