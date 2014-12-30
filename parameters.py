@@ -3,7 +3,7 @@
 import pygame.locals as p_l
 
 
-GAMESIZE = (320, 240) # ~neo geo
+GAMESIZE = (320, 240)  # ~neo geo
 # GAMESIZE = (1024, 500)
 COLORDEPTH = 16  # set to 8 for speedier game with low color resolution !
 RESCALE = '2x'  # set to 2x or mame or None

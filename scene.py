@@ -293,7 +293,6 @@ class Scene():
         self.game.controller.toggle_active_controls('menu', True)
         self.game.controller.bind_control('change_level', -1, self)
         self.game.controller.bind_control('pause', -1, self)
-        self.game.controller.bind_control('menu', -1, self)
         self.game.controller.bind_control('mute', -1, self)
 
     def trigger(self, control):
@@ -378,6 +377,7 @@ class Scene():
         self.update = self.update_level
         self.menu = False
         self.paused = False
+        self.game.controller.bind_control('menu', -1, self)
         self.game.controller.toggle_active_controls('menu', False)
         self.game.controller.toggle_active_controls('game', True)
         self.game.controller.toggle_active_controls('pause', True)
@@ -465,22 +465,14 @@ class Scene():
         self.lst_sprites.content = self.game_sprites
         # stop background music
         self.cont.music()
-        # add "MENU" string
-        surf = self.font.render('MENU', 1, (140, 200, 0))
-        surf2 = self.font.render('MENU', 1, (0, 0, 0))
-        x = parameters.GAMESIZE[0] / 2 - surf.get_width() / 2
-        y = parameters.GAMESIZE[1] / 2 - surf.get_height() / 2
-        identifier = ((x, y), surf)
-        identifier2 = ((x+1, y+1), surf2)
-        self.lst_sprites.append(identifier2, parameters.MENULAY)
-        self.lst_sprites.append(identifier, parameters.MENULAY)
+        self.game.menu.add_sprites(self.game.menu)
 
     def update_paused(self, interval=0, time=0):
         # stop background music
         self.cont.music()
         # add "PAUSE" string
-        surf = self.font.render('PAUSE', 1, (140, 200, 0))
-        surf2 = self.font.render('PAUSE', 1, (0, 0, 0))
+        surf = self.font.render('PAUSE', True, (140, 200, 0))
+        surf2 = self.font.render('PAUSE', True, (0, 0, 0))
         x = parameters.GAMESIZE[0] / 2 - surf.get_width() / 2
         y = parameters.GAMESIZE[1] / 2 - surf.get_height() / 2
         identifier = ((x, y), surf)

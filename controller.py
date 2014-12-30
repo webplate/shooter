@@ -58,7 +58,8 @@ class Controller():
                 if control['name'] == control_name and control['player'] == player:
                     new_ctrl = control.copy()
                     new_ctrl.update({'target': target})
-                    self.bound_controls[key].append(new_ctrl)
+                    if new_ctrl not in self.bound_controls[key]:
+                        self.bound_controls[key].append(new_ctrl)
         self.refresh_active_controls()
 
     def bind_control_switch(self, control_name, player, target):
@@ -73,26 +74,31 @@ class Controller():
                         new_ctrl = control.copy()
                         new_ctrl.update({'event_type': p_l.KEYUP})
                         new_ctrl.update({'target': target})
-                        self.bound_controls[key].append(new_ctrl)
+                        if new_ctrl not in self.bound_controls[key]:
+                            self.bound_controls[key].append(new_ctrl)
                         new_ctrl = control.copy()
                         new_ctrl.update({'event_type': p_l.KEYDOWN})
                         new_ctrl.update({'target': target})
-                        self.bound_controls[key].append(new_ctrl)
+                        if new_ctrl not in self.bound_controls[key]:
+                            self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
                     elif control['event_type'] == 'JOY_SWITCH':
                         new_ctrl = control.copy()
                         new_ctrl.update({'event_type': p_l.JOYBUTTONUP})
                         new_ctrl.update({'target': target})
-                        self.bound_controls[key].append(new_ctrl)
+                        if new_ctrl not in self.bound_controls[key]:
+                            self.bound_controls[key].append(new_ctrl)
                         new_ctrl = control.copy()
                         new_ctrl.update({'event_type': p_l.JOYBUTTONDOWN})
                         new_ctrl.update({'target': target})
-                        self.bound_controls[key].append(new_ctrl)
+                        if new_ctrl not in self.bound_controls[key]:
+                            self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
                     elif control['event_type'] == p_l.JOYAXISMOTION:
                         new_ctrl = control.copy()
                         new_ctrl.update({'target': target})
-                        self.bound_controls[key].append(new_ctrl)
+                        if new_ctrl not in self.bound_controls[key]:
+                            self.bound_controls[key].append(new_ctrl)
                         self.controls_state[player].update({control['name']: False})
         self.refresh_active_controls()
 

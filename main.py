@@ -99,6 +99,8 @@ class Shooter():
             self.controller.bind_control('fullscreen', -1, self)
         # initialize scene
         self.scene = scene.Scene(self)
+        # initialize menu
+        self.menu = menu.Menu(self)
         # players
         self.players = self.scene.players
 
