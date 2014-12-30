@@ -13,7 +13,7 @@ DEFAULTPLAY = {
     'flip_rate': 70,  # fps cap
     'hit_pulse': 50,  # ms between two hits on ship
     'blast_hit_pulse': 20,  # ms between two blast hits
-    'game_speed': 1,
+    'game_speed': 0.1,
     'ratio_life_upgrade': 0.1
 }
 
@@ -126,7 +126,7 @@ HITBLINK = {
 
 SHIPORIENTATION = {
     'type': 'Roll',
-    'sprites': ['ship_roll_right', 'ship', 'ship_roll_left'],
+    'sprites': ['FighterB 1a', 'FighterB 1b', 'FighterB 1c'],
     'delay': 100
 }
 
