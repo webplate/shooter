@@ -4,6 +4,7 @@ import entity, tools, parameters
 import numpy
 import pygame.locals as p_l
 
+
 class Player():
     """class for player settings, controls, ships"""
     def __init__(self, scene, index):
@@ -115,7 +116,6 @@ class Player():
             self.ship.charge = 0.
 
     def update(self, interval, time):
-
         if self.alive:
             self.command(interval, time)
         # update info from ship if it exists
