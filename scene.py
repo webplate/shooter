@@ -219,6 +219,7 @@ class Container():
                 if music:
                     self.scene.game.music.play(loops)
                     self.scene.game.music.set_volume(self.scene.snd_pack['music_volume'])
+                    self.music()
 
     def music(self):
         """control game mixer for streaming large music files"""
