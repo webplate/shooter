@@ -13,7 +13,7 @@ DEFAULTPLAY = {
     'flip_rate': 70,  # fps cap
     'hit_pulse': 50,  # ms between two hits on ship
     'blast_hit_pulse': 20,  # ms between two blast hits
-    'game_speed': 0.1,
+    'game_speed': 1,
     'ratio_life_upgrade': 0.1
 }
 
@@ -584,10 +584,10 @@ COPTER = {
     'type': 'Fighter',
     'has_shadow': True,
     'speed': 0.03,
-    'life': 9000,
+    'life': 9,
     'weapons': [ANGLECANON],
-    'trajectory': 'Trajectory',
-    'trajectory_params': {'init_pos': (100, 110)},
+    'trajectory': 'GoFront',
+    #~ 'trajectory_params': {'init_pos': (100, 110)},
     'animations': [COPTEREIGHTDIR],
     'followers': [ROTOR],
     'reward': 1,
@@ -683,9 +683,8 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 1,
-    'player': PLAYER
+    'nb_enemies': 5,
+    'player': DERVAL
 }
-
 
 LEVEL = CLEBLEVEL

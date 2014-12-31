@@ -385,38 +385,55 @@ class Roll(Anim):
         self.player = self.parent.player
         self.base_name = self.parent.name
         # ref for animation of ship movements
-        self.last_bend = 0
+        self.last_bend_right = 0
+        self.last_bend_left = 0
         # state can be 0, 1, 2 corresponding to left, center or right
         self.state = 1
         self.flipping = False
+        self.flip_right = False
+        self.flip_left = False
+        
 
     def update(self, interval, time):
-        if not self.flipping:
-            
-
+        # detect changes of direction
+        if not self.flip_right:
             if self.player.go['right'] and self.state == 0:
-                self.flipping = True
-                self.last_bend = time
-                self.state = 1
-            
-            elif self.player.go['left'] and self.state == 2:
-                self.flipping = True
-                self.last_bend = time
+                self.flip_right = True
+                self.last_bend_right = time
                 self.state = 1
             
             elif (not (self.player.go['left'] or self.player.go['right'])
                   and self.state == 0):
-                self.flipping = True
-                self.last_bend = time
+                self.flip_right = True
+                self.last_bend_right = time
+                self.state = 1
+        
+        if not self.flip_left:
+            if self.player.go['left'] and self.state == 2:
+                self.flip_left = True
+                self.last_bend_left = time
                 self.state = 1
             
             elif (not (self.player.go['left'] or self.player.go['right'])
                   and self.state == 2):
-                self.flipping = True
-                self.last_bend = time
+                self.flip_left = True
+                self.last_bend_left = time
                 self.state = 1
+
+        # check if roll is over
+        if self.flip_right:
+            if time > self.last_bend_right + self.delay:
+                #~ print 'end flip right'
+                self.flip_right = False
+        elif self.flip_left:
+            if time > self.last_bend_left + self.delay:
+                #~ print 'end flip left'
+                self.flip_left = False
+        
+        # change appearance if roll is over
+        if not (self.flip_right or self.flip_left):
             # go center
-            elif not (self.player.go['left'] or self.player.go['right']):
+            if not (self.player.go['left'] or self.player.go['right']):
                 self.state = 1
             # go right
             elif self.player.go['right'] and self.state == 1:
@@ -424,28 +441,9 @@ class Roll(Anim):
             # go left
             elif self.player.go['left'] and self.state == 1:
                 self.state = 0
-        if self.flipping and time > self.last_bend + self.delay:
-            print 'flip'
-            self.flipping = False
 
+        # set surface
         self.parent.surface = self.sprites[self.state]
-            
-        # detect change of direction
-        #~ if self.player.go['right'] and not self.righto:
-            #~ self.righto = True
-            #~ self.lefto = False
-            #~ self.last_bend = time
-        #~ elif self.player.go['left'] and not self.lefto:
-            #~ self.lefto = True
-            #~ self.righto = False
-            #~ self.last_bend = time
-        #~ # show orientation of ship
-        #~ if self.player.go['right'] and time > self.last_bend + self.delay:
-            #~ self.parent.surface = self.sprites[0]
-        #~ elif self.player.go['left']  and time > self.last_bend + self.delay:
-            #~ self.parent.surface = self.sprites[2]
-        #~ else:
-            #~ self.parent.surface = self.sprites[1]
 
 class Directions(Anim):
     """change surface according to direction toward target"""
