@@ -298,7 +298,7 @@ class Scene():
     def trigger(self, control):
         # change level command
         if control['name'] == 'change_level':
-            print 'there should be a level change !'
+            print 'New level !'
             level = parameters.LEVEL
             level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
             self.play_level(level)
@@ -460,11 +460,14 @@ class Scene():
             self.lst_sprites.append(identifier, item.layer)
 
     def update_menu(self, interval=0, time=0):
+        # keep sprites from the game to make background image
         self.game_sprites = self.lst_sprites.content[:parameters.INTERFACELAY+1]
         self.lst_sprites = Ordered()
         self.lst_sprites.content = self.game_sprites
         # stop background music
         self.cont.music()
+        # update menu and get menu sprites
+        # self.game.menu.update()
         self.game.menu.add_sprites(self.game.menu)
 
     def update_paused(self, interval=0, time=0):
