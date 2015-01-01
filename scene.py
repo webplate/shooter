@@ -467,7 +467,7 @@ class Scene():
         # stop background music
         self.cont.music()
         # update menu and get menu sprites
-        # self.game.menu.update()
+        self.game.menu.update()
         self.game.menu.add_sprites(self.game.menu)
 
     def update_paused(self, interval=0, time=0):

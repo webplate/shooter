@@ -25,20 +25,26 @@ class Menu():
         self.bg_color = [40, 40, 40]
 
         # margins, spacings...
-        self.x_margin = 10
-        self.y_margin = 5
+        self.line_spacing = 5
+        self.main_menu_margins = [12, 8, 12, 8]
 
         # container for menu elements
         self.content = []
 
-        main_menu = MenuList(self, None, ['Resume', 'New Game', 'Controls', 'High Scores', 'Quit'], 5)
+        # bind menu controls
+        self.game.controller.bind_control('up', -1, self)
+        self.game.controller.bind_control('down', -1, self)
+        self.game.controller.bind_control('enter', -1, self)
+
+        # describe menus
+        lines = ['Resume', 'New Game', 'Controls', 'High Scores', 'Quit']
+        main_menu = MenuList(self, None, lines, self.line_spacing)
         main_menu.visible = True
         main_menu.center_lines()
         main_menu.center(['x', 'y'])
-
+        main_menu.add_background(self.bg_color, self.main_menu_margins)
         self.content.append(main_menu)
-
-        main_menu.add_background([0, 0, 0])
+        self.active_menu = main_menu
 
     def add_sprites(self, container):
         for item in container.content:
@@ -50,7 +56,10 @@ class Menu():
 
     def update(self):
         for item in self.content:
-            item.update
+            item.update()
+
+    def trigger(self, control):
+        self.active_menu.trigger(control)
 
 
 class MenuElement():
@@ -64,15 +73,12 @@ class MenuElement():
         self.layer = parameters.MENULAY
         self.rel_pos = [0, 0]
         self.size = [0, 0]
-        # left, top, right, bottom
-        self.margins = [0, 0, 0, 0]
         # container for other menu elements
         self.content = []
 
     def update(self):
         for item in self.content:
             item.update()
-        self.compute_size()
 
     # absolute position is obtained by recursively adding all relative positions of parents
     def get_abs_pos(self):
@@ -94,12 +100,18 @@ class MenuElement():
             self.size = [0, 0]
         # size due to content
         for item in self.content:
-            self.size[0] = max(self.size[0], item.rel_pos[0]+item.size[0])
-            self.size[1] = max(self.size[1], item.rel_pos[1]+item.size[1])
+            if item.type is not 'background':
+                self.size[0] = max(self.size[0], item.rel_pos[0]+item.size[0])
+                self.size[1] = max(self.size[1], item.rel_pos[1]+item.size[1])
 
-    def add_background(self, color):
-        background = MenuBackground(self.menu, self, color)
+    def add_background(self, color, margins=[0, 0, 0, 0]):
+        background = MenuBackground(self.menu, self, color, margins)
         self.content.append(background)
+
+    def remove_background(self):
+        for item in self.content:
+            if item.type == 'background':
+                self.content.remove(item)
 
     def center(self, axes):
         for axis in axes:
@@ -118,12 +130,16 @@ class MenuElement():
 
 
 class MenuBackground(MenuElement):
-    def __init__(self, menu, parent, color):
+    def __init__(self, menu, parent, color, margins):
         MenuElement.__init__(self, menu, parent)
         self.type = 'background'
         self.visible = True
         self.layer = parameters.MENUBGLAY
+        self.parent.compute_size()
         self.size = parent.size
+        self.size[0] += margins[0] + margins[2]
+        self.size[1] += margins[1] + margins[3]
+        self.rel_pos = [-margins[0], -margins[1]]
         self.surface = pygame.Surface(self.size)
         self.surface.fill(color)
 
@@ -146,22 +162,59 @@ class MenuList(MenuElement):
         MenuElement.__init__(self, menu, parent)
         self.type = 'menu list'
         self.line_spacing = line_spacing
+        self.lines = []
+        self.nlines = 0
+        self.selected_line = None
 
         for i, txt in enumerate(texts):
             line = MenuLine(self.menu, self, txt)
             line.visible = True
-            line.number = i
-            # notice the little trick to get line spacings only between lines
+            line.selectable = True
+            line.line_number = i
+            # notice the little trick to avoid line spacing before first line
             line.rel_pos = [0, self.size[1] + min(i, 1)*self.line_spacing]
+            self.lines.append(line)
             self.content.append(line)
+            self.nlines += 1
             self.compute_size()
 
-        # self.content[0].add_background([255, 0, 0])
-
     def center_lines(self):
+        """center all lines of the list"""
         for item in self.content:
             if item.type == 'menu line':
                 item.center('x')
+
+    def select_line(self, which):
+        """select next or previous selectable line"""
+        if which == 'down':
+            if self.selected_line is None:
+                self.selected_line = -1
+            for i in range(self.nlines):
+                if self.lines[(i+1+self.selected_line) % self.nlines].selectable:
+                    self.selected_line = (i+1+self.selected_line) % self.nlines
+                    break
+        elif which == 'up':
+            if self.selected_line is None:
+                self.selected_line = self.nlines
+            for i in range(self.nlines).__reversed__():
+                if self.lines[(i+self.selected_line) % self.nlines].selectable:
+                    self.selected_line = (i+self.selected_line) % self.nlines
+                    break
+        if self.selected_line not in range(self.nlines):
+            self.selected_line = None
+
+    def update(self):
+        for item in self.content:
+            if item.type == 'menu line':
+                if item.line_number == self.selected_line:
+                    item.add_background([90, 90, 90], [10, 3, 10, 3])
+                else:
+                    item.remove_background()
+            item.update()
+
+    def trigger(self, control):
+        if control['name'] == 'up' or control['name'] == 'down':
+            self.select_line(control['name'])
 
 
 class MenuGrid(MenuElement):
