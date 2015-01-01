@@ -47,6 +47,7 @@ class Menu():
         self.active_menu = main_menu
 
     def add_sprites(self, container):
+        """add visible menu sprites to scene sprite list"""
         for item in container.content:
             if item.visible and item.surface is not None:
                 self.scene.add_sprite(item.abs_pos[0], item.abs_pos[1], item)
@@ -60,6 +61,19 @@ class Menu():
 
     def trigger(self, control):
         self.active_menu.trigger(control)
+
+    def action(self, menu_element):
+        if menu_element.type == 'menu line':
+            if menu_element.text == 'Resume':
+                self.scene.trigger({'name': 'menu'})
+            if menu_element.text == 'New Game':
+                self.scene.trigger({'name': 'change_level'})
+            if menu_element.text == 'Controls':
+                print 'No way! Controls are fine!'
+            if menu_element.text == 'High Scores':
+                print 'No high scores yet'
+            if menu_element.text == 'Quit':
+                self.game.trigger({'name': 'quit'})
 
 
 class MenuElement():
@@ -206,15 +220,16 @@ class MenuList(MenuElement):
     def update(self):
         for item in self.content:
             if item.type == 'menu line':
+                item.remove_background()
                 if item.line_number == self.selected_line:
                     item.add_background([90, 90, 90], [10, 3, 10, 3])
-                else:
-                    item.remove_background()
             item.update()
 
     def trigger(self, control):
         if control['name'] == 'up' or control['name'] == 'down':
             self.select_line(control['name'])
+        if control['name'] == 'enter' and self.selected_line is not None:
+            self.menu.action(self.lines[self.selected_line])
 
 
 class MenuGrid(MenuElement):

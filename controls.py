@@ -50,10 +50,10 @@ import pygame.locals as p_l
 controls = {}
 # global controls (always active)
 controls.update({'global': [
-    ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Quit game
+    ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_q}],  # Quit game
     ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
     ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
-    ['menu', -1, p_l.KEYDOWN, {'key': p_l.K_F1}],  # Open menu
+    ['menu', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Open menu
 ]})
 
 # menu controls

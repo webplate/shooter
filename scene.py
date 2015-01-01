@@ -277,6 +277,8 @@ class Scene():
         self.sfont = game.sfont
         # create four players
         self.players = [Player(self, i) for i in range(4)]
+        # no level loaded yet
+        self.level = None
         # an object for efficient loading
         self.cont = Container(self)
         # content in priority update order
@@ -291,7 +293,8 @@ class Scene():
         # controller configuration
         self.game.controller.toggle_active_controls('global', True)
         self.game.controller.toggle_active_controls('menu', True)
-        self.game.controller.bind_control('change_level', -1, self)
+        self.game.controller.bind_control('menu', -1, self)
+        # self.game.controller.bind_control('change_level', -1, self)
         self.game.controller.bind_control('pause', -1, self)
         self.game.controller.bind_control('mute', -1, self)
 
@@ -321,7 +324,7 @@ class Scene():
                 self.game.controller.toggle_active_controls('menu', True)
                 self.update = self.update_menu
                 self.menu = True
-            else:
+            elif self.level is not None:
                 if self.paused:
                     self.trigger({'name': 'pause'})
                 self.game.controller.toggle_active_controls('pause', True)
@@ -377,7 +380,6 @@ class Scene():
         self.update = self.update_level
         self.menu = False
         self.paused = False
-        self.game.controller.bind_control('menu', -1, self)
         self.game.controller.toggle_active_controls('menu', False)
         self.game.controller.toggle_active_controls('game', True)
         self.game.controller.toggle_active_controls('pause', True)
