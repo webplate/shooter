@@ -58,7 +58,6 @@ controls.update({'global': [
 
 # menu controls
 controls.update({'menu': [
-    ['change_level', -1, p_l.KEYDOWN, {'key': p_l.K_c}],
     ['up', -1, p_l.KEYDOWN, {'key': p_l.K_UP}],
     ['down', -1, p_l.KEYDOWN, {'key': p_l.K_DOWN}],
     ['enter', -1, p_l.KEYDOWN, {'key': p_l.K_RETURN}]

@@ -43,7 +43,7 @@ KEYMAPS = [KEYMAP1, KEYMAP2]
 # Theme packs
 DEFAULTTHEME = {
     'name': None,
-    'bg_color': (50, 50, 50),
+    'bg_color': (65, 65, 65),
     'txt_color': (100, 100, 100),
     'font': "FIXED_BO.TTF",
     'monospace_font': "FIXED_BO.TTF",
@@ -84,9 +84,10 @@ IRONBRAIN = {
 # Various....
 COLLISIONDAMAGE = -1
 # set layers of sprites
-MENULAY = 30
-MENUBGLAY = 29
-MESSAGELAY = 28
+MENULAY = 35
+MENUSHADOWLAY = 34
+MENUBGLAY = 32
+MESSAGELAY = 30
 INTERFACELAY = 25
 FRONTLAY = 20
 OVERLAY = 18
@@ -575,7 +576,7 @@ CLEBLEVEL = {
     'theme': CLEBARD,
     'sound_pack': MCPACK,
     'background': DESERT,
-    'nb_enemies': 40,
+    'nb_enemies': 20,
     'player': DERVAL
 }
 

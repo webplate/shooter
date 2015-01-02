@@ -288,20 +288,18 @@ class Scene():
 
         # show menu at start
         self.update = self.update_menu
-        self.menu = True
+        self.in_menu = True
 
         # controller configuration
         self.game.controller.toggle_active_controls('global', True)
         self.game.controller.toggle_active_controls('menu', True)
         self.game.controller.bind_control('menu', -1, self)
-        # self.game.controller.bind_control('change_level', -1, self)
         self.game.controller.bind_control('pause', -1, self)
         self.game.controller.bind_control('mute', -1, self)
 
     def trigger(self, control):
         # change level command
         if control['name'] == 'change_level':
-            print 'New level !'
             level = parameters.LEVEL
             level = tools.fill_dict_with_default(level, parameters.DEFAULTLEVEL)
             self.play_level(level)
@@ -317,19 +315,22 @@ class Scene():
                 self.update = self.update_level
         # menu command
         elif control['name'] == 'menu':
-            if not self.menu:
+            if not self.in_menu:
+                # open menu if it is closed
                 if not self.paused:
                     self.trigger({'name': 'pause'})
                 self.game.controller.toggle_active_controls('pause', False)
                 self.game.controller.toggle_active_controls('menu', True)
+                self.game.menu.trigger({'name': 'open_menu'})
                 self.update = self.update_menu
-                self.menu = True
+                self.in_menu = True
             elif self.level is not None:
+                # close menu if it is open and a level is loaded
                 if self.paused:
                     self.trigger({'name': 'pause'})
                 self.game.controller.toggle_active_controls('pause', True)
                 self.game.controller.toggle_active_controls('menu', False)
-                self.menu = False
+                self.in_menu = False
         # mute command
         elif control['name'] == 'mute':
             if not self.mute:
@@ -378,7 +379,7 @@ class Scene():
         entity.Landscape(self, parameters.CLOUD).add()
         # change active controls and reroute update function
         self.update = self.update_level
-        self.menu = False
+        self.in_menu = False
         self.paused = False
         self.game.controller.toggle_active_controls('menu', False)
         self.game.controller.toggle_active_controls('game', True)
@@ -470,7 +471,7 @@ class Scene():
         self.cont.music()
         # update menu and get menu sprites
         self.game.menu.update()
-        self.game.menu.add_sprites(self.game.menu)
+        self.game.menu.add_sprites(self.game.menu.active_menu)
 
     def update_paused(self, interval=0, time=0):
         # stop background music

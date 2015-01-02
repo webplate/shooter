@@ -20,9 +20,9 @@ class Menu():
         self.font_name = "FIXED_BO.TTF"
         self.font_size = 9
         self.font_color = (140, 200, 0)
-        self.font_color_inactive = (100, 150, 0)
+        self.font_color_inactive = (70, 100, 0)
         self.font = tools.load_font(self.font_name, self.font_size)
-        self.bg_color = [40, 40, 40]
+        self.bg_color = [50, 50, 50]
 
         # margins, spacings...
         self.line_spacing = 5
@@ -36,15 +36,54 @@ class Menu():
         self.game.controller.bind_control('down', -1, self)
         self.game.controller.bind_control('enter', -1, self)
 
-        # describe menus
-        lines = ['Resume', 'New Game', 'Controls', 'High Scores', 'Quit']
-        main_menu = MenuList(self, None, lines, self.line_spacing)
-        main_menu.visible = True
-        main_menu.center_lines()
-        main_menu.center(['x', 'y'])
-        main_menu.add_background(self.bg_color, self.main_menu_margins)
-        self.content.append(main_menu)
-        self.active_menu = main_menu
+        # # # # # # # # #
+        # generate menu #
+        # # # # # # # # #
+
+        # main menu
+        lines = ['Resume', 'New Game', 'Controls', 'Options', 'High Scores', 'Quit']
+        self.main_menu = MenuList(self, None, lines, self.line_spacing)
+        self.main_menu.visible = True
+        self.main_menu.center_lines()
+        self.main_menu.center(['x', 'y'])
+        self.main_menu.add_border([0,0,0], self.main_menu_margins)
+        self.main_menu.add_background(self.bg_color, self.main_menu_margins)
+        for line in self.main_menu.lines:
+            line.add_shadow()
+        self.content.append(self.main_menu)
+        self.main_menu.default_selected = 0
+
+        # options
+        lines = ['Back', 'Gameplay', 'Display', 'Sound']
+        self.options_menu = MenuList(self, None, lines, self.line_spacing)
+        self.options_menu.visible = True
+        self.options_menu.center_lines()
+        self.options_menu.center(['x', 'y'])
+        self.options_menu.add_border([0,0,0], self.main_menu_margins)
+        self.options_menu.add_background(self.bg_color, self.main_menu_margins)
+        for line in self.options_menu.lines:
+            line.add_shadow()
+        self.content.append(self.options_menu)
+        self.options_menu.previous = self.main_menu
+        self.options_menu.default_selected = 0
+
+        # options/sound
+        lines = ['Back', 'Mute']
+        self.sound_menu = MenuList(self, None, lines, self.line_spacing)
+        self.sound_menu.visible = True
+        self.sound_menu.center_lines()
+        self.sound_menu.center(['x', 'y'])
+        self.sound_menu.add_border([0,0,0], self.main_menu_margins)
+        self.sound_menu.add_background(self.bg_color, self.main_menu_margins)
+        for line in self.sound_menu.lines:
+            line.add_shadow()
+        self.content.append(self.sound_menu)
+        self.sound_menu.previous = self.options_menu
+        self.sound_menu.default_selected = 0
+
+        # active menu at start
+        self.active_menu = self.main_menu
+        self.active_menu.selected_line = 1  # new game
 
     def add_sprites(self, container):
         """add visible menu sprites to scene sprite list"""
@@ -60,27 +99,69 @@ class Menu():
             item.update()
 
     def trigger(self, control):
-        self.active_menu.trigger(control)
+        """trigger function (outside triggers)"""
+        if control['name'] == 'open_menu':
+            self.active_menu = self.main_menu
+            self.active_menu.selected_line = 0  # resume
+        else:
+            self.active_menu.trigger(control)
+
+    def is_selectable(self, menu_element):
+        """function called by elements who want to know if they can be selected"""
+        if menu_element.type == 'menu line':
+            # generic
+            if menu_element.text == 'Back':
+                return True
+            # main menu
+            elif menu_element.text == 'Resume':
+                if self.scene.level is not None:
+                    return True
+            elif menu_element.text == 'New Game':
+                return True
+            elif menu_element.text == 'Options':
+                return True
+            elif menu_element.text == 'Quit':
+                return True
+            # options menu
+            elif menu_element.text == 'Sound':
+                return True
+            else:
+                return False
 
     def action(self, menu_element):
+        """function called by selectable elements (inside triggers)"""
         if menu_element.type == 'menu line':
+            # generic
+            if menu_element.text == 'Back':
+                if menu_element.find_previous_menu() is not None:
+                    self.active_menu = menu_element.find_previous_menu()
+                else:
+                    self.active_menu = self.main_menu
+                self.active_menu.selected_line = self.active_menu.default_selected
+            # main menu
             if menu_element.text == 'Resume':
                 self.scene.trigger({'name': 'menu'})
-            if menu_element.text == 'New Game':
+            elif menu_element.text == 'New Game':
                 self.scene.trigger({'name': 'change_level'})
-            if menu_element.text == 'Controls':
-                print 'No way! Controls are fine!'
-            if menu_element.text == 'High Scores':
-                print 'No high scores yet'
-            if menu_element.text == 'Quit':
+            elif menu_element.text == 'Options':
+                self.options_menu.selected_line = 0
+                self.active_menu = self.options_menu
+            elif menu_element.text == 'Quit':
                 self.game.trigger({'name': 'quit'})
+            # options menu
+            elif menu_element.text == 'Sound':
+                self.sound_menu.selected_line = 0
+                self.active_menu = self.sound_menu
 
 
 class MenuElement():
     def __init__(self, menu, parent):
         self.menu = menu
         self.type = 'generic menu element'
+        # parent is the menu element which contains the current menu element
         self.parent = parent
+        # previous menu is the menu which contains a link to the current menu
+        self.previous = None
         self.visible = False
         self.selectable = False
         self.surface = None
@@ -114,11 +195,23 @@ class MenuElement():
             self.size = [0, 0]
         # size due to content
         for item in self.content:
-            if item.type is not 'background':
+            if item.type not in ['background', 'border']:
                 self.size[0] = max(self.size[0], item.rel_pos[0]+item.size[0])
                 self.size[1] = max(self.size[1], item.rel_pos[1]+item.size[1])
 
-    def add_background(self, color, margins=[0, 0, 0, 0]):
+    def find_previous_menu(self):
+        current = self
+        while current is not None:
+            if current.previous is not None:
+                return current.previous
+            current = current.parent
+        return None
+
+    def add_background(self, color, margins=(0, 0, 0, 0)):
+        """
+        Add a background to a menu element
+        :param margins: extra area around element that should be filled with background color
+        """
         background = MenuBackground(self.menu, self, color, margins)
         self.content.append(background)
 
@@ -127,7 +220,24 @@ class MenuElement():
             if item.type == 'background':
                 self.content.remove(item)
 
+    def add_border(self, color, margins=(0, 0, 0, 0), width=1):
+        """
+        Add a border to a menu element
+        :param margins: extra area around element that should be included inside the border
+        """
+        border = MenuBorder(self.menu, self, color, margins, width)
+        self.content.append(border)
+
+    def remove_border(self):
+        for item in self.content:
+            if item.type == 'border':
+                self.content.remove(item)
+
     def center(self, axes):
+        """
+        Center menu element in regard to its parent (or screen if no self.parent = None)
+        :param axes: 'x', 'y' or ['x', 'y']
+        """
         for axis in axes:
             if axis == 'x':
                 axis = 0
@@ -158,17 +268,51 @@ class MenuBackground(MenuElement):
         self.surface.fill(color)
 
 
+class MenuBorder(MenuElement):
+    def __init__(self, menu, parent, color, margins, width):
+        MenuElement.__init__(self, menu, parent)
+        new_margins = list(margins)
+        for i, margin in enumerate(margins):
+            new_margins[i] = margin+width
+        self.type = 'border'
+        self.visible = True
+        self.layer = parameters.MENUBGLAY
+        self.parent.compute_size()
+        self.size = parent.size
+        self.size[0] += new_margins[0] + new_margins[2]
+        self.size[1] += new_margins[1] + new_margins[3]
+        self.rel_pos = [-new_margins[0], -new_margins[1]]
+        self.surface = pygame.Surface(self.size, pygame.SRCALPHA)
+        self.surface.fill(color)
+        rect = [width, width, self.size[0]-1-width, self.size[1]-1-width]
+        self.surface.fill([0,0,0,0], rect)
+
 class MenuLine(MenuElement):
     def __init__(self, menu, parent, text):
         MenuElement.__init__(self, menu, parent)
         self.type = 'menu line'
         self.text = text
-        self.surface = self.get_surface()
-        self.compute_size()
+        self.update()
+
+    def add_shadow(self):
+        """generate a pseudo-shadow of the text by adding a background black shifted copy of itself"""
+        line_shadow = MenuElement(self.menu, self)
+        line_shadow.surface = self.menu.font.render(self.text, True, [0, 0, 0])
+        line_shadow.rel_pos = [1, 1]
+        line_shadow.layer = parameters.MENUSHADOWLAY
+        line_shadow.visible = True
+        self.content.append(line_shadow)
 
     def get_surface(self):
-        surface = self.menu.font.render(self.text, True, self.menu.font_color)
-        return surface
+        if self.selectable:
+            return self.menu.font.render(self.text, True, self.menu.font_color)
+        else:
+            return self.menu.font.render(self.text, True, self.menu.font_color_inactive)
+
+    def update(self):
+        self.selectable = self.menu.is_selectable(self)
+        self.surface = self.get_surface()
+        self.compute_size()
 
 
 class MenuList(MenuElement):
@@ -218,11 +362,11 @@ class MenuList(MenuElement):
             self.selected_line = None
 
     def update(self):
+        for item in self.lines:
+            item.remove_background()
+            if item.line_number == self.selected_line:
+                item.add_background([90, 90, 90], [10, 3, 10, 3])
         for item in self.content:
-            if item.type == 'menu line':
-                item.remove_background()
-                if item.line_number == self.selected_line:
-                    item.add_background([90, 90, 90], [10, 3, 10, 3])
             item.update()
 
     def trigger(self, control):
