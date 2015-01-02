@@ -49,7 +49,7 @@ class Menu():
         self.main_menu.add_border([0,0,0], self.main_menu_margins)
         self.main_menu.add_background(self.bg_color, self.main_menu_margins)
         for line in self.main_menu.lines:
-            line.add_shadow()
+            line.shadow = True
         self.content.append(self.main_menu)
 
         # options
@@ -61,7 +61,7 @@ class Menu():
         self.options_menu.add_border([0,0,0], self.main_menu_margins)
         self.options_menu.add_background(self.bg_color, self.main_menu_margins)
         for line in self.options_menu.lines:
-            line.add_shadow()
+            line.shadow = True
         self.content.append(self.options_menu)
         self.options_menu.previous = self.main_menu
 
@@ -74,7 +74,7 @@ class Menu():
         self.sound_menu.add_border([0,0,0], self.main_menu_margins)
         self.sound_menu.add_background(self.bg_color, self.main_menu_margins)
         for line in self.sound_menu.lines:
-            line.add_shadow()
+            line.shadow = True
         self.content.append(self.sound_menu)
         self.sound_menu.previous = self.options_menu
 
@@ -83,7 +83,7 @@ class Menu():
         self.active_menu.select_line('first')
 
     def add_sprites(self, container):
-        """add visible menu sprites to scene sprite list"""
+        """add active menu sprites to scene sprite list"""
         for item in container.content:
             if item.visible and item.surface is not None:
                 self.scene.add_sprite(item.abs_pos[0], item.abs_pos[1], item)
@@ -108,22 +108,22 @@ class Menu():
         """function called by elements who want to know if they can be selected"""
         if menu_element.type == 'menu line':
             # generic
-            if menu_element.text == 'Back':
+            if menu_element.name == 'Back':
                 return True
             # main menu
-            elif menu_element.text == 'Resume':
+            elif menu_element.name == 'Resume':
                 if self.scene.level is not None:
                     return True
-            elif menu_element.text == 'New Game':
+            elif menu_element.name == 'New Game':
                 return True
-            elif menu_element.text == 'Options':
+            elif menu_element.name == 'Options':
                 return True
-            elif menu_element.text == 'Quit':
+            elif menu_element.name == 'Quit':
                 return True
             # options menu
-            elif menu_element.text == 'Sound':
+            elif menu_element.name == 'Sound':
                 return True
-            elif menu_element.text == 'Mute':
+            elif menu_element.name == 'Mute':
                 return True
             else:
                 return False
@@ -132,27 +132,27 @@ class Menu():
         """function called by selectable elements (inside triggers)"""
         if menu_element.type == 'menu line':
             # generic
-            if menu_element.text == 'Back':
+            if menu_element.name == 'Back':
                 if menu_element.find_previous_menu() is not None:
                     self.active_menu = menu_element.find_previous_menu()
                 else:
                     self.active_menu = self.main_menu
                 self.active_menu.select_line('first')
             # main menu
-            if menu_element.text == 'Resume':
+            if menu_element.name == 'Resume':
                 self.scene.trigger({'name': 'menu'})
-            elif menu_element.text == 'New Game':
+            elif menu_element.name == 'New Game':
                 self.scene.trigger({'name': 'change_level'})
-            elif menu_element.text == 'Options':
+            elif menu_element.name == 'Options':
                 self.options_menu.select_line('first')
                 self.active_menu = self.options_menu
-            elif menu_element.text == 'Quit':
+            elif menu_element.name == 'Quit':
                 self.game.trigger({'name': 'quit'})
             # options menu
-            elif menu_element.text == 'Sound':
+            elif menu_element.name == 'Sound':
                 self.sound_menu.select_line('first')
                 self.active_menu = self.sound_menu
-            elif menu_element.text == 'Mute':
+            elif menu_element.name == 'Mute':
                 self.scene.trigger({'name': 'mute'})
 
 
@@ -295,11 +295,14 @@ class MenuLine(MenuElement):
         MenuElement.__init__(self, menu, parent)
         self.type = 'menu line'
         self.text = text
+        self.name = text
+        self.shadow = False
         self.update()
 
     def add_shadow(self):
         """generate a pseudo-shadow of the text by adding a background black shifted copy of itself"""
         line_shadow = MenuElement(self.menu, self)
+        line_shadow.type = 'shadow'
         line_shadow.surface = self.menu.font.render(self.text, True, [0, 0, 0])
         line_shadow.rel_pos = [1, 1]
         line_shadow.layer = parameters.MENUSHADOWLAY
@@ -313,8 +316,11 @@ class MenuLine(MenuElement):
             return self.menu.font.render(self.text, True, self.menu.font_color_inactive)
 
     def update(self):
-        self.selectable = self.menu.is_selectable(self)
+        self.content = []
         self.surface = self.get_surface()
+        if self.shadow:
+            self.add_shadow()
+        self.selectable = self.menu.is_selectable(self)
         self.compute_size()
 
 
@@ -371,12 +377,12 @@ class MenuList(MenuElement):
             self.selected_line = None
 
     def update(self):
+        for item in self.content:
+            item.update()
         for item in self.lines:
             item.remove_background()
             if item.line_number == self.selected_line:
                 item.add_background([90, 90, 90], [10, 3, 10, 3])
-        for item in self.content:
-            item.update()
 
     def trigger(self, control):
         if control['name'] == 'up' or control['name'] == 'down':
