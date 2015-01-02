@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import entity, tools, parameters
 import numpy
+import logging
 import pygame.locals as p_l
 
 
@@ -357,12 +358,17 @@ class Scene():
                         miny, maxy = max(yP, yT)-yT, min(yPe, yTe)-yT
                         minxP, maxxP = max(xP, xT)-xP, min(xPe, xTe)-xP
                         minyP, maxyP = max(yP, yT)-yP, min(yPe, yTe)-yP
-                        touch = numpy.logical_and(
-                            itemT.array[minx:maxx, miny:maxy],
-                            itemP.array[minxP:maxxP, minyP:maxyP])
-                        if True in touch:
-                            itemT.collided(itemP, time)
-                            itemP.collided(itemT, time)
+                        aT = itemT.array[minx:maxx, miny:maxy]
+                        aP = itemP.array[minxP:maxxP, minyP:maxyP]
+                        try:
+                            touch = numpy.logical_and(aT, aP)
+                        except ValueError:
+                            logging.error("Bad collision between %s and %s",
+                            str(aT.shape), str(aP.shape))
+                        else:
+                            if True in touch:
+                                itemT.collided(itemP, time)
+                                itemP.collided(itemT, time)
 
     def update_paused(self, interval=0, time=0):
         # stop background music
