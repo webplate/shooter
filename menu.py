@@ -51,7 +51,6 @@ class Menu():
         for line in self.main_menu.lines:
             line.add_shadow()
         self.content.append(self.main_menu)
-        self.main_menu.default_selected = 0
 
         # options
         lines = ['Back', 'Gameplay', 'Display', 'Sound']
@@ -65,7 +64,6 @@ class Menu():
             line.add_shadow()
         self.content.append(self.options_menu)
         self.options_menu.previous = self.main_menu
-        self.options_menu.default_selected = 0
 
         # options/sound
         lines = ['Back', 'Mute']
@@ -79,11 +77,10 @@ class Menu():
             line.add_shadow()
         self.content.append(self.sound_menu)
         self.sound_menu.previous = self.options_menu
-        self.sound_menu.default_selected = 0
 
         # active menu at start
         self.active_menu = self.main_menu
-        self.active_menu.selected_line = 1  # new game
+        self.active_menu.select_line('first')
 
     def add_sprites(self, container):
         """add visible menu sprites to scene sprite list"""
@@ -102,7 +99,8 @@ class Menu():
         """trigger function (outside triggers)"""
         if control['name'] == 'open_menu':
             self.active_menu = self.main_menu
-            self.active_menu.selected_line = 0  # resume
+            self.active_menu.update()
+            self.active_menu.select_line('first')
         else:
             self.active_menu.trigger(control)
 
@@ -125,6 +123,8 @@ class Menu():
             # options menu
             elif menu_element.text == 'Sound':
                 return True
+            elif menu_element.text == 'Mute':
+                return True
             else:
                 return False
 
@@ -137,21 +137,23 @@ class Menu():
                     self.active_menu = menu_element.find_previous_menu()
                 else:
                     self.active_menu = self.main_menu
-                self.active_menu.selected_line = self.active_menu.default_selected
+                self.active_menu.select_line('first')
             # main menu
             if menu_element.text == 'Resume':
                 self.scene.trigger({'name': 'menu'})
             elif menu_element.text == 'New Game':
                 self.scene.trigger({'name': 'change_level'})
             elif menu_element.text == 'Options':
-                self.options_menu.selected_line = 0
+                self.options_menu.select_line('first')
                 self.active_menu = self.options_menu
             elif menu_element.text == 'Quit':
                 self.game.trigger({'name': 'quit'})
             # options menu
             elif menu_element.text == 'Sound':
-                self.sound_menu.selected_line = 0
+                self.sound_menu.select_line('first')
                 self.active_menu = self.sound_menu
+            elif menu_element.text == 'Mute':
+                self.scene.trigger({'name': 'mute'})
 
 
 class MenuElement():
@@ -287,6 +289,7 @@ class MenuBorder(MenuElement):
         rect = [width, width, self.size[0]-1-width, self.size[1]-1-width]
         self.surface.fill([0,0,0,0], rect)
 
+
 class MenuLine(MenuElement):
     def __init__(self, menu, parent, text):
         MenuElement.__init__(self, menu, parent)
@@ -327,7 +330,6 @@ class MenuList(MenuElement):
         for i, txt in enumerate(texts):
             line = MenuLine(self.menu, self, txt)
             line.visible = True
-            line.selectable = True
             line.line_number = i
             # notice the little trick to avoid line spacing before first line
             line.rel_pos = [0, self.size[1] + min(i, 1)*self.line_spacing]
@@ -358,6 +360,13 @@ class MenuList(MenuElement):
                 if self.lines[(i+self.selected_line) % self.nlines].selectable:
                     self.selected_line = (i+self.selected_line) % self.nlines
                     break
+        elif which == 'first':
+            for i, line in enumerate(self.lines):
+                if line.selectable:
+                    self.selected_line = i
+                    break
+                else:
+                    self.selected_line = None
         if self.selected_line not in range(self.nlines):
             self.selected_line = None
 
