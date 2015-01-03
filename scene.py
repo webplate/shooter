@@ -360,11 +360,17 @@ class Scene():
                         minyP, maxyP = max(yP, yT)-yP, min(yPe, yTe)-yP
                         aT = itemT.array[minx:maxx, miny:maxy]
                         aP = itemP.array[minxP:maxxP, minyP:maxyP]
+                        # there seem to be a bug here
+                        # wrong shapes of intersections parts
+                        # we ignore the collision and log the error for now
                         try:
                             touch = numpy.logical_and(aT, aP)
                         except ValueError:
-                            logging.error("Bad collision between %s and %s",
-                            str(aT.shape), str(aP.shape))
+                            logging.error(
+                        "Bad collision between %s %s and %s %s.",
+                                itemT.name, str(aT.shape),
+                                itemP.name, str(aP.shape))
+                            import pdb; pdb.set_trace()
                         else:
                             if True in touch:
                                 itemT.collided(itemP, time)

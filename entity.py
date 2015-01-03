@@ -462,8 +462,6 @@ class Directions(Anim):
     
     def replace_anim(self, new_direction):
         '''replace current animation of parent'''
-        # the parameters
-        ani = self.animations[new_direction]
         # the instanciation of the one dir anim
         instance = self.anim_instances[new_direction]
         # remove precedent anim
@@ -508,9 +506,6 @@ class TrajectoryDirections(Directions):
         return self.aim_angle(target)
 
 class Projectile(Mobile):
-    """projectile positions should be accessed with position(index)
-    damage
-    """
     def __init__(self, scene, parent, params={}):
         # projectiles shouldn't exist outside screen
         self.margin_proportion = 0
