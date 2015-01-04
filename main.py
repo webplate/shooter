@@ -19,21 +19,7 @@
 
 import platform, os, pygame
 import pygame.locals as p_l
-import scene, parameters, tools, controls
-
-
-def load_level(level):
-    """make sure the loaded level is playable"""
-    ref = parameters.DEFAULTLEVEL
-    for key in ref:
-        if key not in level:
-            level.update({key: ref[key]})
-        elif key in ['theme', 'gameplay', 'sound_pack']:
-            ref2 = ref[key]
-            for key2 in ref2:
-                if key2 not in level[key]:
-                    level[key].update({key2: ref2[key2]})
-    return level
+import scene, parameters, tools, controller, menu
 
 class Shooter():
     """a pygame shooter"""
@@ -67,6 +53,7 @@ class Shooter():
         self.speed = parameters.DEFAULTPLAY['game_speed']
         self.flip_rate = parameters.DEFAULTPLAY['flip_rate']
         self.frame_limit = 1000. / self.flip_rate   # max time for a scene update
+        # display parameters
         self.limits = parameters.GAMESIZE
         self.scale = parameters.RESCALE
         if self.scale in ['mame', '2x']:
@@ -77,9 +64,9 @@ class Shooter():
         self.screen = pygame.Surface(self.limits)
         self.fullscreen = False
         self.fps = 0
-        # load content from file
-        self.level = load_level(parameters.LEVEL)
-        self.theme = self.level['theme']
+        # load theme from file
+        self.theme = parameters.THEME
+        self.theme = tools.fill_dict_with_default(self.theme, parameters.DEFAULTTHEME)
         # load fonts
         pygame.font.init()
         self.font = tools.load_font(self.theme['font'],
@@ -89,126 +76,64 @@ class Shooter():
         self.sfont = tools.load_font(self.theme['small_font'],
                                      self.theme['small_size'])
         # joysticks
-        self.joysticks = [[], [], [], [], []]  # josticks linked with each player
+        self.joysticks = [[], [], [], [], []]  # josticks linked with each player (1-4 + environment)
         pygame.joystick.init()
         joysticks = [pygame.joystick.Joystick(x)
                      for x in range(pygame.joystick.get_count())]
         for joy in joysticks:
             joy.init()
+            # append unassigned joystick to environment
             self.joysticks[-1].append(joy.get_id())
             # disable joystick used by Virtual Box (for mouse integration)
             if 'VirtualBox' in joy.get_name():
                 joy.quit()
         # time reference
         self.now = 0
-        # Load static sontrols from controls.py
-        self.controls = controls.content
-        # Create empty lists of bound controls (those who are used)
-        self.bound_controls = []
-        # Create a list of dictionaries containing control switches for each player
-        # (last player is environment)
-        self.controls_state = [{}, {}, {}, {}, {}]
-        # Initial control binding
-        self.bind_control('quit', -1, self)
-        self.bind_control('pause', -1, self)
-        self.bind_control('mute', -1, self)
-        self.bind_control('fullscreen', -1, self)
-        self.bind_control('new_player', -1, self)
-        # Initialize scene
+        # initialize controller
+        self.controller = controller.Controller(self)
+        # initial control binding
+        self.controller.bind_control('quit', -1, self)
+        if system != 'Darwin':
+            self.controller.bind_control('fullscreen', -1, self)
+        # initialize scene
         self.scene = scene.Scene(self)
-        # Players
+        # initialize menu
+        self.menu = menu.Menu(self)
+        # players
         self.players = self.scene.players
 
     def trigger(self, control):
         if control['name'] == 'quit':
             self.running = False
-        elif control['name'] == 'new_player':
-            for player in range(3):
-                if not self.scene.players[player].active:
-                    self.joysticks[-1].remove(control['event_params']['joy'])
-                    self.joysticks[player].append(control['event_params']['joy'])
-                    self.scene.players[player].trigger(control)
-                    break
-        elif control['name'] == 'pause':
-            if not self.scene.paused:
-                self.scene.pause(self.now*self.speed)
-            else:
-                self.scene.paused = False
-        elif control['name'] == 'mute':
-            if not self.scene.mute:
-                self.scene.mute = True
-            else:
-                self.scene.mute = False
         elif control['name'] == 'fullscreen':
             if self.fullscreen:
                 self.display = pygame.display.set_mode(self.winsize)
                 pygame.mouse.set_visible(True)     # show cursor
                 self.fullscreen = False
             else:
-                self.display = pygame.display.set_mode(self.winsize,
-                    p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
+                self.display = pygame.display.set_mode(
+                    self.winsize, p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
                 pygame.mouse.set_visible(False)     # hide cursor
                 self.fullscreen = True
 
-    def bind_control(self, control_name, player, target):
-        """bind a control event to a target"""
-        for control in self.controls:
-            if control['name'] == control_name and control['player'] == player:
-                control.update({'target': target})
-                self.bound_controls.append(control.copy())
-
-    def bind_control_switch(self, control_name, player, target):
-        """bind a keyboard or joystick input state (on/off) to a target
-        this function is used when the program needs to monitor the state of
-        a keyboard input continuously and not only the press/release events
-        """
-        for control in self.controls:
-            if control['name'] == control_name and control['player'] == player:
-                if control['event_type'] == 'SWITCH':
-                    control.update({'event_type': p_l.KEYUP})
-                    control.update({'target': target})
-                    self.bound_controls.append(control.copy())
-                    control.update({'event_type': p_l.KEYDOWN})
-                    control.update({'target': target})
-                    self.bound_controls.append(control.copy())
-                    self.controls_state[player].update({control['name']: False})
-                elif control['event_type'] == 'JOY_SWITCH':
-                    control.update({'event_type': p_l.JOYBUTTONUP})
-                    control.update({'target': target})
-                    self.bound_controls.append(control.copy())
-                    control.update({'event_type': p_l.JOYBUTTONDOWN})
-                    control.update({'target': target})
-                    self.bound_controls.append(control.copy())
-                    self.controls_state[player].update({control['name']: False})
-                elif control['event_type'] == p_l.JOYAXISMOTION:
-                    control.update({'target': target})
-                    self.bound_controls.append(control.copy())
-                    self.controls_state[player].update({control['name']: False})
-
-    def unbind_control(self, control_name, player, target):
-        """unbind a control event from a target"""
-        for control in list(self.bound_controls):
-            if (control['name'] == control_name
-                and control['player'] == player 
-                and control['target'] == target):
-                self.bound_controls.remove(control)
-
     def on_event(self, event):
         """propagate and interpret events"""
+        # deal with 'QUIT' event
         if event.type == p_l.QUIT:
             self.trigger({'name': 'quit'})
 
-        for control in self.bound_controls:
+        # deal with other events
+        for control in self.controller.active_controls:
             if control['event_type'] == event.type:
                 # key pressed
                 if event.type == p_l.KEYDOWN:
                     if event.key == control['event_params']['key'] and control['target'] is not None:
-                        self.controls_state[control['player']].update({control['name']: True})
+                        self.controller.controls_state[control['player']].update({control['name']: True})
                         control['target'].trigger(control)
                 # key released
                 elif event.type == p_l.KEYUP:
                     if event.key == control['event_params']['key'] and control['target'] is not None:
-                        self.controls_state[control['player']].update({control['name']: False})
+                        self.controller.controls_state[control['player']].update({control['name']: False})
                         control['target'].trigger(control)
                 # gamepad axis motion
                 elif control['event_type'] == p_l.JOYAXISMOTION and event.joy in self.joysticks[control['player']]:
@@ -219,13 +144,13 @@ class Shooter():
                 # gamepad button pressed
                 elif event.type == p_l.JOYBUTTONDOWN and event.joy in self.joysticks[control['player']]:
                     if event.button == control['event_params']['button'] and control['target'] is not None:
-                        self.controls_state[control['player']].update({control['name']: True})
+                        self.controller.controls_state[control['player']].update({control['name']: True})
                         control['event_params'].update({'joy': event.joy})
                         control['target'].trigger(control)
                 # gamepad button released
                 elif event.type == p_l.JOYBUTTONUP and event.joy in self.joysticks[control['player']]:
                     if event.button == control['event_params']['button'] and control['target'] is not None:
-                        self.controls_state[control['player']].update({control['name']: False})
+                        self.controller.controls_state[control['player']].update({control['name']: False})
                         control['event_params'].update({'joy': event.joy})
                         control['target'].trigger(control)
 

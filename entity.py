@@ -28,6 +28,9 @@ class Actor(object):
         # layer for drawing on screen
         if not hasattr(self, 'layer'):
             self.layer = parameters.ACTORLAY
+        if not hasattr(self, 'pos'):
+            # default position of visible
+            self.pos = (0, 0)
         # variables to intermitently check for target
         self.last_check = 0
         self.target = None
@@ -164,10 +167,19 @@ class Visible(Actor):
             self._surface = new_surface
         # remember opacity
         self._surface.set_alpha(self.opacity)
+        # stay aware of eventual shape changes
+        self.update_frame()
     surface = property(_get_surface, _set_surface)
 
     def init_surface(self):
         self.surface = self.surface_name
+    
+    def update_frame(self):
+        """a visible has width and height and center
+        this computes new values"""
+        self.width = self.surface.get_width()
+        self.height = self.surface.get_height()
+        self.center = tools.get_center(self.pos, self.width, self.height)
 
     def add(self):
         Actor.add(self)
@@ -237,11 +249,6 @@ class Mobile(Visible):
     def _set_pos(self, new_position):
         self._pos = new_position[0], new_position[1]
     pos = property(_get_pos, _set_pos)
-
-    def update_frame(self):
-        self.width = self.surface.get_width()
-        self.height = self.surface.get_height()
-        self.center = tools.get_center(self.pos, self.width, self.height)
 
     def move(self, interval, time):
         if self.trajectory is not None:
@@ -643,7 +650,6 @@ class Landscape(Visible):
         if  not hasattr(self,'speed'):
             self.speed = 0
         self.full = self.surface
-        self.width, self.height = self.full.get_size()
         self.offset = self.height
 
     def update(self, interval, time):
@@ -689,8 +695,6 @@ class Catchable(Mobile):
     """
     def __init__(self, scene, params):
         Mobile.__init__(self, scene, params)
-        self.width = self.surface.get_width()
-        self.height = self.surface.get_height()
         # how does it affect life
         if 'add_life' not in self.effect:
             self.add_life = 0

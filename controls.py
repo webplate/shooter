@@ -1,37 +1,76 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 import pygame.locals as p_l
 
-# 'content' lists all available commands and their associated triggering events
-# each line is called a "control" in the program
-# each control is structured as
-# [ command name, player concerned, event type, event parameters ]
-# objects in the program can bind themselves to a control using the Shooter.bind_control method
-# (this method can usually be accessed throug scene.game.bind_control)
-# Shooter.bind_control_switch is used to bind both 'KEYDOWN' and 'KEYUP' at the same time
-# (this method should be used when the program needs the state of the key continuously and not only the event)
-# 'main.py' imports this list and handle pygame events by comparing them with bound controls
-# if all goes well, this is the only place in the program where the keys used to trigger events will be mentionned
 
+# # # # # # # # # # # # # #
+#   Game Control System   #
+# # # # # # # # # # # # # #
+#
+#   controller.py       Controller class and associated functions
+#   controls.py         List of controls
+#
+# In this file, default controls are defined in a dictionary called 'controls'.
+# This dictionary contains several control sets which can be toggled active/inactive by the controller.
+# Each control set is a list of 'controls', which are structured as follows:
+# [ command name, player concerned, event type, event parameters ]
+#
+# Once a Controller object is created, objects in the program can bind themselves to a control using
+# the Controller.bind_control method (usually accessed through game.controller.bind_control).
+# The Controller.bind_control_switch method is used to bind both 'KEYDOWN' and 'KEYUP' at the same time.
+# This method should be used when the program needs the state of the key continuously
+#
+# The Controller object imports 'controls' and deals with control binding and control sets activation
+# The main.py 'on_event' function handles events by comparing them with active controls
+#
 # player concerned:
 #   -1              environment
 #   0-3             player 1-4
-
+#
 # event types:
-#   key pressed     p_l.KEYDOWN
-#   key released    p_l.KEYUP
-# to be continued
-
+#   key pressed trigger             p_l.KEYDOWN
+#   key released trigger            p_l.KEYUP
+#   key pressed (on/off)            'SWITCH'
+#   button pressed trigger          p_l.JOYBUTTONDOWN
+#   button released trigger         p_l.JOYBUTTONUP
+#   button pressed (on/off)         'JOY_SWITCH'
+#   joystick axis movement          p_l.JOYAXISMOTION
+#   mouse click
+#   mouse movement
+#
 # pygame event types
 # http://www.pygame.org/docs/ref/event.html
-
+#
 # pygame keys (for keyboard events)
 # http://www.pygame.org/docs/ref/key.html
+#
+# # # # # # # # # # # # # #
 
-content_list = [
-    # Environment (-1)
-    ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Quit game
-    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause game
+# /!\ controls should be unique
+controls = {}
+# global controls (always active)
+controls.update({'global': [
+    ['quit', -1, p_l.KEYDOWN, {'key': p_l.K_q}],  # Quit game
     ['mute', -1, p_l.KEYDOWN, {'key': p_l.K_m}],  # Sound on/off
     ['fullscreen', -1, p_l.KEYDOWN, {'key': p_l.K_f}],  # Fullscreen on/off
+    ['menu', -1, p_l.KEYDOWN, {'key': p_l.K_ESCAPE}],  # Open menu
+]})
+
+# menu controls
+controls.update({'menu': [
+    ['up', -1, p_l.KEYDOWN, {'key': p_l.K_UP}],
+    ['down', -1, p_l.KEYDOWN, {'key': p_l.K_DOWN}],
+    ['enter', -1, p_l.KEYDOWN, {'key': p_l.K_RETURN}]
+]})
+
+# pause controls
+controls.update({'pause': [
+    ['pause', -1, p_l.KEYDOWN, {'key': p_l.K_p}],  # Pause / unpause game
+]})
+
+# game controls
+controls.update({'game': [
+    # Environment (-1)
     ['new_player', -1, p_l.JOYBUTTONDOWN, {'button': 2}],
 
     # Player 1 (0)
@@ -79,12 +118,4 @@ content_list = [
     ['left', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'negative',  'tol': -0.8}],
     ['right', 3, p_l.JOYAXISMOTION, {'axis': 0, 'direction': 'positive',  'tol': 0.8}],
     ['shoot', 3, 'JOY_SWITCH', {'button': 2}],
-]
-
-key_list = ['name', 'player', 'event_type', 'event_params']
-content = []
-for control in content_list:
-    content_line = {}
-    for i, key in enumerate(key_list):
-        content_line.update({key_list[i]: control[i]})
-    content.append(content_line)
+]})
