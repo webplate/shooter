@@ -112,7 +112,7 @@ class Shooter():
                 self.fullscreen = False
             else:
                 self.display = pygame.display.set_mode(
-                    self.winsize, p_l.HWSURFACE | p_l.FULLSCREEN | p_l.DOUBLEBUF)
+                    self.winsize, p_l.FULLSCREEN)
                 pygame.mouse.set_visible(False)     # hide cursor
                 self.fullscreen = True
 
