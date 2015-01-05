@@ -650,21 +650,24 @@ class Landscape(Visible):
         if  not hasattr(self,'speed'):
             self.speed = 0
         self.full = self.surface
+        # for now surface is too long for screen
+        # we keep the full dimensions
+        self.totH = self.height
         self.offset = self.height
 
     def update(self, interval, time):
         # move down the displayed area of landscape
         self.offset -= self.speed * interval
 
-        w, h = self.width, parameters.GAMESIZE[1]
+        w, h = self.width, parameters.GAMESIZE[1] + 1
         # do not loop if smaller than screen background
         if self.height >= h:
             # loop background
             if self.offset < 0:
-                self.offset = self.height
+                self.offset = self.totH
             if self.offset + h > self.height:
                 t1 = self.offset
-                h1 = self.height - self.offset
+                h1 = self.totH - self.offset
                 h2 = h - (self.height - self.offset)
                 if self.has_alpha:
                     back = tools.make_rect(w, h, self.alpha_key)

@@ -454,19 +454,10 @@ class Scene():
                         # there seem to be a bug here
                         # wrong shapes of intersections parts
                         # we ignore the collision and log the error for now
-                        try:
-                            touch = numpy.logical_and(aT, aP)
-                        except ValueError:
-                            logging.error(
-                        "Bad collision between %s %s and %s %s.",
-                                itemT.name, str(aT.shape),
-                                itemP.name, str(aP.shape))
-                            import ipdb
-                            ipdb.set_trace()
-                        else:
-                            if True in touch:
-                                itemT.collided(itemP, time)
-                                itemP.collided(itemT, time)
+                        touch = numpy.logical_and(aT, aP)
+                        if True in touch:
+                            itemT.collided(itemP, time)
+                            itemP.collided(itemT, time)
 
     def pause(self, time):
         self.paused = True

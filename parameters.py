@@ -455,7 +455,7 @@ MISSILE = {
     'effect': {'add_life': -5},
     'layer': BELOWSHIPLAY,
     'speed': 0.05,
-    'cooldown': 500,
+    'cooldown': 1000,
 }
 
 #weapons
@@ -517,7 +517,7 @@ STALKER = {
     'speed': 0.2,
     'charge_rate': 0.001,
     'life': 20,
-    'weapons': [SPREADER, MISSILE_WEAPON, BLASTER]
+    'weapons': [MISSILE_WEAPON, BLASTER, SPREADER]
 }
 
 INVINCIBLE = SHIP.copy()
