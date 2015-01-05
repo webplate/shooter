@@ -599,6 +599,21 @@ COPTER = {
     'bonus_rate': 0.2
 }
 
+TANK = {
+    'name': 'tank',
+    'type': 'Fighter',
+    'has_shadow': True,
+    'speed': 0.03,
+    'life': 9,
+    'weapons': [ANGLECANON],
+    'trajectory': 'Down',
+    'trajectory_params': {'init_pos': (100, 110)},
+    'animations': [COPTEREIGHTDIR],
+    'followers': [ROTOR],
+    'reward': 1,
+    'bonus_rate': 0.2
+}
+
 DESERT = {
     'name': 'desert',
     'type': 'Landscape',
